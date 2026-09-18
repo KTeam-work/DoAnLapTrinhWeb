@@ -1,0 +1,292 @@
+﻿
+@{
+    ViewData["Title"] = "Quản lý Nhân viên";
+}
+
+<!-- Fonts & FontAwesome -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<link rel="stylesheet" href="~/Css/StyleEmployee.css" />
+
+<div class="container-fluid px-4 py-4">
+
+    <!-- 1. Header & Breadcrumb -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="page-title mb-1">Danh sách Nhân viên</h1>
+            <div class="breadcrumb-custom">
+                <i class="fa-solid fa-house"></i>
+                <span>/</span>
+                <span>Nhân sự</span>
+                <span>/</span>
+                <span class="text-dark fw-semibold">Quản lý nhân viên</span>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn-action-outline"><i class="fa-solid fa-file-export text-muted"></i> Xuất Excel</button>
+            <button class="btn-add-glow" data-bs-toggle="modal" data-bs-target="#createEmployeeModal">
+                <i class="fa-solid fa-plus"></i> Thêm Nhân Viên
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. Hero Banner & Search Section (Tone Xanh Lá Đồng Bộ) -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="p-4 p-md-5 hero-banner position-relative overflow-hidden">
+                <div class="position-absolute hero-orb-1"></div>
+                <div class="position-absolute hero-orb-2"></div>
+
+                <div class="row align-items-center position-relative z-1 g-4">
+                    <div class="col-lg-7">
+                        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white bg-opacity-25 backdrop-blur mb-3 text-white fs-7 border border-white border-opacity-25 shadow-sm">
+                            <span class="d-inline-block rounded-circle" style="width: 8px; height: 8px; background-color: #34d399;"></span>
+                            Hệ thống Quản trị Nhân sự & Ca làm LumiTea
+                        </div>
+                        <h3 class="fw-bold text-white mb-2">Quản Lý Đội Ngũ Nhân Viên</h3>
+                        <p class="text-white mb-0 fs-6" style="opacity: 0.85;">Tìm kiếm, phân quyền tài khoản và theo dõi trạng thái hoạt động của nhân viên toàn hệ thống.</p>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="d-flex flex-column gap-2">
+                            <div class="input-group shadow-lg rounded-3 overflow-hidden bg-white p-1">
+                                <span class="input-group-text bg-transparent border-0 text-muted ps-3">
+                                    <i class="fa-solid fa-magnifying-glass fs-6"></i>
+                                </span>
+                                <input type="text" id="tableSearchInput" onkeyup="filterTable()" class="form-control border-0 shadow-none ps-2 fs-6" placeholder="Tìm tên, email, SDT..." aria-label="Search">
+                                <button class="btn btn-primary px-4 fw-semibold rounded-2" type="button" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none;">
+                                    Tìm kiếm
+                                </button>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between px-2 text-white small mt-1" style="opacity: 0.85;">
+                                <span><i class="fa-solid fa-bolt text-warning me-1"></i> Số lượng nhân viên</span>
+                                <span><i class="fa-solid fa-users me-1"></i> 24 Nhân viên</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Main Data Table Card -->
+    <div class="app-card">
+
+        <!-- Filter Controls Bar -->
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-muted small fw-bold text-uppercase"><i class="fa-solid fa-filter text-success me-1"></i> BỘ LỌC:</span>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <!-- Dropdown Vị Trí -->
+                <select id="roleFilter" onchange="filterTable()" class="form-select border-0 bg-light text-muted fw-semibold shadow-sm" style="border-radius: 10px; font-size: 0.90rem; min-width: 200px; padding: 10px 16px;">
+                    <option value="">Tất cả vị trí</option>
+                    <option value="Quản lý">Quản lý</option>
+                    <option value="Pha chế">Pha chế</option>
+                    <option value="Thu ngân">Thu ngân</option>
+                </select>
+
+                <!-- Dropdown Trạng Thái -->
+                <select id="statusFilter" onchange="filterTable()" class="form-select border-0 bg-light text-muted fw-semibold shadow-sm" style="border-radius: 10px; font-size: 0.90rem; min-width: 200px; padding: 10px 16px;">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="active">Đang hoạt động</option>
+                    <option value="locked">Tạm khóa</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>NHÂN VIÊN</th>
+                        <th>CHỨC VỤ</th>
+                        <th>EMAIL</th>
+                        <th>SỐ ĐIỆN THOẠI</th>
+                        <th>TRẠNG THÁI</th>
+                        <th class="text-end">THAO TÁC</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            var avatarBg = "#d1fae5";
+                            var avatarText = !string.IsNullOrEmpty(item.FullName) && item.FullName.Length >= 2 ? item.FullName.Substring(0, 2).ToUpper() : "NV";
+                            var roleClass = "default";
+                            var roleName = item.Role?.RoleName ?? "N/A";
+                            if (roleName.Contains("Quản lý")) { roleClass = "manager"; }
+                            else if (roleName.Contains("Pha chế")) { roleClass = "barista"; }
+                            else if (roleName.Contains("Thu ngân")) { roleClass = "cashier"; }
+
+                            <tr class="employee-row" data-role="@roleName" data-status="@(item.IsActive ? "active" : "locked")">
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="rounded-circle fw-bold d-flex align-items-center justify-content-center" style="width:38px; height:38px; background: @avatarBg; color: #047857; font-size: 0.85rem;">
+                                            @avatarText
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">@item.FullName</div>
+                                            <div class="text-muted" style="font-size: 0.75rem;">ID: #@item.UserId</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="role-badge @roleClass">@roleName</span></td>
+                                <td><a href="mailto:@item.Email" class="text-success text-decoration-none fw-medium">@item.Email</a></td>
+                                <td class="text-muted fw-medium">@(string.IsNullOrEmpty(item.Phone) ? "(+84) 901 234 567" : item.Phone)</td>
+                                <td>
+                                    <div class="form-check form-switch mb-0">
+                                        <input class="form-check-input status-switch" type="checkbox" @(item.IsActive ? "checked" : "") onchange="toggleStatus(@item.UserId)">
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <button class="action-btn-pill" onclick="openEditModal(@item.UserId)" title="Chỉnh sửa"><i class="fa-solid fa-pen-to-square"></i></button>
+                                    <button class="action-btn-pill delete" onclick="deleteEmployee(@item.UserId)" title="Xóa"><i class="fa-solid fa-trash-can"></i></button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <!-- DỮ LIỆU MẪU ĐỂ TEST GIAO DIỆN -->
+                        <tr class="employee-row" data-role="Quản lý" data-status="active">
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle fw-bold d-flex align-items-center justify-content-center" style="width:38px; height:38px; background: #f3e8ff; color: #7e22ce; font-size: 0.85rem;">TC</div>
+                                    <div><div class="fw-bold text-dark">Tom Colicchio</div><div class="text-muted" style="font-size: 0.75rem;">ID: #NV001</div></div>
+                                </div>
+                            </td>
+                            <td><span class="role-badge manager"><i class="fa-solid fa-shield-halved me-1"></i> Quản lý</span></td>
+                            <td><a href="#" class="text-success text-decoration-none fw-medium">tomcolicchio@cupcake.com</a></td>
+                            <td class="text-muted fw-medium">(+84) 950 045 328</td>
+                            <td><div class="form-check form-switch mb-0"><input class="form-check-input status-switch" type="checkbox" checked></div></td>
+                            <td class="text-end"><button class="action-btn-pill"><i class="fa-solid fa-pen-to-square"></i></button><button class="action-btn-pill delete"><i class="fa-solid fa-trash-can"></i></button></td>
+                        </tr>
+                        <tr class="employee-row" data-role="Pha chế" data-status="active">
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle fw-bold d-flex align-items-center justify-content-center" style="width:38px; height:38px; background: #e0f2fe; color: #0369a1; font-size: 0.85rem;">RB</div>
+                                    <div><div class="fw-bold text-dark">Richard Blais</div><div class="text-muted" style="font-size: 0.75rem;">ID: #NV002</div></div>
+                                </div>
+                            </td>
+                            <td><span class="role-badge barista"><i class="fa-solid fa-mug-hot me-1"></i> Pha chế</span></td>
+                            <td><a href="#" class="text-success text-decoration-none fw-medium">richardblais@cupcake.com</a></td>
+                            <td class="text-muted fw-medium">(+84) 971 023 185</td>
+                            <td><div class="form-check form-switch mb-0"><input class="form-check-input status-switch" type="checkbox" checked></div></td>
+                            <td class="text-end"><button class="action-btn-pill"><i class="fa-solid fa-pen-to-square"></i></button><button class="action-btn-pill delete"><i class="fa-solid fa-trash-can"></i></button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Bar -->
+        <div class="pagination-wrapper">
+            <span class="text-muted small">Hiển thị <strong>1 - 10</strong> trong số <strong>24</strong> nhân viên</span>
+            <div class="d-flex gap-1">
+                <a href="#" class="page-link-custom"><i class="fa-solid fa-chevron-left"></i></a>
+                <a href="#" class="page-link-custom active">1</a>
+                <a href="#" class="page-link-custom">2</a>
+                <a href="#" class="page-link-custom">3</a>
+                <a href="#" class="page-link-custom"><i class="fa-solid fa-chevron-right"></i></a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- =========================================================================
+     MODAL THÊM NHÂN VIÊN MỚI (Có Tên, Chức Vụ, SĐT và Email)
+========================================================================= -->
+<div class="modal fade" id="createEmployeeModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px; border: none; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+            <form asp-action="Create" method="post">
+                <div class="modal-header px-4 pt-4 border-0">
+                    <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-user-plus text-success me-2"></i>Thêm Nhân Viên Mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-4 py-3">
+
+                    <!-- 1. Họ và tên -->
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">HỌ VÀ TÊN</label>
+                        <input type="text" name="FullName" class="form-control bg-light" style="border-radius: 10px; padding: 10px; border: 1px solid #e2e8f0;" placeholder="Nhập họ và tên..." required />
+                    </div>
+
+                    <!-- 2. Chức vụ / Vai trò -->
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">CHỨC VỤ / VAI TRÒ</label>
+                        <select name="RoleId" class="form-select bg-light text-dark fw-medium" style="border-radius: 10px; padding: 10px; border: 1px solid #e2e8f0;" required>
+                            <option value="" disabled selected>-- Chọn vị trí công việc --</option>
+                            @if (ViewBag.Roles != null)
+                            {
+                                foreach (var role in ViewBag.Roles)
+                                {
+                                    <option value="@role.RoleId">@role.RoleName</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="1">Quản lý</option>
+                                <option value="2">Pha chế</option>
+                                <option value="3">Thu ngân</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- 3. Số điện thoại -->
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">SỐ ĐIỆN THOẠI</label>
+                        <input type="text" name="Phone" class="form-control bg-light" style="border-radius: 10px; padding: 10px; border: 1px solid #e2e8f0;" placeholder="Ví dụ: 0901234567" required />
+                    </div>
+
+                    <!-- 4. Email Tài Khoản -->
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">EMAIL TÀI KHOẢN</label>
+                        <input type="email" name="Email" class="form-control bg-light" style="border-radius: 10px; padding: 10px; border: 1px solid #e2e8f0;" placeholder="nhanvien@lumitea.com" required />
+                    </div>
+
+                </div>
+                <div class="modal-footer px-4 pb-4 border-0">
+                    <button type="button" class="btn btn-light fw-semibold" data-bs-dismiss="modal" style="border-radius: 10px;">Hủy</button>
+                    <button type="submit" class="btn-add-glow">Lưu Thông Tin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterTable() {
+        let searchInput = document.getElementById('tableSearchInput').value.toLowerCase();
+        let roleFilter = document.getElementById('roleFilter').value.toLowerCase();
+        let statusFilter = document.getElementById('statusFilter').value.toLowerCase();
+        let rows = document.querySelectorAll('.employee-row');
+
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            let role = row.getAttribute('data-role')?.toLowerCase() || '';
+            let status = row.getAttribute('data-status')?.toLowerCase() || '';
+
+            let matchesSearch = text.includes(searchInput);
+            let matchesRole = roleFilter === '' || role.includes(roleFilter);
+            let matchesStatus = statusFilter === '' || status === statusFilter;
+
+            row.style.display = (matchesSearch && matchesRole && matchesStatus) ? '' : 'none';
+        });
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            document.getElementById('tableSearchInput').focus();
+        }
+    });
+</script>

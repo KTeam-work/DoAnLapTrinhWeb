@@ -1,0 +1,295 @@
+﻿
+:root {
+    --lumitea-primary: #1A4D3E;
+    --lumitea-primary-light: #2D6A4F;
+    --lumitea-accent: #D97706;
+    --lumitea-bg: #F7F5EF;
+    --lumitea-card-bg: #FFFFFF;
+    --text-main: #1E293B;
+    --text-muted: #64748B;
+    --border-color: #E2E8F0;
+    --radius-lg: 16px;
+    --shadow-soft: 0 4px 14px rgba(0, 0, 0, 0.04);
+    --shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.08);
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--lumitea-bg);
+    color: var(--text-main);
+}
+
+/* KPI Card */
+.kpi-card {
+    background: var(--lumitea-card-bg);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition);
+}
+
+    .kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+    }
+
+.kpi-title {
+    font-size: 0.825rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.kpi-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-top: 6px;
+}
+
+.kpi-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(26, 77, 62, 0.1);
+    color: var(--lumitea-primary);
+    font-size: 1.25rem;
+}
+
+/* Ticket Card Design */
+.voucher-ticket-card {
+    background: var(--lumitea-card-bg);
+    border-radius: var(--radius-lg);
+    border: 1px dashed var(--border-color);
+    display: flex;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition);
+    position: relative;
+}
+
+    .voucher-ticket-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-hover);
+        border-color: var(--lumitea-primary-light);
+    }
+
+/* Stub bán vé trái */
+.voucher-left {
+    width: 115px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    padding: 16px 8px;
+    text-align: center;
+    position: relative;
+}
+
+.bg-emerald {
+    background: linear-gradient(135deg, #1A4D3E, #2D6A4F);
+}
+
+.bg-amber {
+    background: linear-gradient(135deg, #D97706, #F59E0B);
+}
+
+.bg-blue {
+    background: linear-gradient(135deg, #0284C7, #38BDF8);
+}
+
+.bg-secondary-gradient {
+    background: linear-gradient(135deg, #64748B, #94A3B8);
+}
+
+.discount-badge {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.discount-type {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+    opacity: 0.9;
+}
+
+/* Vùng nội dung phải */
+.voucher-right {
+    padding: 18px;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.voucher-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.voucher-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+.code-box-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #F1F5F9;
+    border: 1px dashed #CBD5E1;
+    border-radius: 8px;
+    padding: 6px 12px;
+    width: 100%;
+}
+
+.code-text {
+    font-family: monospace;
+    font-weight: 800;
+    color: var(--lumitea-primary);
+    letter-spacing: 1.5px;
+    font-size: 0.95rem;
+}
+
+.btn-copy {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0 4px;
+    transition: var(--transition);
+}
+
+    .btn-copy:hover {
+        color: var(--lumitea-primary);
+        transform: scale(1.15);
+    }
+
+/* Progress Bar */
+.progress-mini {
+    height: 6px;
+    background-color: #E2E8F0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: var(--lumitea-primary);
+    border-radius: 10px;
+}
+
+.voucher-footer {
+    font-size: 0.75rem;
+    border-top: 1px solid #F1F5F9;
+    padding-top: 8px;
+    margin-top: 10px;
+}
+
+/* Status Pills */
+.status-pill {
+    font-size: 0.725rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-active {
+    background: #DCFCE7;
+    color: #15803D;
+}
+
+.status-upcoming {
+    background: #E0F2FE;
+    color: #0369A1;
+}
+
+.status-paused {
+    background: #F1F5F9;
+    color: #475569;
+}
+
+.status-expired {
+    background: #FEE2E2;
+    color: #B91C1C;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: currentColor;
+}
+
+/* Animation Dot */
+.pulse-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #10B981;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    animation: pulse 1.6s infinite;
+}
+
+@@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+/* Buttons */
+.btn-lumitea-primary {
+    background-color: var(--lumitea-primary);
+    color: #FFF;
+    border: none;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 10px 20px;
+    transition: var(--transition);
+}
+
+.btn-lumitea-primary:hover {
+        background-color: var(--lumitea-primary-light);
+        color: #FFF;
+        box-shadow: 0 4px 12px rgba(26, 77, 62, 0.25);
+}
+
+.btn-action-outline {
+    border: 1px solid var(--border-color);
+    background: #FFF;
+    color: var(--text-main);
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 10px 20px;
+    transition: var(--transition);
+}
+.btn-action-outline:hover {
+        background: #F8FAFC;
+        border-color: #CBD5E1;
+}
+

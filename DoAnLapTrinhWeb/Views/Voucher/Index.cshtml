@@ -1,0 +1,481 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LumiTea - Quản Lý Mã Giảm Giá</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+     <link href="~/Css/styleVoucher.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div class="container-fluid px-4 py-4">
+
+        <!-- 1. HEADER SECTION -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <div>
+                <h3 class="fw-bold mb-1" style="color: var(--lumitea-primary);">
+                    <i class="fa-solid fa-ticket me-2" style="color: var(--lumitea-accent);"></i>Quản Lý Voucher & Khuyến Mãi
+                </h3>
+                <p class="text-muted small mb-0">Tạo, thiết lập điều kiện và theo dõi hiệu suất các chương trình ưu đãi LumiTea</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-action-outline">
+                    <i class="fa-solid fa-file-export me-1"></i> Xuất Báo Cáo
+                </button>
+                <button class="btn btn-lumitea-primary" data-bs-toggle="modal" data-bs-target="#createVoucherModal">
+                    <i class="fa-solid fa-plus me-1"></i> Tạo Voucher Mới
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. KPI METRICS CARDS -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-title">Tổng Chương Trình</div>
+                            <div class="kpi-value" id="countTotal">12</div>
+                        </div>
+                        <div class="kpi-icon-wrap"><i class="fa-solid fa-tags"></i></div>
+                    </div>
+                    <div class="mt-3 fs-7 text-muted">Đã khởi tạo từ trước đến nay</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-title">Đang Hoạt Động</div>
+                            <div class="kpi-value text-success" id="countActive">5</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="background: rgba(16, 185, 129, 0.1); color: #10B981;"><i class="fa-solid fa-circle-play"></i></div>
+                    </div>
+                    <div class="mt-3 fs-7 text-muted"><span class="pulse-dot me-1"></span> Khách hàng đang áp dụng</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-title">Tổng Lượt Đã Dùng</div>
+                            <div class="kpi-value text-primary">1,420</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="background: rgba(59, 130, 246, 0.1); color: #2563EB;"><i class="fa-solid fa-users-check"></i></div>
+                    </div>
+                    <div class="mt-3 fs-7 text-muted">Lượt áp dụng đơn thành công</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-title">Sắp Diễn Ra</div>
+                            <div class="kpi-value text-info">3</div>
+                        </div>
+                        <div class="kpi-icon-wrap" style="background: rgba(2, 132, 199, 0.1); color: #0284C7;"><i class="fa-solid fa-clock"></i></div>
+                    </div>
+                    <div class="mt-3 fs-7 text-muted">Đã lên lịch chờ kích hoạt</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. FILTER & SEARCH BAR -->
+        <div class="kpi-card mb-4" style="padding: 16px 20px;">
+            <div class="row g-3 align-items-center">
+                <div class="col-12 col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 rounded-start-3 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" id="searchInput" class="form-control border-start-0 rounded-end-3" placeholder="Tìm theo mã (VD: LUMI20), tên ưu đãi..." style="box-shadow: none;">
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <select id="filterStatus" class="form-select rounded-3">
+                        <option value="">-- Tất cả trạng thái --</option>
+                        <option value="active">Đang chạy (Active)</option>
+                        <option value="upcoming">Sắp diễn ra</option>
+                        <option value="paused">Tạm dừng</option>
+                        <option value="expired">Đã hết hạn / Hết lượt</option>
+                    </select>
+                </div>
+                <div class="col-6 col-md-2">
+                    <select id="filterType" class="form-select rounded-3">
+                        <option value="">-- Loại ưu đãi --</option>
+                        <option value="percent">Giảm theo %</option>
+                        <option value="amount">Giảm tiền cố định</option>
+                        <option value="freeship">Freeship</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-2 text-end">
+                    <button class="btn btn-action-outline w-100" onclick="resetFilters()"><i class="fa-solid fa-rotate-right me-1"></i> Đặt Lại</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. VOUCHER CARDS GRID -->
+        <div class="row g-3" id="voucherContainer">
+
+            <!-- Card 1: Giảm % (Đang chạy) -->
+            <div class="col-12 col-md-6 col-xl-4 voucher-item" data-code="lumi20k" data-title="giảm 20% trà trái cây tươi" data-status="active" data-type="percent">
+                <div class="voucher-ticket-card">
+                    <div class="voucher-left bg-emerald">
+                        <div class="discount-badge">20%</div>
+                        <div class="discount-type">Tối đa 30K</div>
+                    </div>
+                    <div class="voucher-right">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <span class="status-pill status-active"><span class="dot"></span> Đang chạy</span>
+                            <div class="dropdown">
+                                <button class="btn btn-sm text-muted p-0 border-0" data-bs-toggle="dropdown"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm fs-7">
+                                    <li><a class="dropdown-item" href="#" onclick="showToast('Mở giao diện sửa')"><i class="fa-solid fa-pen-to-square me-2"></i>Chỉnh sửa</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="showToast('Đã tạm dừng mã')"><i class="fa-solid fa-pause me-2"></i>Tạm dừng</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="#" onclick="showToast('Đã xóa mã')"><i class="fa-solid fa-trash me-2"></i>Xóa</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <h6 class="voucher-title text-truncate" title="Giảm 20% Trà Trái Cây Tươi">Giảm 20% Trà Trái Cây Tươi</h6>
+                        <p class="voucher-desc">Áp dụng đơn từ: <strong>99.000đ</strong></p>
+
+                        <div class="code-box-wrap mb-2">
+                            <span class="code-text">LUMI20K</span>
+                            <button class="btn-copy" onclick="copyToClipboard('LUMI20K')"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-1 fs-7 text-muted">
+                            <span>Đã dùng: <strong>75/100</strong></span>
+                            <span>75%</span>
+                        </div>
+                        <div class="progress-mini mb-2">
+                            <div class="progress-bar-fill" style="width: 75%;"></div>
+                        </div>
+
+                        <div class="voucher-footer text-muted">
+                            <i class="fa-regular fa-clock me-1"></i> Hạn: 30/09/2026
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Freeship (Đang chạy) -->
+            <div class="col-12 col-md-6 col-xl-4 voucher-item" data-code="freeship" data-title="miễn phí vận chuyển toàn quốc" data-status="active" data-type="freeship">
+                <div class="voucher-ticket-card">
+                    <div class="voucher-left bg-amber">
+                        <div class="discount-badge"><i class="fa-solid fa-truck-fast"></i></div>
+                        <div class="discount-type">Free Ship</div>
+                    </div>
+                    <div class="voucher-right">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <span class="status-pill status-active"><span class="dot"></span> Đang chạy</span>
+                            <div class="dropdown">
+                                <button class="btn btn-sm text-muted p-0 border-0" data-bs-toggle="dropdown"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm fs-7">
+                                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-pen-to-square me-2"></i>Chỉnh sửa</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-pause me-2"></i>Tạm dừng</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="#"><i class="fa-solid fa-trash me-2"></i>Xóa</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <h6 class="voucher-title text-truncate" title="Miễn Phí Vận Chuyển Đơn Đầu">Miễn Phí Vận Chuyển Đơn Đầu</h6>
+                        <p class="voucher-desc">Áp dụng đơn từ: <strong>150.000đ</strong></p>
+
+                        <div class="code-box-wrap mb-2">
+                            <span class="code-text">FREESHIP</span>
+                            <button class="btn-copy" onclick="copyToClipboard('FREESHIP')"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-1 fs-7 text-muted">
+                            <span>Đã dùng: <strong>320/500</strong></span>
+                            <span>64%</span>
+                        </div>
+                        <div class="progress-mini mb-2">
+                            <div class="progress-bar-fill" style="width: 64%; background-color: var(--lumitea-accent);"></div>
+                        </div>
+
+                        <div class="voucher-footer text-muted">
+                            <i class="fa-regular fa-clock me-1"></i> Hạn: 15/10/2026
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Giảm tiền cố định (Sắp diễn ra) -->
+            <div class="col-12 col-md-6 col-xl-4 voucher-item" data-code="lumidat30" data-title="giảm 30k mừng ngày sinh nhật" data-status="upcoming" data-type="amount">
+                <div class="voucher-ticket-card">
+                    <div class="voucher-left bg-blue">
+                        <div class="discount-badge">30K</div>
+                        <div class="discount-type">Giảm thẳng</div>
+                    </div>
+                    <div class="voucher-right">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <span class="status-pill status-upcoming"><span class="dot"></span> Sắp diễn ra</span>
+                            <div class="dropdown">
+                                <button class="btn btn-sm text-muted p-0 border-0" data-bs-toggle="dropdown"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm fs-7">
+                                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-pen-to-square me-2"></i>Chỉnh sửa</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-play me-2"></i>Kích hoạt ngay</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="#"><i class="fa-solid fa-trash me-2"></i>Xóa</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <h6 class="voucher-title text-truncate" title="Ưu Đãi Mừng Chi Nhánh Mới">Ưu Đãi Mừng Chi Nhánh Mới</h6>
+                        <p class="voucher-desc">Áp dụng đơn từ: <strong>120.000đ</strong></p>
+
+                        <div class="code-box-wrap mb-2">
+                            <span class="code-text">LUMIDAT30</span>
+                            <button class="btn-copy" onclick="copyToClipboard('LUMIDAT30')"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-1 fs-7 text-muted">
+                            <span>Đã dùng: <strong>0/200</strong></span>
+                            <span>0%</span>
+                        </div>
+                        <div class="progress-mini mb-2">
+                            <div class="progress-bar-fill" style="width: 0%;"></div>
+                        </div>
+
+                        <div class="voucher-footer text-muted">
+                            <i class="fa-regular fa-clock me-1"></i> Bắt đầu: 01/10/2026
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: Tạm dừng -->
+            <div class="col-12 col-md-6 col-xl-4 voucher-item" data-code="teamilk50" data-title="giảm 50% trà sữa ô long" data-status="paused" data-type="percent">
+                <div class="voucher-ticket-card opacity-75">
+                    <div class="voucher-left bg-secondary-gradient">
+                        <div class="discount-badge">50%</div>
+                        <div class="discount-type">Tối đa 40K</div>
+                    </div>
+                    <div class="voucher-right">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <span class="status-pill status-paused"><span class="dot"></span> Tạm dừng</span>
+                            <div class="dropdown">
+                                <button class="btn btn-sm text-muted p-0 border-0" data-bs-toggle="dropdown"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm fs-7">
+                                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-play me-2"></i>Tiếp tục chạy</a></li>
+                                    <li><a class="dropdown-item text-danger" href="#"><i class="fa-solid fa-trash me-2"></i>Xóa</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <h6 class="voucher-title text-truncate" title="Giảm 50% Trà Sữa Ô Long">Giảm 50% Trà Sữa Ô Long</h6>
+                        <p class="voucher-desc">Áp dụng đơn từ: <strong>80.000đ</strong></p>
+
+                        <div class="code-box-wrap mb-2">
+                            <span class="code-text">TEAMILK50</span>
+                            <button class="btn-copy" onclick="copyToClipboard('TEAMILK50')"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-1 fs-7 text-muted">
+                            <span>Đã dùng: <strong>50/50</strong></span>
+                            <span>100%</span>
+                        </div>
+                        <div class="progress-mini mb-2">
+                            <div class="progress-bar-fill bg-secondary" style="width: 100%;"></div>
+                        </div>
+
+                        <div class="voucher-footer text-muted">
+                            <i class="fa-regular fa-clock me-1"></i> Tạm dừng quản trị
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 5. PAGINATION -->
+        <div class="d-flex justify-content-between align-items-center mt-4 pt-2">
+            <span class="fs-7 text-muted">Hiển thị 1 - 4 trong số 12 Voucher</span>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item disabled"><a class="page-link" href="#"><i class="fa-solid fa-chevron-left"></i></a></li>
+                    <li class="page-item active"><a class="page-link" href="#" style="background-color: var(--lumitea-primary); border-color: var(--lumitea-primary);">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#"><i class="fa-solid fa-chevron-right"></i></a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- MODAL TẠO VOUCHER MỚI -->
+    <div class="modal fade" id="createVoucherModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold" style="color: var(--lumitea-primary);">
+                        <i class="fa-solid fa-ticket me-2" style="color: var(--lumitea-accent);"></i>Tạo Mã Khuyến Mãi Mới
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <form id="formCreateVoucher">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold fs-7">Mã Voucher (Code) <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control rounded-3 text-uppercase fw-bold" placeholder="VD: LUMITEA20K" required style="letter-spacing: 1px;">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold fs-7">Tên Chương Trình <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control rounded-3" placeholder="VD: Giảm 20k mừng Khai Trương" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold fs-7">Loại Giảm Giá</label>
+                                <select class="form-select rounded-3" id="modalDiscountType">
+                                    <option value="amount">Giảm theo số tiền (VNĐ)</option>
+                                    <option value="percent">Giảm theo phần trăm (%)</option>
+                                    <option value="freeship">Miễn phí vận chuyển (Freeship)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold fs-7" id="lblDiscountValue">Giá Trị Giảm (VNĐ) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control rounded-3" placeholder="VD: 20000" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold fs-7">Đơn Hàng Tối Thiểu (VNĐ)</label>
+                                <input type="number" class="form-control rounded-3" placeholder="VD: 99000 (Để 0 nếu không yêu cầu)" value="0">
+                            </div>
+                            <div class="col-md-6" id="wrapMaxDiscount" style="display: none;">
+                                <label class="form-label fw-semibold fs-7">Giảm Tối Đa (VNĐ)</label>
+                                <input type="number" class="form-control rounded-3" placeholder="VD: 30000">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold fs-7">Tổng Số Lượt Sử Dụng</label>
+                                <input type="number" class="form-control rounded-3" placeholder="VD: 100 (Để trống nếu vô hạn)">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold fs-7">Ngày Bắt Đầu</label>
+                                <input type="datetime-local" class="form-control rounded-3" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold fs-7">Ngày Kết Thúc</label>
+                                <input type="datetime-local" class="form-control rounded-3" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-action-outline px-4" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-lumitea-primary px-4" onclick="saveVoucher()">Lưu & Kích Hoạt</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+        <div id="liveToast" class="toast align-items-center text-white bg-dark border-0 rounded-3 shadow" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage">Đã thực hiện thao tác!</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // 1. Tự động đổi label & ẩn/hiện ô 'Giảm tối đa' trong Modal
+        document.getElementById("modalDiscountType").addEventListener("change", function () {
+            const wrapMax = document.getElementById("wrapMaxDiscount");
+            const lblValue = document.getElementById("lblDiscountValue");
+
+            if (this.value === "percent") {
+                wrapMax.style.display = "block";
+                lblValue.innerHTML = 'Giá Trị Giảm (%) <span class="text-danger">*</span>';
+            } else if (this.value === "freeship") {
+                wrapMax.style.display = "none";
+                lblValue.innerHTML = 'Hỗ Trợ Ship Tối Đa (VNĐ) <span class="text-danger">*</span>';
+            } else {
+                wrapMax.style.display = "none";
+                lblValue.innerHTML = 'Giá Trị Giảm (VNĐ) <span class="text-danger">*</span>';
+            }
+        });
+
+        // 2. Tìm kiếm và Lọc Client-side Nhanh
+        const searchInput = document.getElementById("searchInput");
+        const filterStatus = document.getElementById("filterStatus");
+        const filterType = document.getElementById("filterType");
+
+        function filterVouchers() {
+            const query = searchInput.value.toLowerCase().trim();
+            const statusVal = filterStatus.value;
+            const typeVal = filterType.value;
+            const items = document.querySelectorAll(".voucher-item");
+
+            items.forEach(item => {
+                const code = item.getAttribute("data-code");
+                const title = item.getAttribute("data-title");
+                const status = item.getAttribute("data-status");
+                const type = item.getAttribute("data-type");
+
+                const matchSearch = code.includes(query) || title.includes(query);
+                const matchStatus = !statusVal || status === statusVal;
+                const matchType = !typeVal || type === typeVal;
+
+                if (matchSearch && matchStatus && matchType) {
+                    item.style.display = "block";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        }
+
+        searchInput.addEventListener("input", filterVouchers);
+        filterStatus.addEventListener("change", filterVouchers);
+        filterType.addEventListener("change", filterVouchers);
+
+        function resetFilters() {
+            searchInput.value = "";
+            filterStatus.value = "";
+            filterType.value = "";
+            filterVouchers();
+        }
+
+        // 3. Sao chép Mã
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(`Đã sao chép mã: ${text}`);
+            });
+        }
+
+        // 4. Toast Thông Báo
+        function showToast(msg) {
+            document.getElementById('toastMessage').innerText = msg;
+            const toast = new bootstrap.Toast(document.getElementById('liveToast'));
+            toast.show();
+        }
+
+        // 5. Giả lập Lưu Modal
+        function saveVoucher() {
+            const form = document.getElementById("formCreateVoucher");
+            if (form.checkValidity()) {
+                showToast("Đã khởi tạo Voucher mới thành công!");
+                bootstrap.Modal.getInstance(document.getElementById('createVoucherModal')).hide();
+                form.reset();
+            } else {
+                form.reportValidity();
+            }
+        }
+    </script>
+
+</body>
+</html>
