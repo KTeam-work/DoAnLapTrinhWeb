@@ -1,0 +1,520 @@
+﻿@{
+    ViewBag.Title = "Dashboard Quản Lý - LumiTea";
+    Layout = "~/Views/Shared/_Layout.cshtml"; 
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Quản Lý - LumiTea</title>
+
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS & FontAwesome 6 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="~/Css/styleDashboard.css" />
+
+
+</head>
+<body>
+
+    <div class="dashboard-wrapper">
+
+        <!-- HEADER BANNER / WELCOME BAR -->
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <h3 class="fw-extrabold m-0" style="color: var(--lumitea-primary); letter-spacing: -0.6px; font-weight: 800;">
+                        Tổng Quan Cửa Hàng
+                    </h3>
+                    <span class="badge bg-white text-dark border px-2 py-1 rounded-pill small ms-2 shadow-sm d-flex align-items-center gap-1">
+                        <span class="pulse-dot"></span> Hệ thống sẵn sàng
+                    </span>
+                </div>
+                <p class="text-muted small m-0">
+                    Báo cáo tình hình kinh doanh & vận hành LumiTea theo thời gian thực
+                </p>
+            </div>
+
+            <!-- Quick Controls -->
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <div class="dropdown">
+                    <button class="btn btn-action-outline btn-sm d-flex align-items-center gap-2 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fa-regular fa-calendar-check text-muted"></i> Hôm nay
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
+                        <li><a class="dropdown-item active" href="#">Hôm nay</a></li>
+                        <li><a class="dropdown-item" href="#">Hôm qua</a></li>
+                        <li><a class="dropdown-item" href="#">7 ngày qua</a></li>
+                        <li><a class="dropdown-item" href="#">Tháng này</a></li>
+                    </ul>
+                </div>
+
+                <button class="btn btn-action-outline btn-sm d-flex align-items-center gap-2" onclick="location.reload();">
+                    <i class="fa-solid fa-arrows-rotate text-muted"></i> Làm mới
+                </button>
+
+                <button class="btn btn-lumitea-primary btn-sm d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-plus-circle fs-6"></i> Tạo Đơn POS
+                </button>
+            </div>
+        </div>
+
+        <!-- 1. KPI STATS ROW -->
+        <div class="row g-3 mb-4">
+            <!-- Card 1: Doanh Thu -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-title">Doanh thu hôm nay</div>
+                            <div class="kpi-value">2,850,000 <small class="fs-6 fw-normal text-muted">đ</small></div>
+                        </div>
+                        <div class="kpi-icon-wrap">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mt-3 pt-2 border-top border-light">
+                        <span class="badge-trend badge-trend-up">
+                            <i class="fa-solid fa-arrow-up"></i> +15.2%
+                        </span>
+                        <span class="text-muted small">So với hôm qua</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Đơn Hàng -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-title">Đơn hàng hôm nay</div>
+                            <div class="kpi-value">124 <small class="fs-6 fw-normal text-muted">đơn</small></div>
+                        </div>
+                        <div class="kpi-icon-wrap">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mt-3 pt-2 border-top border-light">
+                        <span class="text-dark fw-bold small">8 đơn đang pha chế</span>
+                        <span class="badge bg-success-subtle text-success font-monospace fw-bold px-2 py-1 rounded">93.5% xong</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Số Ly Đã Bán -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-title">Tổng ly phục vụ</div>
+                            <div class="kpi-value">312 <small class="fs-6 fw-normal text-muted">ly</small></div>
+                        </div>
+                        <div class="kpi-icon-wrap">
+                            <i class="fa-solid fa-mug-hot"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mt-3 pt-2 border-top border-light">
+                        <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i>Giờ cao điểm:</span>
+                        <span class="fw-bold text-dark small">11:00 - 13:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: Nguồn Đơn -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-title">Tỷ lệ Kênh Đặt</div>
+                            <div class="kpi-value">75% <small class="fs-6 fw-normal text-muted">Online</small></div>
+                        </div>
+                        <div class="kpi-icon-wrap">
+                            <i class="fa-solid fa-globe"></i>
+                        </div>
+                    </div>
+                    <div class="progress-mini">
+                        <div class="progress-bar-fill" style="width: 75%;"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small text-muted mt-2" style="font-size: 0.75rem;">
+                        <span><i class="fa-solid fa-circle text-success me-1" style="font-size:6px;"></i>Web App: 75%</span>
+                        <span><i class="fa-solid fa-circle text-warning me-1" style="font-size:6px;"></i>Tại quầy: 25%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. MAIN CHARTS & ALERTS SECTION -->
+        <div class="row g-3 mb-4">
+            <!-- Biểu đồ Doanh Thu -->
+            <div class="col-12 col-xl-8">
+                <div class="sec-card">
+                    <div class="sec-header">
+                        <div class="sec-title">
+                            <i class="fa-solid fa-chart-area text-success"></i>
+                            Doanh Thu Theo Khung Giờ
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-light text-secondary border font-monospace px-2.5 py-1.5 rounded-2">Hôm nay</span>
+                        </div>
+                    </div>
+                    <div style="height: 310px; position: relative;">
+                        <canvas id="hourlyRevenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cảnh Báo Vận Hành -->
+            <div class="col-12 col-xl-4">
+                <div class="sec-card">
+                    <div class="sec-header">
+                        <div class="sec-title">
+                            <i class="fa-solid fa-bell-concierge text-warning"></i>
+                            Cảnh Báo Cần Xử Lý
+                        </div>
+                        <a href="#" class="small text-decoration-none fw-bold text-success">Xem tất cả</a>
+                    </div>
+
+                    <!-- Alert Item 1 -->
+                    <div class="alert-card danger">
+                        <div class="alert-icon-box">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold fs-6">Trân châu đen sắp hết!</div>
+                            <div class="small opacity-85">Tồn kho hiện tại: <b>1.2 kg</b> (Cần &ge; 3.0 kg)</div>
+                            <button class="btn btn-sm btn-danger py-0 px-2 mt-2 rounded-2" style="font-size: 0.72rem;">
+                                <i class="fa-solid fa-plus me-1"></i> Đặt kho thêm
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Alert Item 2 -->
+                    <div class="alert-card danger">
+                        <div class="alert-icon-box">
+                            <i class="fa-solid fa-bottle-droplet"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold fs-6">Sữa tươi Đà Lạt Milk</div>
+                            <div class="small opacity-85">Tủ mát chỉ còn <b>2 hộp</b> sẵn sàng.</div>
+                        </div>
+                    </div>
+
+                    <!-- Alert Item 3 -->
+                    <div class="alert-card warning">
+                        <div class="alert-icon-box">
+                            <i class="fa-solid fa-user-clock"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold fs-6">Điểm danh Ca Chiều</div>
+                            <div class="small opacity-85">NV <b>Nguyễn Văn A</b> chưa check-in ca 12:00.</div>
+                            <button class="btn btn-sm btn-warning text-dark py-0 px-2 mt-2 rounded-2 fw-semibold" style="font-size: 0.72rem;">
+                                <i class="fa-solid fa-paper-plane me-1"></i> Nhắc nhở
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. TOP SELLING & RECENT ORDERS TABLE -->
+        <div class="row g-3">
+            <!-- Top 5 Món Bán Chạy -->
+            <div class="col-12 col-xl-4">
+                <div class="sec-card">
+                    <div class="sec-header">
+                        <div class="sec-title">
+                            <i class="fa-solid fa-fire text-danger"></i>
+                            Top Món Bán Chạy
+                        </div>
+                        <span class="text-muted small">Trong ngày</span>
+                    </div>
+
+                    <!-- Product 1 -->
+                    <div class="top-product-item">
+                        <div class="d-flex align-items-center gap-3 flex-grow-1">
+                            <div class="rank-badge rank-1">1</div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold text-dark small">Trà Sữa Ô Long Nướng</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">Đã bán: <b>98</b> ly</div>
+                                <div class="progress-mini">
+                                    <div class="progress-bar-fill" style="width: 100%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fw-bold text-dark ms-3 text-end" style="font-size: 0.9rem;">
+                            3,430k <span class="d-block text-muted font-monospace fw-normal" style="font-size: 0.7rem;">đ</span>
+                        </div>
+                    </div>
+
+                    <!-- Product 2 -->
+                    <div class="top-product-item">
+                        <div class="d-flex align-items-center gap-3 flex-grow-1">
+                            <div class="rank-badge rank-2">2</div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold text-dark small">Sữa Tươi Trân Châu Đường Đen</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">Đã bán: <b>75</b> ly</div>
+                                <div class="progress-mini">
+                                    <div class="progress-bar-fill" style="width: 76%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fw-bold text-dark ms-3 text-end" style="font-size: 0.9rem;">
+                            3,000k <span class="d-block text-muted font-monospace fw-normal" style="font-size: 0.7rem;">đ</span>
+                        </div>
+                    </div>
+
+                    <!-- Product 3 -->
+                    <div class="top-product-item">
+                        <div class="d-flex align-items-center gap-3 flex-grow-1">
+                            <div class="rank-badge rank-3">3</div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold text-dark small">Trà Xoài Nhài Kem Cheese</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">Đã bán: <b>52</b> ly</div>
+                                <div class="progress-mini">
+                                    <div class="progress-bar-fill" style="width: 53%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fw-bold text-dark ms-3 text-end" style="font-size: 0.9rem;">
+                            2,340k <span class="d-block text-muted font-monospace fw-normal" style="font-size: 0.7rem;">đ</span>
+                        </div>
+                    </div>
+
+                    <!-- Product 4 -->
+                    <div class="top-product-item">
+                        <div class="d-flex align-items-center gap-3 flex-grow-1">
+                            <div class="rank-badge rank-normal">4</div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold text-dark small">Trà Xanh Đậu Đỏ</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">Đã bán: <b>41</b> ly</div>
+                                <div class="progress-mini">
+                                    <div class="progress-bar-fill" style="width: 41%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fw-bold text-dark ms-3 text-end" style="font-size: 0.9rem;">
+                            1,435k <span class="d-block text-muted font-monospace fw-normal" style="font-size: 0.7rem;">đ</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Bảng Đơn Hàng Gần Đây -->
+            <div class="col-12 col-xl-8">
+                <div class="sec-card">
+                    <div class="sec-header">
+                        <div class="sec-title">
+                            <i class="fa-solid fa-clock-rotate-left text-primary"></i>
+                            Đơn Hàng Gần Đây
+                        </div>
+                        <a href="#" class="btn btn-sm btn-action-outline">
+                            Quản lý tất cả đơn <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-custom align-middle mb-0">
+                            <thead>
+                                <tr class="text-muted border-bottom" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    <th class="py-3">Mã Đơn</th>
+                                    <th class="py-3">Khách Hàng</th>
+                                    <th class="py-3">Kênh Đặt</th>
+                                    <th class="py-3">Tổng Tiền</th>
+                                    <th class="py-3">Trạng Thái</th>
+                                    <th class="py-3 text-end">Thời Gian</th>
+                                </tr>
+                            </thead>
+                            <tbody style="font-size: 0.88rem;">
+                                <tr>
+                                    <td>
+                                        <a href="#" class="fw-bold text-decoration-none" style="color: var(--lumitea-primary);">#ORD-1082</a>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="avatar-initial">N</div>
+                                            <span class="fw-semibold text-dark">Nguyễn Hoàng Nam</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1">
+                                            <i class="fa-solid fa-globe me-1"></i> Web Online
+                                        </span>
+                                    </td>
+                                    <td class="fw-bold text-dark">125,000 đ</td>
+                                    <td>
+                                        <span class="status-pill status-pending">
+                                            <span class="dot"></span> Chờ xác nhận
+                                        </span>
+                                    </td>
+                                    <td class="text-end text-muted small">11:42 AM</td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <a href="#" class="fw-bold text-decoration-none" style="color: var(--lumitea-primary);">#ORD-1081</a>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="avatar-initial bg-warning-subtle text-warning-emphasis">K</div>
+                                            <span class="fw-semibold text-dark">Khách tại bàn (Bàn 04)</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1">
+                                            <i class="fa-solid fa-cash-register me-1"></i> POS Tại Quầy
+                                        </span>
+                                    </td>
+                                    <td class="fw-bold text-dark">65,000 đ</td>
+                                    <td>
+                                        <span class="status-pill status-preparing">
+                                            <span class="dot"></span> Đang pha chế
+                                        </span>
+                                    </td>
+                                    <td class="text-end text-muted small">11:38 AM</td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <a href="#" class="fw-bold text-decoration-none" style="color: var(--lumitea-primary);">#ORD-1080</a>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="avatar-initial bg-success-subtle text-success">P</div>
+                                            <span class="fw-semibold text-dark">Phan Hồng Trúc</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1">
+                                            <i class="fa-solid fa-globe me-1"></i> Web Online
+                                        </span>
+                                    </td>
+                                    <td class="fw-bold text-dark">90,000 đ</td>
+                                    <td>
+                                        <span class="status-pill status-completed">
+                                            <span class="dot"></span> Hoàn thành
+                                        </span>
+                                    </td>
+                                    <td class="text-end text-muted small">11:25 AM</td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <a href="#" class="fw-bold text-decoration-none" style="color: var(--lumitea-primary);">#ORD-1079</a>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="avatar-initial bg-info-subtle text-info-emphasis">L</div>
+                                            <span class="fw-semibold text-dark">Lê Minh Quân</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1">
+                                            <i class="fa-solid fa-globe me-1"></i> Web Online
+                                        </span>
+                                    </td>
+                                    <td class="fw-bold text-dark">180,000 đ</td>
+                                    <td>
+                                        <span class="status-pill status-completed">
+                                            <span class="dot"></span> Hoàn thành
+                                        </span>
+                                    </td>
+                                    <td class="text-end text-muted small">11:10 AM</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Chart.js Config Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById('hourlyRevenueChart').getContext('2d');
+
+            // Tạo hiệu ứng Gradient mềm mại
+            let gradient = ctx.createLinearGradient(0, 0, 0, 280);
+            gradient.addColorStop(0, 'rgba(26, 77, 62, 0.28)');
+            gradient.addColorStop(1, 'rgba(26, 77, 62, 0.0)');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['8h', '9h', '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h', '20h'],
+                    datasets: [{
+                        label: 'Doanh thu',
+                        data: [120000, 250000, 480000, 850000, 1200000, 950000, 400000, 520000, 680000, 910000, 1150000, 800000, 350000],
+                        borderColor: '#1A4D3E',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#F6C90E',
+                        pointBorderColor: '#1A4D3E',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 7,
+                        pointHoverBackgroundColor: '#1A4D3E',
+                        pointHoverBorderColor: '#FFFFFF',
+                        pointHoverBorderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0F172A',
+                            titleFont: { family: 'Plus Jakarta Sans', size: 13, weight: 'bold' },
+                            bodyFont: { family: 'Plus Jakarta Sans', size: 12 },
+                            padding: 12,
+                            cornerRadius: 10,
+                            displayColors: false,
+                            callbacks: {
+                                label: function (context) {
+                                    return ' Doanh thu: ' + context.parsed.y.toLocaleString('vi-VN') + ' VNĐ';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(226, 232, 240, 0.6)' },
+                            ticks: {
+                                font: { family: 'Plus Jakarta Sans', size: 11 },
+                                color: '#64748B',
+                                callback: function (value) {
+                                    return (value / 1000).toFixed(0) + 'k';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                font: { family: 'Plus Jakarta Sans', size: 11 },
+                                color: '#64748B'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

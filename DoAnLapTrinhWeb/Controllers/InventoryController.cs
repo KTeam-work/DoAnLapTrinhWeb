@@ -6,12 +6,17 @@ using System.Web.Mvc;
 
 namespace DoAnLapTrinhWeb.Controllers
 {
-    public class HomeController : Controller
+    public class InventoryController : Controller
     {
+        // GET: Inventory
         public ActionResult Index()
         {
             return View();
         }
 
+        public ActionResult LichSuNhap()
+        {
+            return View();
+        }
     }
 }

@@ -1,0 +1,188 @@
+﻿
+:root {
+    --lumitea-green: #21554A;
+    --lumitea-green-hover: #194138;
+    --lumitea-green-light: #eef5f3;
+    --bg-light-cream: #fbf9f4;
+    --card-bg: #ffffff;
+    --border-color: #e6e2d8;
+    --text-main: #2c322e;
+    --text-muted: #6c757d;
+    --accent-gold: #c29b38;
+    --accent-gold-light: #fffcf2;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-light-cream);
+    color: var(--text-main);
+    padding-bottom: 110px; /* Offset for sticky summary footer */
+}
+
+h1, h2, h3, h4, h5, .brand-font {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Top Bar & Branding */
+.top-navbar {
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.brand-badge {
+    background-color: var(--lumitea-green);
+    color: #ffffff;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    letter-spacing: 0.5px;
+}
+
+/* Cards & Section Styling */
+.lumitea-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(33, 85, 74, 0.04);
+    transition: all 0.2s ease;
+}
+
+.lumitea-card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: #ffffff;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+/* Form Controls */
+.form-control, .form-select {
+    border-color: var(--border-color);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--lumitea-green);
+        box-shadow: 0 0 0 0.2rem rgba(33, 85, 74, 0.15);
+    }
+
+.form-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #4a524d;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Buttons */
+.btn-lumitea {
+    background-color: var(--lumitea-green);
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    padding: 8px 18px;
+    transition: all 0.2s;
+}
+
+    .btn-lumitea:hover {
+        background-color: var(--lumitea-green-hover);
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(33, 85, 74, 0.2);
+    }
+
+.btn-outline-lumitea {
+    border: 1.5px solid var(--lumitea-green);
+    color: var(--lumitea-green);
+    font-weight: 600;
+    border-radius: 8px;
+    background: transparent;
+}
+
+    .btn-outline-lumitea:hover {
+        background-color: var(--lumitea-green-light);
+        color: var(--lumitea-green);
+    }
+
+/* Table Styling */
+.table-custom {
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+
+    .table-custom th {
+        background-color: #f7f5ef;
+        color: #4a524d;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid var(--border-color);
+        padding: 12px;
+    }
+
+    .table-custom td {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.875rem;
+    }
+
+/* Sticky Footer Bar */
+.sticky-summary-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+    z-index: 1030;
+    padding: 12px 0;
+}
+
+.total-amount-display {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--lumitea-green);
+}
+
+/* Custom Badges */
+.badge-draft {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fcd34d;
+}
+
+/* Toast Container */
+.toast-container {
+    z-index: 1090;
+}
+
+/* Printable Area */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    #printableReceiptModal, #printableReceiptModal * {
+        visibility: visible;
+    }
+
+    #printableReceiptModal {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}
+
+
