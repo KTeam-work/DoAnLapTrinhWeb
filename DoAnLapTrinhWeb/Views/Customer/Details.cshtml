@@ -1,0 +1,257 @@
+﻿@{
+    ViewData["Title"] = "Hồ sơ Khách hàng - Nguyễn Tấn Kỳ";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="~/Css/styleCustomer_Details.css" />
+
+<div class="container-fluid px-4 py-4">
+
+    <!-- Header Navigation -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <a href="/Customer" class="btn btn-sm btn-white border rounded-3 px-3 text-dark fw-semibold btn-action shadow-sm">
+                <i class="fa-solid fa-arrow-left me-1 text-muted"></i> Danh sách
+            </a>
+            <span class="text-muted">/</span>
+            <span class="fw-bold text-dark">Hồ sơ khách hàng #KH-1088</span>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-danger rounded-3 px-3 fw-semibold btn-action btn-danger-action" onclick="triggerToast('Đã tạm khóa tài khoản khách hàng!')">
+                <i class="fa-solid fa-user-lock me-1"></i> Khóa tài khoản
+            </button>
+            <button class="btn btn-sm btn-primary rounded-3 px-3 fw-semibold btn-action" style="background: var(--primary); border:none;" onclick="triggerToast('Đã cập nhật thông tin!')">
+                <i class="fa-solid fa-floppy-disk me-1"></i> Lưu chỉnh sửa
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Sidebar Profile -->
+        <div class="col-12 col-lg-4">
+            <div class="saas-card saas-card-hover p-4 text-center mb-4">
+                <div class="avatar-wrapper mb-3">
+                    <div class="avatar-circle mx-auto d-flex align-items-center justify-content-center rounded-circle fw-bold"
+                         style="width: 76px; height: 76px; font-size: 1.6rem; background: var(--primary-light); color: var(--primary);">
+                        AK
+                    </div>
+                </div>
+                <h5 class="fw-bold text-dark mb-1">Nguyễn Tấn Kỳ</h5>
+                <p class="text-muted small mb-3">Thành viên từ 12/01/2026</p>
+
+                <span class="badge badge-vip px-3 py-2 rounded-pill fw-semibold small d-inline-flex align-items-center gap-1">
+                    <i class="fa-solid fa-crown text-warning"></i> VIP Tier Member
+                </span>
+
+                <hr class="my-4" style="border-color: var(--border-color);">
+
+                <div class="text-start d-flex flex-column gap-3">
+                    <div class="p-2 rounded-3 transition-all hover-bg-light">
+                        <label class="text-muted small d-block mb-1">Số điện thoại</label>
+                        <span class="fw-semibold text-dark"><i class="fa-solid fa-phone text-primary me-2"></i>0901 234 567</span>
+                    </div>
+                    <div class="p-2 rounded-3 transition-all hover-bg-light">
+                        <label class="text-muted small d-block mb-1">Email</label>
+                        <span class="fw-semibold text-dark"><i class="fa-solid fa-envelope text-primary me-2"></i>tanky.dev@huit.edu.vn</span>
+                    </div>
+                    <div class="p-2 rounded-3 transition-all hover-bg-light">
+                        <label class="text-muted small d-block mb-1">Địa chỉ mặc định</label>
+                        <span class="fw-semibold text-dark"><i class="fa-solid fa-location-dot text-primary me-2"></i>Đại học HUIT, Q. Tân Phú, TP.HCM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Loyalty Points Box -->
+            <div class="saas-card saas-card-hover p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fw-bold text-dark small">TÍCH ĐIỂM THƯỞNG</span>
+                    <i class="fa-solid fa-coins text-warning fs-5"></i>
+                </div>
+                <h3 class="fw-bold text-dark mb-1 d-inline-block" id="pointsVal">1,850 điểm</h3>
+                <p class="text-muted small mb-3">Tương đương ~185.000 đ giảm giá</p>
+                <button class="btn btn-sm btn-light border w-100 rounded-3 fw-semibold text-dark btn-action" onclick="addPoints(100)">
+                    <i class="fa-solid fa-plus me-1 text-primary"></i> Cộng 100 điểm thưởng
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="col-12 col-lg-8">
+            <!-- Metric Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-4">
+                    <div class="saas-card saas-card-hover metric-card p-3">
+                        <span class="text-muted small d-block mb-1">Tổng chi tiêu</span>
+                        <h4 class="fw-bold text-dark mb-0">18,500,000 đ</h4>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="saas-card saas-card-hover metric-card p-3">
+                        <span class="text-muted small d-block mb-1">Tổng đơn hàng</span>
+                        <h4 class="fw-bold text-dark mb-0">24 đơn</h4>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="saas-card saas-card-hover metric-card p-3">
+                        <span class="text-muted small d-block mb-1">Đánh giá trung bình</span>
+                        <h4 class="fw-bold text-dark mb-0">5.0 <i class="fa-solid fa-star text-warning fs-6 ms-1"></i></h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs Section -->
+            <div class="saas-card p-4">
+                <ul class="nav nav-saas gap-2 mb-4 border-bottom pb-3">
+                    <li class="nav-item">
+                        <button class="nav-link active" onclick="switchTab('orders', this)">
+                            <i class="fa-solid fa-receipt me-1.5"></i> Lịch sử đơn hàng
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" onclick="switchTab('activity', this)">
+                            <i class="fa-solid fa-clock-rotate-left me-1.5"></i> Nhật ký tương tác
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- TAB 1: Đơn hàng -->
+                <div id="tab-orders" class="tab-pane-anim">
+                    <div class="table-responsive">
+                        <table class="table saas-table align-middle mb-0">
+                            <thead>
+                                <tr class="text-muted small">
+                                    <th>MÃ ĐƠN</th>
+                                    <th>NGÀY ĐẶT</th>
+                                    <th>GIÁ TRỊ</th>
+                                    <th>TRẠNG THÁI</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fw-bold text-primary">#DH-9928</td>
+                                    <td>20/09/2026</td>
+                                    <td class="fw-bold">1,250,000 đ</td>
+                                    <td><span class="badge bg-success-subtle text-success px-2.5 py-1.5 rounded-pill small fw-semibold"><i class="fa-solid fa-check me-1"></i>Thành công</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold text-primary">#DH-9810</td>
+                                    <td>05/09/2026</td>
+                                    <td class="fw-bold">3,400,000 đ</td>
+                                    <td><span class="badge bg-success-subtle text-success px-2.5 py-1.5 rounded-pill small fw-semibold"><i class="fa-solid fa-check me-1"></i>Thành công</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 2: Nhật ký -->
+                <div id="tab-activity" style="display: none;" class="tab-pane-anim">
+                    <div class="activity-stream" id="activityList">
+                        <div class="activity-item">
+                            <div class="activity-dot"></div>
+                            <div class="fw-bold text-dark small">Khách hàng hoàn thành đơn #DH-9928</div>
+                            <div class="text-muted small">Hôm nay, 14:30 • Thanh toán qua Momo</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-dot"></div>
+                            <div class="fw-bold text-dark small">Đổi mã giảm giá VIP 100k</div>
+                            <div class="text-muted small">15/09/2026 • Sử dụng 500 điểm thưởng</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top">
+                        <label class="form-label text-muted small fw-semibold">Thêm ghi chú chăm sóc khách hàng</label>
+                        <div class="input-group">
+                            <input type="text" id="noteInput" class="form-control shadow-none rounded-start-3" placeholder="Nhập nội dung ghi chú..." onkeypress="if(event.key==='Enter') addNote()">
+                            <button class="btn btn-primary px-4 fw-semibold btn-action rounded-end-3" style="background: var(--primary); border:none;" onclick="addNote()">
+                                <i class="fa-solid fa-paper-plane me-1"></i> Lưu ghi chú
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notice -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+    <div id="detailToast" class="toast align-items-center text-white bg-dark border-0 rounded-3 shadow-lg" role="alert">
+        <div class="d-flex">
+            <div class="toast-body d-flex align-items-center gap-2">
+                <i class="fa-solid fa-circle-check text-success fs-5"></i>
+                <span id="detailToastMsg">Thao tác thành công!</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(tab, btn) {
+        document.querySelectorAll('.nav-saas .nav-link').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const ordersTab = document.getElementById('tab-orders');
+        const activityTab = document.getElementById('tab-activity');
+
+        if (tab === 'orders') {
+            activityTab.style.display = 'none';
+            ordersTab.style.display = 'block';
+            ordersTab.classList.remove('tab-pane-anim');
+            void ordersTab.offsetWidth; // Trigger reflow
+            ordersTab.classList.add('tab-pane-anim');
+        } else {
+            ordersTab.style.display = 'none';
+            activityTab.style.display = 'block';
+            activityTab.classList.remove('tab-pane-anim');
+            void activityTab.offsetWidth; // Trigger reflow
+            activityTab.classList.add('tab-pane-anim');
+        }
+    }
+
+    function addPoints(pts) {
+        const el = document.getElementById('pointsVal');
+        let current = parseInt(el.innerText.replace(/,/g, '').replace(' điểm', ''));
+        current += pts;
+
+        // Bounce Animation
+        el.classList.remove('pop-number');
+        void el.offsetWidth; // Trigger reflow
+        el.innerText = `${current.toLocaleString()} điểm`;
+        el.classList.add('pop-number');
+
+        triggerToast(`Đã cộng thành công ${pts} điểm!`);
+    }
+
+    function addNote() {
+        const input = document.getElementById('noteInput');
+        if (!input.value.trim()) return;
+
+        const list = document.getElementById('activityList');
+        const div = document.createElement('div');
+        div.className = 'activity-item new-item-anim';
+        div.innerHTML = `
+            <div class="activity-dot"></div>
+            <div class="fw-bold text-dark small">${escapeHtml(input.value)}</div>
+            <div class="text-muted small">Vừa xong • Tạo bởi Nhân viên</div>
+        `;
+
+        list.insertBefore(div, list.firstChild);
+        input.value = '';
+        triggerToast('Đã lưu ghi chú mới!');
+    }
+
+    function triggerToast(msg) {
+        document.getElementById('detailToastMsg').innerText = msg;
+        const toastEl = document.getElementById('detailToast');
+        const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+        toast.show();
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+</script>
