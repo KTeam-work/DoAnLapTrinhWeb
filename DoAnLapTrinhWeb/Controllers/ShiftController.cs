@@ -6,12 +6,17 @@ using System.Web.Mvc;
 
 namespace DoAnLapTrinhWeb.Controllers
 {
-    public class HomeController : Controller
+    public class ShiftController : Controller
     {
+        // GET: Shift
         public ActionResult Index()
         {
             return View();
         }
 
+        public ActionResult Schedule()
+        {
+            return View();
+        }
     }
 }
