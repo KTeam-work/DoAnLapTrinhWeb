@@ -6,12 +6,12 @@ using System.Web.Mvc;
 
 namespace DoAnLapTrinhWeb.Controllers
 {
-    public class HomeController : Controller
+    public class RecipeController : Controller
     {
+        // GET: Recipe
         public ActionResult Index()
         {
             return View();
         }
-
     }
 }

@@ -1,0 +1,248 @@
+﻿:root {
+    /* BẢNG MÀU ĐỒNG BỘ LUMITEA */
+    --primary-color: #10b981; /* Xanh Ngọc / Emerald */
+    --primary-dark: #059669;
+    --banner-bg-start: #0f382c; /* Xanh Rêu Đậm Tone Navbar */
+    --banner-bg-end: #165b46;
+    --bg-main: #FCF9F2; /* MÀU NỀN KEM TRẮNG */
+    --card-bg: #ffffff;
+    --text-dark: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #f1f5f9;
+}
+
+body {
+    background-color: var(--bg-main);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #334155;
+}
+
+/* Page Header & Breadcrumb */
+.page-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    letter-spacing: -0.02em;
+}
+
+.breadcrumb-custom {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Hero Banner - Tông Xanh LumiTea */
+.hero-banner {
+    background: linear-gradient(135deg, var(--banner-bg-start) 0%, var(--banner-bg-end) 100%) !important;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px -5px rgba(15, 56, 44, 0.25);
+}
+
+.hero-orb-1 {
+    width: 250px;
+    height: 250px;
+    background: rgba(52, 211, 153, 0.15);
+    filter: blur(50px);
+    top: -50px;
+    right: -50px;
+    border-radius: 50%;
+}
+
+.hero-orb-2 {
+    width: 180px;
+    height: 180px;
+    background: rgba(16, 185, 129, 0.12);
+    filter: blur(40px);
+    bottom: -30px;
+    left: 20%;
+    border-radius: 50%;
+}
+
+/* Main App Card */
+.app-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    border: 1px solid #edf2f7;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.03);
+    padding: 24px;
+}
+
+.btn-action-outline {
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 9px 16px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+    .btn-action-outline:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        color: var(--text-dark);
+    }
+
+.btn-add-glow {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    color: #fff !important;
+    border: none;
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 9px 20px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+    transition: all 0.2s;
+}
+
+    .btn-add-glow:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+        color: #fff !important;
+    }
+
+/* Table Styling */
+.table-responsive {
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 0;
+}
+
+    .custom-table thead th {
+        background-color: #f8fafc !important;
+        color: #64748b;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        padding: 16px 20px;
+        border: none;
+    }
+
+    .custom-table tbody tr {
+        transition: all 0.15s;
+    }
+
+        .custom-table tbody tr:hover {
+            background-color: #f1f5f9;
+        }
+
+    .custom-table tbody td {
+        padding: 16px 20px;
+        vertical-align: middle;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.88rem;
+    }
+
+/* Role Badges */
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+    .role-badge.manager {
+        background-color: #f3e8ff;
+        color: #7e22ce;
+    }
+
+    .role-badge.barista {
+        background-color: #e0f2fe;
+        color: #0369a1;
+    }
+
+    .role-badge.cashier {
+        background-color: #dcfce7;
+        color: #15803d;
+    }
+
+    .role-badge.default {
+        background-color: #f1f5f9;
+        color: #475569;
+    }
+
+/* Custom Switch */
+.form-check-input.status-switch {
+    width: 36px;
+    height: 20px;
+    cursor: pointer;
+}
+
+    .form-check-input.status-switch:checked {
+        background-color: #10b981;
+        border-color: #10b981;
+    }
+
+/* Action Buttons */
+.action-btn-pill {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+    .action-btn-pill:hover {
+        background-color: #e2e8f0;
+        color: #1e293b;
+    }
+
+    .action-btn-pill.delete:hover {
+        background-color: #fee2e2;
+        color: #ef4444;
+    }
+
+/* Pagination */
+.pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.page-link-custom {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+    .page-link-custom.active {
+        background-color: var(--primary-color);
+        color: #fff;
+    }
+
+    .page-link-custom:hover:not(.active) {
+        background-color: #e2e8f0;
+    }
+
