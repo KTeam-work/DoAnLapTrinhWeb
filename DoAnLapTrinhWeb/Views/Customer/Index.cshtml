@@ -1,0 +1,600 @@
+﻿@{
+    ViewData["Title"] = "Quản lý Khách hàng";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="~/Css/styleCustomer_index.css" />
+
+<div class="container-fluid px-4 py-4">
+
+    <!-- Header -->
+    <div class="mb-4">
+        <div class="breadcrumb-saas mb-2">
+            <a href="#">Trang chủ</a> <i class="fa-solid fa-chevron-right mx-1 text-muted" style="font-size: 0.7rem;"></i> <span class="fw-semibold text-dark">Khách hàng</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h4 class="fw-bold mb-1 text-dark">Quản lý Khách hàng</h4>
+                <p class="text-muted small mb-0">Theo dõi thông tin, phân hạng và tương tác khách hàng thông minh 360°</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-glass-secondary btn-sm rounded-3 px-3 fw-semibold dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="fa-solid fa-download me-1.5 text-muted"></i> Xuất dữ liệu
+                </button>
+                <ul class="dropdown-menu shadow-sm">
+                    <li><a class="dropdown-item" href="#" onclick="triggerToast('Đã xuất file Excel!')">Xuất Excel (.xlsx)</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="triggerToast('Đã xuất file CSV!')">Xuất CSV (.csv)</a></li>
+                </ul>
+                <button class="btn btn-glass-primary btn-sm rounded-3 px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#addModal">
+                    <i class="fa-solid fa-user-plus me-1.5"></i>  Thêm khách hàng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4 Metric Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="metric-card">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="text-muted small fw-semibold text-uppercase">TỔNG KHÁCH HÀNG</span>
+                    <div class="metric-icon-wrapper" style="background: rgba(79, 70, 229, 0.12); color: #4f46e5;">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+                <div class="d-flex align-items-baseline gap-2 mb-2">
+                    <h3 class="fw-bold mb-0 text-dark" id="statTotal">1,248</h3>
+                    <span class="badge-pill-saas badge-active" style="padding: 2px 8px; font-size: 0.72rem;"><i class="fa-solid fa-chart-line"></i> +12%</span>
+                </div>
+                <div class="text-muted small">Tăng 142 tài khoản mới 30 ngày qua</div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="metric-card">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="text-muted small fw-semibold text-uppercase">THÀNH VIÊN VIP</span>
+                    <div class="metric-icon-wrapper" style="background: rgba(147, 51, 234, 0.12); color: #9333ea;">
+                        <i class="fa-solid fa-award"></i>
+                    </div>
+                </div>
+                <div class="d-flex align-items-baseline gap-2 mb-2">
+                    <h3 class="fw-bold mb-0 text-dark">184</h3>
+                    <span class="badge-pill-saas" style="background: rgba(0,0,0,0.05); color: var(--text-muted);">~15% tổng số</span>
+                </div>
+                <div class="progress-saas mt-2" style="height: 4px;">
+                    <div class="progress-bar" style="width: 15%; background: linear-gradient(90deg, #9333ea, #a855f7);"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="metric-card">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="text-muted small fw-semibold text-uppercase">CHI TIÊU TRUNG BÌNH</span>
+                    <div class="metric-icon-wrapper" style="background: rgba(2, 132, 199, 0.12); color: #0284c7;">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                </div>
+                <div class="d-flex align-items-baseline gap-2 mb-2">
+                    <h3 class="fw-bold mb-0 text-dark">4.25M <span class="fs-6 fw-normal text-muted">đ</span></h3>
+                    <span class="badge-pill-saas badge-active" style="padding: 2px 8px; font-size: 0.72rem;"><i class="fa-solid fa-arrow-up-right"></i> +5.4%</span>
+                </div>
+                <div class="text-muted small d-flex justify-content-between">
+                    <span>Kỳ trước: 4.03M đ</span>
+                    <span class="text-success fw-semibold">Đạt mục tiêu</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="metric-card">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="text-muted small fw-semibold text-uppercase">TÀI KHOẢN TẠM KHÓA</span>
+                    <div class="metric-icon-wrapper" style="background: rgba(225, 29, 72, 0.12); color: #e11d48;">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </div>
+                </div>
+                <div class="d-flex align-items-baseline gap-2 mb-2">
+                    <h3 class="fw-bold mb-0 text-dark">08</h3>
+                    <span class="badge-pill-saas badge-locked" style="padding: 2px 8px; font-size: 0.72rem;">Cần xử lý</span>
+                </div>
+                <div class="text-muted small d-flex justify-content-between align-items-center">
+                    <span>Yêu cầu xác minh</span>
+                    <a href="javascript:void(0)" onclick="quickFilterLocked()" class="text-primary text-decoration-none fw-semibold">Lọc ngay <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls Panel -->
+    <div class="glass-panel p-3 mb-4">
+        <div class="row g-2 align-items-center mb-3">
+            <div class="col-12 col-md-4">
+                <div class="position-relative">
+                    <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                    <input type="text" id="searchInput" class="form-control form-saas ps-5 pe-5" placeholder="Tìm theo tên, mã KH, email hoặc SĐT..." onkeyup="filterData()">
+                    <span class="position-absolute top-50 end-0 translate-middle-y me-3 kbd-shortcut">⌘K</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-2">
+                <select id="rankFilter" class="form-select form-saas" onchange="filterData()">
+                    <option value="">Hạng: Tất cả</option>
+                    <option value="VIP">VIP Tier</option>
+                    <option value="Gold">Gold Tier</option>
+                    <option value="Standard">Standard Tier</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <select id="statusFilter" class="form-select form-saas" onchange="filterData()">
+                    <option value="">Trạng thái: Tất cả</option>
+                    <option value="Hoạt động">Hoạt động</option>
+                    <option value="Đã khóa">Đã khóa</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-4 d-flex align-items-center justify-content-end gap-2">
+                <button class="view-btn active" id="btnGrid" onclick="setMode('grid')" title="Dạng Thẻ">
+                    <i class="fa-solid fa-border-all"></i>
+                </button>
+                <button class="view-btn" id="btnCompact" onclick="setMode('compact')" title="Dạng Danh sách">
+                    <i class="fa-solid fa-list"></i>
+                </button>
+                <div class="vr bg-secondary opacity-25 my-1 mx-1"></div>
+                <button class="btn btn-glass-secondary form-saas fw-semibold d-flex align-items-center gap-1.5" onclick="triggerToast('Đang mở bộ lọc nâng cao...')">
+                    <i class="fa-solid fa-sliders text-muted"></i> Bộ lọc nâng cao
+                </button>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-2 border-top border-secondary border-opacity-10">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button class="filter-tab active" onclick="setQuickTab('all', this)">Tất cả (1,248)</button>
+                <button class="filter-tab" onclick="setQuickTab('VIP', this)">VIP Tier (184)</button>
+                <button class="filter-tab" onclick="setQuickTab('high_spent', this)">Chi tiêu cao (>10M)</button>
+                <button class="filter-tab" onclick="setQuickTab('care', this)">Cần chăm sóc (12)</button>
+            </div>
+            <button class="btn btn-link text-muted p-0 text-decoration-none small fw-semibold" onclick="resetFilters()">
+                <i class="fa-solid fa-rotate-right me-1"></i> Xóa bộ lọc
+            </button>
+        </div>
+    </div>
+
+    <!-- Customer Cards Grid -->
+    <div class="row g-3" id="customerContainer">
+
+        <!-- Card 1 -->
+        <div class="col-12 col-md-6 col-xl-4 customer-card-wrapper" data-name="Nguyễn Tấn Kỳ" data-id="#KH-1088" data-phone="0901 234 567" data-rank="VIP" data-status="Hoạt động" data-spent="18500000">
+            <div class="customer-card">
+                <div class="d-flex align-items-start justify-content-between mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="avatar-circle">TK</div>
+                        <div>
+                            <div class="d-flex align-items-center gap-1.5">
+                                <h6 class="fw-bold text-dark mb-0 card-title-name">Nguyễn Tấn Kỳ</h6>
+                                <i class="fa-solid fa-circle-check text-primary" style="font-size: 0.85rem;" title="Tài khoản đã xác minh"></i>
+                            </div>
+                            <span class="text-muted small">#KH-1088 • Gia nhập 2022</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-link text-muted p-0"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                </div>
+
+                <div class="card-body-content">
+                    <div class="d-flex gap-2 mb-3">
+                        <span class="badge-pill-saas badge-active"><i class="fa-solid fa-circle" style="font-size: 6px;"></i> Hoạt động</span>
+                        <span class="badge-pill-saas badge-vip"><i class="fa-solid fa-trophy"></i> VIP Tier</span>
+                    </div>
+
+                    <div class="contact-info-box mb-3">
+                        <div class="text-muted small mb-1"><i class="fa-solid fa-phone me-2 text-muted"></i> 0901 234 567</div>
+                        <div class="text-muted small"><i class="fa-solid fa-envelope me-2 text-muted"></i> tanky.dev@huit.edu.vn</div>
+                    </div>
+
+                    <div class="card-hide-compact">
+                        <div class="d-flex justify-content-between align-items-baseline mb-2">
+                            <span class="text-muted small">Tổng tích lũy</span>
+                            <span class="fw-bold text-dark fs-6">18,500,000 <span class="fw-normal text-muted small">đ</span></span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center small mb-1">
+                            <span class="text-muted" style="font-size: 0.78rem;">Tiến độ Diamond</span>
+                            <span class="text-muted fw-semibold" style="font-size: 0.78rem;">92%</span>
+                        </div>
+                        <div class="progress-saas mb-3">
+                            <div class="progress-bar" style="width: 92%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 pt-2 border-top border-secondary border-opacity-10 card-hide-compact">
+                    <button class="btn btn-sm btn-glass-secondary rounded-3 w-50 fw-semibold" onclick="openDrawer('Nguyễn Tấn Kỳ', '#KH-1088', '0901 234 567', 'VIP Tier', '18,500,000 đ')">
+                        Xem nhanh
+                    </button>
+                    <a href="/Customer/Details" class="btn btn-sm btn-glass-primary rounded-3 w-50 fw-semibold text-center text-decoration-none d-flex align-items-center justify-content-center gap-1">
+                        Hồ sơ 360° <i class="fa-solid fa-arrow-right" style="font-size: 0.75rem;"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="col-12 col-md-6 col-xl-4 customer-card-wrapper" data-name="Trần Hoàng Nam" data-id="#KH-1089" data-phone="0988 765 432" data-rank="Gold" data-status="Hoạt động" data-spent="6200000">
+            <div class="customer-card">
+                <div class="d-flex align-items-start justify-content-between mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="avatar-circle" style="color: #0284c7; background: rgba(2, 132, 199, 0.1); border-color: rgba(2, 132, 199, 0.25);">HN</div>
+                        <div>
+                            <div class="d-flex align-items-center gap-1.5">
+                                <h6 class="fw-bold text-dark mb-0 card-title-name">Trần Hoàng Nam</h6>
+                            </div>
+                            <span class="text-muted small">#KH-1089 • Gia nhập 2023</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-link text-muted p-0"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                </div>
+
+                <div class="card-body-content">
+                    <div class="d-flex gap-2 mb-3">
+                        <span class="badge-pill-saas badge-active"><i class="fa-solid fa-circle" style="font-size: 6px;"></i> Hoạt động</span>
+                        <span class="badge-pill-saas badge-gold"><i class="fa-solid fa-award"></i> Gold Tier</span>
+                    </div>
+
+                    <div class="contact-info-box mb-3">
+                        <div class="text-muted small mb-1"><i class="fa-solid fa-phone me-2 text-muted"></i> 0988 765 432</div>
+                        <div class="text-muted small"><i class="fa-solid fa-envelope me-2 text-muted"></i> hoangnam@gmail.com</div>
+                    </div>
+
+                    <div class="card-hide-compact">
+                        <div class="d-flex justify-content-between align-items-baseline mb-2">
+                            <span class="text-muted small">Tổng tích lũy</span>
+                            <span class="fw-bold text-dark fs-6">6,200,000 <span class="fw-normal text-muted small">đ</span></span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center small mb-1">
+                            <span class="text-muted" style="font-size: 0.78rem;">Tiến độ VIP Tier</span>
+                            <span class="text-muted fw-semibold" style="font-size: 0.78rem;">62%</span>
+                        </div>
+                        <div class="progress-saas mb-3">
+                            <div class="progress-bar" style="width: 62%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 pt-2 border-top border-secondary border-opacity-10 card-hide-compact">
+                    <button class="btn btn-sm btn-glass-secondary rounded-3 w-50 fw-semibold" onclick="openDrawer('Trần Hoàng Nam', '#KH-1089', '0988 765 432', 'Gold Tier', '6,200,000 đ')">
+                        Xem nhanh
+                    </button>
+                    <a href="/Customer/Details" class="btn btn-sm btn-glass-primary rounded-3 w-50 fw-semibold text-center text-decoration-none d-flex align-items-center justify-content-center gap-1">
+                        Hồ sơ 360° <i class="fa-solid fa-arrow-right" style="font-size: 0.75rem;"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="col-12 col-md-6 col-xl-4 customer-card-wrapper" data-name="Phan Thị Hồng" data-id="#KH-1090" data-phone="0912 333 444" data-rank="Standard" data-status="Đã khóa" data-spent="850000">
+            <div class="customer-card">
+                <div class="d-flex align-items-start justify-content-between mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="avatar-circle" style="color: #e11d48; background: rgba(225, 29, 72, 0.1); border-color: rgba(225, 29, 72, 0.25);">HP</div>
+                        <div>
+                            <div class="d-flex align-items-center gap-1.5">
+                                <h6 class="fw-bold text-dark mb-0 card-title-name">Phan Thị Hồng</h6>
+                            </div>
+                            <span class="text-muted small">#KH-1090 • Gia nhập 2024</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-link text-muted p-0"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                </div>
+
+                <div class="card-body-content">
+                    <div class="d-flex gap-2 mb-3">
+                        <span class="badge-pill-saas badge-locked"><i class="fa-solid fa-lock" style="font-size: 8px;"></i> Đã khóa</span>
+                        <span class="badge-pill-saas bg-light text-muted border">Standard Tier</span>
+                    </div>
+
+                    <div class="contact-info-box mb-3">
+                        <div class="text-muted small mb-1"><i class="fa-solid fa-phone me-2 text-muted"></i> 0912 333 444</div>
+                        <div class="text-muted small"><i class="fa-solid fa-envelope me-2 text-muted"></i> hongphan@gmail.com</div>
+                    </div>
+
+                    <div class="card-hide-compact">
+                        <div class="d-flex justify-content-between align-items-baseline mb-2">
+                            <span class="text-muted small">Tổng tích lũy</span>
+                            <span class="fw-bold text-dark fs-6">850,000 <span class="fw-normal text-muted small">đ</span></span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center small mb-1">
+                            <span class="text-muted" style="font-size: 0.78rem;">Tiến độ Silver Tier</span>
+                            <span class="text-muted fw-semibold" style="font-size: 0.78rem;">18%</span>
+                        </div>
+                        <div class="progress-saas mb-3">
+                            <div class="progress-bar" style="width: 18%; background: #94a3b8;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 pt-2 border-top border-secondary border-opacity-10 card-hide-compact">
+                    <button class="btn btn-sm btn-glass-danger rounded-3 w-50 fw-semibold" onclick="triggerToast('Đã mở khóa tài khoản Phan Thị Hồng!')">
+                        Mở khóa
+                    </button>
+                    <button class="btn btn-sm btn-glass-secondary rounded-3 w-50 fw-semibold" onclick="openDrawer('Phan Thị Hồng', '#KH-1090', '0912 333 444', 'Standard Tier', '850,000 đ')">
+                        Xem nhanh
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer Pagination -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4 pt-3 border-top border-secondary border-opacity-10">
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-muted small">Hiển thị <strong class="text-dark">1 - 3</strong> trong <strong id="visibleCount" class="text-dark">1,248</strong> khách hàng</span>
+            <div class="d-flex align-items-center gap-1.5 small text-muted ms-2">
+                <span>Số lượng/trang:</span>
+                <select class="form-select form-saas py-1 px-2" style="width: auto; font-size: 0.8rem;">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-1">
+            <a href="#" class="page-link-saas disabled"><i class="fa-solid fa-chevron-left"></i></a>
+            <a href="#" class="page-link-saas active">1</a>
+            <a href="#" class="page-link-saas">2</a>
+            <a href="#" class="page-link-saas">3</a>
+            <span class="text-muted mx-1">...</span>
+            <a href="#" class="page-link-saas">42</a>
+            <a href="#" class="page-link-saas"><i class="fa-solid fa-chevron-right"></i></a>
+        </div>
+    </div>
+</div>
+
+<!-- Drawer Quick View -->
+<div class="offcanvas offcanvas-end drawer-saas" tabindex="-1" id="quickDrawer" style="width: 420px;">
+    <div class="offcanvas-header border-bottom border-secondary border-opacity-10">
+        <h6 class="offcanvas-title fw-bold text-dark">Chi tiết nhanh khách hàng</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body p-4">
+        <div class="text-center pb-3 border-bottom border-secondary border-opacity-10 mb-4">
+            <div class="avatar-circle mx-auto mb-2" style="width: 60px; height: 60px; font-size: 1.2rem;" id="drAvatar">TK</div>
+            <h5 class="fw-bold mb-0 text-dark" id="drName">Nguyễn Tấn Kỳ</h5>
+            <span class="text-muted small" id="drId">#KH-1088</span>
+        </div>
+
+        <div class="d-flex flex-column gap-3">
+            <div>
+                <label class="text-muted small d-block mb-1">Số điện thoại</label>
+                <div class="fw-semibold text-dark" id="drPhone">0901 234 567</div>
+            </div>
+            <div>
+                <label class="text-muted small d-block mb-1">Hạng thành viên</label>
+                <span class="badge-pill-saas badge-vip" id="drRank">VIP Tier</span>
+            </div>
+            <div>
+                <label class="text-muted small d-block mb-1">Tổng chi tiêu</label>
+                <div class="fw-bold fs-5 text-success" id="drSpent">18,500,000 đ</div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 mt-5">
+            <a href="/Customer/Details" class="btn btn-glass-primary rounded-3 py-2 fw-semibold text-center text-decoration-none">
+                Xem Hồ sơ 360° đầy đủ
+            </a>
+            <button class="btn btn-glass-secondary rounded-3 py-2 text-dark fw-semibold" onclick="triggerToast('Đã gửi thông báo ưu đãi SMS!')">
+                <i class="fa-solid fa-paper-plane me-1"></i> Gửi ưu đãi SMS
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thêm Khách Hàng -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-glass rounded-4 shadow-lg">
+            <div class="modal-header border-bottom border-secondary border-opacity-10">
+                <h6 class="modal-title fw-bold text-dark"><i class="fa-solid fa-user-plus text-primary me-2"></i>Thêm mới khách hàng</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body py-4">
+                <form id="addForm" onsubmit="event.preventDefault(); handleAddCustomer();">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-semibold">Họ và Tên</label>
+                        <input type="text" id="addName" class="form-control form-saas" placeholder="Nguyễn Văn A" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-semibold">Số điện thoại</label>
+                        <input type="tel" id="addPhone" class="form-control form-saas" placeholder="090xxxxxxx" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-semibold">Hạng ban đầu</label>
+                        <select id="addRank" class="form-select form-saas">
+                            <option value="Standard">Standard Tier</option>
+                            <option value="Gold">Gold Tier</option>
+                            <option value="VIP">VIP Tier</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="button" class="btn btn-glass-secondary rounded-3 px-3" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-glass-primary rounded-3 px-4 fw-semibold">Lưu khách hàng</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notice -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="saasToast" class="toast align-items-center text-dark bg-white border border-secondary border-opacity-25 rounded-3 shadow-lg" role="alert">
+        <div class="d-flex">
+            <div class="toast-body d-flex align-items-center gap-2">
+                <i class="fa-solid fa-circle-check text-success"></i>
+                <span id="toastMsg">Thao tác thành công!</span>
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function setMode(mode) {
+        const container = document.getElementById('customerContainer');
+        const btnGrid = document.getElementById('btnGrid');
+        const btnCompact = document.getElementById('btnCompact');
+
+        if (mode === 'compact') {
+            container.classList.add('view-compact');
+            btnCompact.classList.add('active');
+            btnGrid.classList.remove('active');
+        } else {
+            container.classList.remove('view-compact');
+            btnGrid.classList.add('active');
+            btnCompact.classList.remove('active');
+        }
+    }
+
+    function filterData() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const rank = document.getElementById('rankFilter').value.toLowerCase();
+        const status = document.getElementById('statusFilter').value.toLowerCase();
+        const items = document.querySelectorAll('.customer-card-wrapper');
+
+        items.forEach(item => {
+            const name = item.getAttribute('data-name').toLowerCase();
+            const id = item.getAttribute('data-id').toLowerCase();
+            const phone = item.getAttribute('data-phone').toLowerCase();
+            const rRank = item.getAttribute('data-rank').toLowerCase();
+            const rStatus = item.getAttribute('data-status').toLowerCase();
+
+            const matchSearch = name.includes(search) || id.includes(search) || phone.includes(search);
+            const matchRank = !rank || rRank.includes(rank);
+            const matchStatus = !status || rStatus.includes(status);
+
+            if (matchSearch && matchRank && matchStatus) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    function setQuickTab(type, element) {
+        document.querySelectorAll('.filter-tab').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+
+        const items = document.querySelectorAll('.customer-card-wrapper');
+        items.forEach(item => {
+            const rank = item.getAttribute('data-rank');
+            const spent = parseInt(item.getAttribute('data-spent') || '0');
+            const status = item.getAttribute('data-status');
+
+            if (type === 'all') {
+                item.style.display = '';
+            } else if (type === 'VIP') {
+                item.style.display = rank === 'VIP' ? '' : 'none';
+            } else if (type === 'high_spent') {
+                item.style.display = spent >= 10000000 ? '' : 'none';
+            } else if (type === 'care') {
+                item.style.display = status === 'Đã khóa' ? '' : 'none';
+            }
+        });
+    }
+
+    function quickFilterLocked() {
+        document.getElementById('statusFilter').value = 'Đã khóa';
+        filterData();
+    }
+
+    function resetFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('rankFilter').value = '';
+        document.getElementById('statusFilter').value = '';
+        document.querySelectorAll('.filter-tab').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.filter-tab')[0].classList.add('active');
+        filterData();
+    }
+
+    function openDrawer(name, id, phone, rank, spent) {
+        document.getElementById('drName').innerText = name;
+        document.getElementById('drId').innerText = id;
+        document.getElementById('drPhone').innerText = phone;
+        document.getElementById('drRank').innerText = rank;
+        document.getElementById('drSpent').innerText = spent;
+        document.getElementById('drAvatar').innerText = name.split(' ').map(n => n[0]).slice(-2).join('');
+
+        const drawer = new bootstrap.Offcanvas(document.getElementById('quickDrawer'));
+        drawer.show();
+    }
+
+    function handleAddCustomer() {
+        const name = document.getElementById('addName').value;
+        const phone = document.getElementById('addPhone').value;
+        const rank = document.getElementById('addRank').value;
+
+        const container = document.getElementById('customerContainer');
+        const initials = name.split(' ').map(n => n[0]).slice(-2).join('');
+
+        const newCard = `
+            <div class="col-12 col-md-6 col-xl-4 customer-card-wrapper" data-name="${name}" data-id="#KH-1091" data-phone="${phone}" data-rank="${rank}" data-status="Hoạt động" data-spent="0">
+                <div class="customer-card">
+                    <div class="d-flex align-items-start justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar-circle">${initials}</div>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-0 card-title-name">${name}</h6>
+                                <span class="text-muted small">#KH-1091 • Gia nhập 2026</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-link text-muted p-0"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                    </div>
+
+                    <div class="card-body-content">
+                        <div class="d-flex gap-2 mb-3">
+                            <span class="badge-pill-saas badge-active"><i class="fa-solid fa-circle" style="font-size: 6px;"></i> Hoạt động</span>
+                            <span class="badge-pill-saas badge-gold">${rank} Tier</span>
+                        </div>
+
+                        <div class="contact-info-box mb-3">
+                            <div class="text-muted small mb-1"><i class="fa-solid fa-phone me-2 text-muted"></i> ${phone}</div>
+                            <div class="text-muted small"><i class="fa-solid fa-envelope me-2 text-muted"></i> newuser@gmail.com</div>
+                        </div>
+
+                        <div class="card-hide-compact">
+                            <div class="d-flex justify-content-between align-items-baseline mb-2">
+                                <span class="text-muted small">Tổng tích lũy</span>
+                                <span class="fw-bold text-dark fs-6">0 <span class="fw-normal text-muted small">đ</span></span>
+                            </div>
+                            <div class="progress-saas mb-3">
+                                <div class="progress-bar" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 pt-2 border-top border-secondary border-opacity-10 card-hide-compact">
+                        <button class="btn btn-sm btn-glass-secondary rounded-3 w-50 fw-semibold" onclick="openDrawer('${name}', '#KH-1091', '${phone}', '${rank} Tier', '0 đ')">
+                            Xem nhanh
+                        </button>
+                        <a href="/Customer/Details" class="btn btn-sm btn-glass-primary rounded-3 w-50 fw-semibold text-center text-decoration-none d-flex align-items-center justify-content-center gap-1">
+                            Hồ sơ 360° <i class="fa-solid fa-arrow-right" style="font-size: 0.75rem;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.insertAdjacentHTML('afterbegin', newCard);
+        bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
+        document.getElementById('addForm').reset();
+        triggerToast('Thêm khách hàng thành công!');
+        filterData();
+    }
+
+    function triggerToast(msg) {
+        document.getElementById('toastMsg').innerText = msg;
+        const toast = new bootstrap.Toast(document.getElementById('saasToast'));
+        toast.show();
+    }
+</script>
