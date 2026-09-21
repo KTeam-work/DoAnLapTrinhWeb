@@ -1,0 +1,456 @@
+﻿
+@{
+    ViewData["Title"] = "Điểm Danh Ca Làm Việc";
+}
+
+<!-- Fonts, FontAwesome, jQuery & Select2 -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<style>
+    :root {
+        --primary-color: #10b981;
+        --primary-dark: #059669;
+        --banner-bg-start: #0f382c;
+        --banner-bg-end: #165b46;
+        --bg-main: #FCF9F2;
+        --card-bg: #ffffff;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --border-color: #f1f5f9;
+    }
+
+    body {
+        background-color: var(--bg-main);
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: #334155;
+    }
+
+    .page-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        letter-spacing: -0.02em;
+    }
+
+    .breadcrumb-custom {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Hero Banner LumiTea */
+    .hero-banner {
+        background: linear-gradient(135deg, var(--banner-bg-start) 0%, var(--banner-bg-end) 100%) !important;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px -5px rgba(15, 56, 44, 0.25);
+    }
+
+    .hero-orb-1 {
+        width: 250px;
+        height: 250px;
+        background: rgba(52, 211, 153, 0.15);
+        filter: blur(50px);
+        top: -50px;
+        right: -50px;
+        border-radius: 50%;
+    }
+
+    /* Live Clock Widget */
+    .live-clock-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        padding: 16px 24px;
+        color: #fff;
+    }
+
+    .btn-checkin-glow {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+        color: #fff !important;
+        border: none;
+        font-weight: 700;
+        font-size: 1rem;
+        padding: 12px 28px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        transition: all 0.2s ease;
+    }
+
+        .btn-checkin-glow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.55);
+        }
+
+    /* Cards & Tables */
+    .app-card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        border: 1px solid #edf2f7;
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.03);
+        padding: 24px;
+    }
+
+    .custom-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .custom-table thead th {
+            background-color: #f8fafc !important;
+            color: #64748b;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            padding: 16px 20px;
+            border: none;
+        }
+
+        .custom-table tbody td {
+            padding: 16px 20px;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.88rem;
+        }
+
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .status-working {
+        background-color: #dcfce7;
+        color: #15803d;
+    }
+
+    .status-completed {
+        background-color: #e0f2fe;
+        color: #0369a1;
+    }
+
+    .status-late {
+        background-color: #fef3c7;
+        color: #b45309;
+    }
+
+    /* PIN Input Style */
+    .pin-input {
+        width: 50px;
+        height: 55px;
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 800;
+        border-radius: 12px;
+        border: 2px solid #cbd5e1;
+        background-color: #f8fafc;
+        transition: all 0.2s;
+    }
+
+        .pin-input:focus {
+            border-color: #10b981;
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+            outline: none;
+        }
+
+    /* Custom CSS cho Select2 trong Bootstrap Modal */
+    .select2-container--default .select2-selection--single {
+        height: 48px !important;
+        border-radius: 12px !important;
+        border: 1px solid #cbd5e1 !important;
+        display: flex !important;
+        align-items: center !important;
+        background-color: #f8fafc !important;
+    }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #1e293b !important;
+            font-weight: 600 !important;
+            padding-left: 14px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 46px !important;
+            right: 10px !important;
+        }
+
+    .select2-dropdown {
+        border-radius: 12px !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+        z-index: 1060 !important;
+    }
+</style>
+
+<div class="container-fluid px-4 py-4">
+
+    <!-- 1. Header Navigation -->
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+        <div>
+            <h1 class="page-title mb-1">Trạm Điểm Danh Ca Làm Việc</h1>
+            <div class="breadcrumb-custom">
+                <i class="fa-solid fa-house"></i>
+                <span>/</span>
+                <span>Vận hành</span>
+                <span>/</span>
+                <span class="text-dark fw-semibold">Điểm danh ca</span>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Schedule", "Shift")" class="btn btn-outline-success fw-bold px-3 py-2" style="border-radius: 12px;">
+                <i class="fa-solid fa-calendar-days me-1"></i> Bảng Phân Ca Tuần
+            </a>
+        </div>
+    </div>
+
+    <!-- 2. Hero Banner - Quick Check-in -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="p-4 p-md-5 hero-banner position-relative overflow-hidden">
+                <div class="position-absolute hero-orb-1"></div>
+
+                <div class="row align-items-center position-relative z-1 g-4">
+                    <div class="col-lg-7">
+                        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white bg-opacity-25 mb-3 text-white fs-7 border border-white border-opacity-25 shadow-sm">
+                            <span class="d-inline-block rounded-circle bg-success" style="width: 8px; height: 8px;"></span>
+                            Trạm Điểm Danh LumiTea POS (Hỗ trợ 50+ Nhân viên)
+                        </div>
+                        <h2 class="fw-extrabold text-white mb-2">Chấm Công Vào / Ra Ca Nhanh</h2>
+                        <p class="text-white mb-4 fs-6" style="opacity: 0.85;">Gõ tên/mã NV hoặc chọn từ danh sách thông minh và nhập mã PIN 4 số để ghi nhận giờ làm việc.</p>
+
+                        <button class="btn-checkin-glow" data-bs-toggle="modal" data-bs-target="#quickCheckInModal">
+                            <i class="fa-solid fa-fingerprint fs-4"></i> ĐIỂM DANH VÀO / RA CA
+                        </button>
+                    </div>
+
+                    <div class="col-lg-5 d-flex justify-content-lg-end">
+                        <div class="live-clock-card text-center text-lg-start">
+                            <div class="text-white-50 text-uppercase fw-bold fs-7 mb-1"><i class="fa-regular fa-clock me-1"></i> Thời Gian Hiện Tại</div>
+                            <div id="liveClock" class="fw-bold display-5 text-white my-1" style="font-family: monospace;">00:00:00</div>
+                            <div id="liveDate" class="text-white fw-medium fs-6" style="opacity: 0.9;">Đang tải...</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Bảng Trạng Thái Ca Làm Việc Trong Ngày -->
+    <div class="app-card">
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+            <div>
+                <h5 class="fw-bold text-dark mb-1">Danh Sách Ca Làm Hôm Nay</h5>
+                <p class="text-muted small mb-0">Theo dõi giờ vào/ra thực tế của nhân viên trong ngày</p>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <input type="text" id="searchTableInput" class="form-control bg-light border-0 small" style="border-radius: 10px; padding: 9px 14px;" placeholder="Lọc nhanh danh sách...">
+                <input type="date" class="form-control border-0 bg-light text-muted fw-semibold shadow-sm" style="border-radius: 10px; font-size: 0.88rem; padding: 9px 14px;" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="custom-table" id="shiftTable">
+                <thead>
+                    <tr>
+                        <th>NHÂN VIÊN</th>
+                        <th>CA ĐĂNG KÝ</th>
+                        <th>GIỜ VÀO CA</th>
+                        <th>GIỜ RA CA</th>
+                        <th>TỔNG GIỜ</th>
+                        <th>TRẠNG THÁI</th>
+                        <th class="text-end">THAO TÁC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="fw-bold text-dark">@item.EmployeeName</div>
+                                    <div class="text-muted small">Mã: #@item.EmployeeCode</div>
+                                </td>
+                                <td><span class="badge bg-light text-dark border fw-bold px-2 py-1">@item.ShiftName</span></td>
+                                <td class="fw-semibold text-dark">@(item.TimeIn?.ToString("HH:mm:ss") ?? "--:--")</td>
+                                <td class="fw-semibold text-muted">@(item.TimeOut?.ToString("HH:mm:ss") ?? "--:--")</td>
+                                <td class="fw-bold text-success">@(item.TotalHours > 0 ? $"{item.TotalHours}h" : "--")</td>
+                                <td>
+                                    @if (item.TimeOut == null)
+                                    {
+                                        <span class="status-badge status-working"><i class="fa-solid fa-spinner fa-spin"></i> Đang làm việc</span>
+                                    }
+                                    else if (item.IsLate)
+                                    {
+                                        <span class="status-badge status-late"><i class="fa-solid fa-triangle-exclamation"></i> Đi trễ</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-completed"><i class="fa-solid fa-check"></i> Hoàn thành</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if (item.TimeOut == null)
+                                    {
+                                        <button class="btn btn-sm btn-outline-danger fw-bold" style="border-radius: 8px;" onclick="checkoutEmployee('@item.EmployeeCode')">
+                                            <i class="fa-solid fa-right-from-bracket me-1"></i> Kết Thúc Ca
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <!-- DỮ LIỆU MẪU ĐỂ DEMO (50+ NV) -->
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-dark">Lê Thị Mai</div>
+                                <div class="text-muted small">Mã: #NV003</div>
+                            </td>
+                            <td><span class="badge bg-light text-dark border fw-bold px-2 py-1">Ca Sáng (07:00 - 12:30)</span></td>
+                            <td class="fw-semibold text-dark">06:55:12</td>
+                            <td class="fw-semibold text-muted">12:31:05</td>
+                            <td class="fw-bold text-success">5.5h</td>
+                            <td><span class="status-badge status-completed"><i class="fa-solid fa-check"></i> Hoàn thành</span></td>
+                            <td class="text-end"><button class="btn btn-sm btn-light disabled text-muted"><i class="fa-solid fa-lock me-1"></i> Đã kết thúc</button></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-dark">Richard Blais</div>
+                                <div class="text-muted small">Mã: #NV002</div>
+                            </td>
+                            <td><span class="badge bg-light text-dark border fw-bold px-2 py-1">Ca Chiều (12:30 - 18:00)</span></td>
+                            <td class="fw-semibold text-dark">12:35:00</td>
+                            <td class="fw-semibold text-muted">--:--</td>
+                            <td class="fw-bold text-success">--</td>
+                            <td><span class="status-badge status-working"><i class="fa-solid fa-circle-dot text-success me-1"></i> Đang làm việc</span></td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-danger fw-bold" style="border-radius: 8px;">
+                                    <i class="fa-solid fa-right-from-bracket me-1"></i> Kết Thúc Ca
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ĐIỂM DANH CÓ TÌM KIẾM NHANH TÊN/MÃ NV (CHO 50+ NV) -->
+<div class="modal fade" id="quickCheckInModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px; border: none; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+            <div class="modal-header px-4 pt-4 border-0 text-center d-block position-relative">
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-4" data-bs-dismiss="modal"></button>
+                <div class="mx-auto rounded-circle d-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px; background-color: #d1fae5; color: #059669;">
+                    <i class="fa-solid fa-fingerprint fs-2"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-1">Điểm Danh Vào / Ra Ca</h4>
+                <p class="text-muted small mb-0">Tìm tên hoặc gõ Mã NV và nhập mã PIN 4 số</p>
+            </div>
+
+            <form asp-action="CheckIn" method="post">
+                <div class="modal-body px-4 py-3">
+
+                    <!-- LỰA CHỌN TÌM KIẾM TÊN HOẶC MÃ NV -->
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">TÌM NHÂN VIÊN (GÕ TÊN HOẶC MÃ NV)</label>
+                        <select id="selectEmpCheckIn" name="EmployeeCode" class="form-select select2-employee" style="width: 100%;" required>
+                            <option value="" disabled selected>-- Gõ tên hoặc Mã NV để tìm --</option>
+                            <option value="NV001">NV001 - Nguyen Tan Ky (Quản lý)</option>
+                            <option value="NV002">NV002 - Richard Blais (Pha chế)</option>
+                            <option value="NV003">NV003 - Lê Thị Mai (Thu ngân)</option>
+                            <option value="NV004">NV004 - Trần Văn An (Phục vụ)</option>
+                            <option value="NV005">NV005 - Phạm Hoàng Nam (Pha chế)</option>
+                            <option value="NV006">NV006 - Nguyễn Hồng Phấn (Thu ngân)</option>
+                            <option value="NV007">NV007 - Đặng Quốc Bảo (Pha chế)</option>
+                            <option value="NV008">NV008 - Võ Thảo Nhi (Thu ngân)</option>
+                            <option value="NV009">NV009 - Hoàng Trọng Nghĩa (Phục vụ)</option>
+                            <option value="NV010">NV010 - Bùi Minh Tuấn (Bảo vệ)</option>
+                            <!-- Hệ thống tự động render thêm hàng chục NV ở đây mà không sợ rối -->
+                        </select>
+                    </div>
+
+                    <!-- MÃ PIN 4 SỐ -->
+                    <div class="mb-4 text-center mt-4">
+                        <label class="form-label text-muted small fw-bold d-block mb-2">MÃ PIN XÁC NHẬN (4 SỐ)</label>
+                        <div class="d-flex justify-content-center gap-2">
+                            <input type="password" maxlength="1" class="pin-input" required onkeyup="moveNext(this, 1)">
+                            <input type="password" maxlength="1" class="pin-input" required onkeyup="moveNext(this, 2)">
+                            <input type="password" maxlength="1" class="pin-input" required onkeyup="moveNext(this, 3)">
+                            <input type="password" maxlength="1" class="pin-input" required onkeyup="moveNext(this, 4)">
+                        </div>
+                        <input type="hidden" id="fullPin" name="PinCode" />
+                    </div>
+                </div>
+                <div class="modal-footer px-4 pb-4 border-0">
+                    <button type="submit" class="btn-checkin-glow w-100 justify-content-center" onclick="combinePin()">
+                        XÁC NHẬN ĐIỂM DANH
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Live Clock
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('liveClock').innerText = now.toLocaleTimeString('vi-VN', { hour12: false });
+        document.getElementById('liveDate').innerText = now.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Auto Move Focus PIN
+    function moveNext(elem, index) {
+        if (elem.value.length === 1 && index < 4) {
+            document.querySelectorAll('.pin-input')[index].focus();
+        }
+    }
+
+    function combinePin() {
+        let pin = '';
+        document.querySelectorAll('.pin-input').forEach(input => pin += input.value);
+        document.getElementById('fullPin').value = pin;
+    }
+
+    // Kích hoạt Select2 Tìm Kiếm Thông Minh
+    $(document).ready(function () {
+        $('.select2-employee').select2({
+            dropdownParent: $('#quickCheckInModal'),
+            placeholder: "-- Gõ tên hoặc Mã NV để tìm --",
+            allowClear: true
+        });
+
+        // Lọc nhanh danh sách bảng điểm danh
+        $("#searchTableInput").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#shiftTable tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
