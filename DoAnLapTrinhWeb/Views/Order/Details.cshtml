@@ -1,0 +1,297 @@
+﻿@{
+    ViewBag.Title = "Chi Tiết Đơn Hàng - LumiTea";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --lumitea-primary: #1A4D3E;
+            --lumitea-accent: #F6C90E;
+            --lumitea-bg: #F8FAFC;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--lumitea-bg);
+        }
+
+        .detail-card {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            color: var(--lumitea-primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        
+        .item-row {
+            padding: 1rem 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+
+            .item-row:last-child {
+                border-bottom: none;
+            }
+
+        .item-img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 10px;
+            background-color: #f1f5f9;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+            list-style: none;
+        }
+
+            .timeline::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0.4rem;
+                width: 2px;
+                background: #e2e8f0;
+            }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+            .timeline-item:last-child {
+                margin-bottom: 0;
+            }
+
+        .timeline-marker {
+            position: absolute;
+            left: -1.8rem;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #fff;
+            border: 3px solid #cbd5e1;
+            top: 4px;
+        }
+     
+        .timeline-item.active .timeline-marker {
+            border-color: var(--lumitea-primary);
+            background: var(--lumitea-primary);
+            box-shadow: 0 0 0 3px rgba(26, 77, 62, 0.2);
+        }
+
+        .timeline-item.active .timeline-title {
+            color: var(--lumitea-primary);
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container py-4">
+        <!-- NÚT QUAY LẠI -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <a href="~/Order/History" class="text-decoration-none text-muted">
+                    <i class="fa-solid fa-arrow-left fs-5"></i>
+                </a>
+                <div>
+                    <h2 class="fw-extrabold m-0" style="color: var(--lumitea-primary); letter-spacing: -0.8px;">
+                        Đơn hàng #ORD-1082
+                    </h2>
+                    <span class="text-muted small">Ngày đặt: 21/09/2026 11:42</span>
+                </div>
+            </div>
+
+          
+            <div>
+                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-3 py-2 fs-6">
+                    <i class="fa-solid fa-motorcycle me-1"></i> Đang giao hàng
+                </span>
+            </div>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- CHI TIẾT MÓN -->
+            <div class="col-12 col-lg-8">
+                <div class="detail-card">
+                    <h5 class="section-title"><i class="fa-solid fa-mug-hot me-2"></i>Chi tiết món ăn</h5>
+
+                    <!-- 1 -->
+                    <div class="item-row d-flex gap-3 align-items-start">
+                        <img src="~/Assets/o_long_sua_nuong.jpg" class="item-img" alt="Trà Sữa Ô Long">
+                        
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="fw-bold text-dark m-0">Trà Sữa Ô Long Nướng</h6>
+                                <span class="fw-bold text-dark">58.000 đ</span>
+                            </div>
+
+                            
+                            <div class="text-muted small mt-1 border-start border-2 ps-2 ms-1" style="border-color: var(--lumitea-primary) !important;">
+                                <div>Ly cơ bản: 35.000 đ</div>
+                                <div>Size M: + 5.000 đ</div>
+                                <div>Trân châu đen: + 8.000 đ</div>
+                                <div>Kem Cheese: + 10.000 đ</div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="text-muted small fst-italic">Ghi chú: Ít đá, 50% đường</span>
+                                <span class="badge bg-light text-dark border">SL: 1</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--  2 -->
+                    <div class="item-row d-flex gap-3 align-items-start">
+                        
+                        <img src="~/Assets/tra_sua_chan_chau_duong_den.jpg" class="item-img" alt="Sữa Tươi"/>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="fw-bold text-dark m-0">Sữa Tươi Trân Châu Đường Đen</h6>
+                                <span class="fw-bold text-dark">80.000 đ</span>
+                            </div>
+
+                            <div class="text-muted small mt-1 border-start border-2 ps-2 ms-1" style="border-color: #cbd5e1 !important;">
+                                <div>Ly cơ bản: 40.000 đ</div>
+                                <div>Size S: + 0 đ</div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="text-muted small fst-italic">Ghi chú: Không</span>
+                                <span class="badge bg-light text-dark border">SL: 2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- THANH TOÁN -->
+                <div class="detail-card bg-light border-0">
+                    <div class="d-flex justify-content-between mb-2 text-muted">
+                        <span>Tổng tiền hàng (3 món)</span>
+                        <span class="fw-medium text-dark">138.000 đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 text-muted">
+                        <span>Phí giao hàng</span>
+                        <span class="fw-medium text-dark">15.000 đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 text-muted">
+                        <span>Voucher áp dụng</span>
+                        <span class="fw-medium text-success">- 0 đ</span>
+                    </div>
+                    <hr class="text-muted opacity-25">
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="fw-bold fs-6">TỔNG CỘNG</span>
+                        <span class="fw-extrabold fs-4 text-danger" style="color: var(--lumitea-primary) !important;">
+                            153.000 <span class="fs-5 text-decoration-underline fw-normal">đ</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIMELINE TIẾN TRÌNH -->
+            <div class="col-12 col-lg-4">
+
+            
+                <div class="detail-card">
+                    <h5 class="section-title"><i class="fa-solid fa-clock-rotate-left me-2"></i>Tiến trình đơn hàng</h5>
+
+                    <ul class="timeline m-0">
+                        <li class="timeline-item active">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title mb-1">Đang giao hàng</div>
+                                <div class="text-muted small">Tài xế đang trên đường đến.</div>
+                                <div class="text-muted small opacity-75" style="font-size: 0.75rem;">Hôm nay 11:55</div>
+                            </div>
+                        </li>
+                        <li class="timeline-item active">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title mb-1">Đã pha chế xong (Ready)</div>
+                                <div class="text-muted small opacity-75" style="font-size: 0.75rem;">Hôm nay 11:50</div>
+                            </div>
+                        </li>
+                        <li class="timeline-item active">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title mb-1">Đang pha chế (Preparing)</div>
+                                <div class="text-muted small opacity-75" style="font-size: 0.75rem;">Hôm nay 11:45</div>
+                            </div>
+                        </li>
+                        <li class="timeline-item active">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title mb-1">Đã xác nhận (Confirmed)</div>
+                                <div class="text-muted small opacity-75" style="font-size: 0.75rem;">Hôm nay 11:43</div>
+                            </div>
+                        </li>
+                        <li class="timeline-item active">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title mb-1">Tạo đơn thành công (Pending)</div>
+                                <div class="text-muted small opacity-75" style="font-size: 0.75rem;">Hôm nay 11:42</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- THÔNG TIN KHÁCH -->
+                <div class="detail-card">
+                    <h5 class="section-title"><i class="fa-solid fa-address-card me-2"></i>Thông tin nhận hàng</h5>
+                    <div class="d-flex flex-column gap-3">
+                        <div>
+                            <div class="text-muted small mb-1">Khách hàng</div>
+                            <div class="fw-semibold text-dark">Lê Quốc Việt</div>
+                        </div>
+                        <div>
+                            <div class="text-muted small mb-1">Số điện thoại</div>
+                            <div class="fw-semibold text-dark">0901234567</div>
+                        </div>
+                        <div>
+                            <div class="text-muted small mb-1">Giao đến</div>
+                            <div class="fw-semibold text-dark">140 Lê Trọng Tấn, P. Tây Thạnh, Q. Tân Phú, TP.HCM</div>
+                        </div>
+                        <div>
+                            <div class="text-muted small mb-1">Phương thức thanh toán</div>
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-building-columns text-primary"></i>
+                                <span class="fw-semibold text-dark">Chuyển khoản (Napas)</span>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill ms-auto">Đã thanh toán</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
