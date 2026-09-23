@@ -1,0 +1,140 @@
+﻿
+:root {
+    --brand-primary: #21554A;
+    --brand-primary-hover: #194037;
+    --brand-secondary: #E8A838;
+    --bg-main: #FAF7F2;
+    --card-bg: #FFFFFF;
+    --text-main: #2D3748;
+    --text-muted: #718096;
+    --border-color: #E2E8F0;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+}
+
+.top-navbar {
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 32px;
+    margin-bottom: 24px;
+}
+
+.main-content {
+    padding: 0 32px 32px 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: #EAF2F0;
+    color: var(--brand-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.card-custom {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    overflow: hidden;
+}
+
+.table > :not(caption) > * > * {
+    padding: 14px 16px;
+    vertical-align: middle;
+}
+
+.table thead th {
+    background-color: #F8FAFC;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.btn-brand {
+    background-color: var(--brand-primary);
+    color: white;
+    font-weight: 600;
+}
+
+    .btn-brand:hover {
+        background-color: var(--brand-primary-hover);
+        color: white;
+    }
+
+.badge-completed {
+    background-color: #DEF7EC;
+    color: #03543F;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+.badge-draft {
+    background-color: #FEF3C7;
+    color: #92400E;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+.badge-cancelled {
+    background-color: #FDE8E8;
+    color: #9B1C1C;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+@@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    #printableReceipt, #printableReceipt * {
+        visibility: visible;
+    }
+
+    #printableReceipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}
+

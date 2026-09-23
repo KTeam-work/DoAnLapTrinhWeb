@@ -1,0 +1,35 @@
+@page
+@model TV1.Pages.Profile.IndexModel
+@{
+    ViewData["Title"] = "Hồ sơ cá nhân";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="tv1-profile-grid">
+    <div class="tv1-avatar-box">
+        <div class="tv1-avatar">🧋</div>
+        <h3 style="margin:6px 0 0;">@Model.FullName</h3>
+        <div class="tv1-badge">@Model.RoleName</div>
+    </div>
+
+    <div class="tv1-card" style="max-width:none;">
+        <h2 style="text-align:left;">Thông tin tài khoản</h2>
+        <form method="post" class="tv1-form">
+            <label>Họ tên</label>
+            <input value="@Model.FullName" disabled />
+
+            <label>Tên đăng nhập</label>
+            <input value="@Model.Username" disabled />
+
+            <label>Email</label>
+            <input value="@Model.Email" disabled />
+
+            <label>Số điện thoại</label>
+            <input value="@Model.Phone" disabled />
+
+            <a class="tv1-btn" style="display:inline-block;width:auto;padding:10px 24px;text-decoration:none;" asp-page="/Profile/ChangePassword">
+                Đổi mật khẩu
+            </a>
+        </form>
+    </div>
+</div>
