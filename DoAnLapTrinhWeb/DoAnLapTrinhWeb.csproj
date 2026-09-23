@@ -120,10 +120,17 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+
+    <Compile Include="Controllers\CartController.cs" />
+
     <Compile Include="Controllers\CustomerController.cs" />
+
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+
+    <Compile Include="Controllers\MenuController.cs" />
+
     <Compile Include="Controllers\ShiftController.cs" />
     <Compile Include="Controllers\VoucherController.cs" />
     <Compile Include="Global.asax.cs">
@@ -188,6 +195,10 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\Voucher\Index.cshtml" />
+
+    <Content Include="Views\Menu\Index.cshtml" />
+    <Content Include="Views\Cart\Index.cshtml" />
+
     <Content Include="Views\Customer\Index.cshtml" />
     <Content Include="Views\Customer\Details.cshtml" />
     <Content Include="Views\Employee\Index.cshtml" />
@@ -195,9 +206,11 @@
     <Content Include="Views\Shift\Index.cshtml" />
     <Contet Include="Views\Shift\Schedule.cshtml" />
 
+
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Assets\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>

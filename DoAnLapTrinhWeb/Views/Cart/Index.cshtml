@@ -1,0 +1,257 @@
+﻿@{
+    ViewBag.Title = "Giỏ Hàng - LumiTea";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --lumitea-primary: #1A4D3E;
+            --lumitea-accent: #F6C90E;
+            --lumitea-bg: #F8FAFC;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--lumitea-bg);
+        }
+
+       
+        .cart-item-card {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: box-shadow 0.2s;
+        }
+
+            .cart-item-card:hover {
+                box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            }
+
+        .cart-img {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 12px;
+            background-color: #f1f5f9;
+        }
+
+        
+        .summary-box {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            position: sticky;
+            top: 20px;
+        }
+
+        .btn-checkout {
+            background-color: var(--lumitea-accent);
+            color: #000;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            transition: all 0.2s;
+        }
+
+            .btn-checkout:hover {
+                background-color: #e5b905;
+                transform: translateY(-2px);
+            }
+
+        .qty-input {
+            width: 50px;
+            text-align: center;
+            border: none;
+            font-weight: 600;
+            background: transparent;
+        }
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            background: #fff;
+            color: #475569;
+            transition: all 0.2s;
+        }
+
+            .qty-btn:hover {
+                background: #f1f5f9;
+                color: var(--lumitea-primary);
+            }
+
+        .remove-btn {
+            color: #ef4444;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+            .remove-btn:hover {
+                opacity: 0.7;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="container py-4">
+        <div class="d-flex align-items-center mb-4 gap-3">
+            <a href="~/Menu/Index" class="text-decoration-none text-muted">
+                <i class="fa-solid fa-arrow-left fs-5"></i>
+            </a>
+            <h2 class="fw-extrabold m-0" style="color: var(--lumitea-primary); letter-spacing: -0.8px;">Giỏ Hàng Của Bạn</h2>
+        </div>
+
+        <div class="row g-4">
+            <!-- SẢN PHẨM -->
+            <div class="col-12 col-lg-8">
+
+                <!-- 1 -->
+                <div class="cart-item-card d-flex gap-3 flex-column flex-sm-row align-items-sm-start">
+                    <img src="~/Assets/o_long_sua_nuong.jpg" alt="Trà Sữa Ô Long" class="cart-img mx-auto mx-sm-0">
+                   
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="fw-bold text-dark m-0 fs-6">Trà Sữa Ô Long Nướng</h5>
+                            <i class="fa-regular fa-trash-can remove-btn ms-2"></i>
+                        </div>
+
+                        <!-- CHI TIẾT -->
+                        <div class="text-muted small mb-2 border-start border-2 ps-2 ms-1" style="border-color: var(--lumitea-primary) !important;">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Ly cơ bản</span>
+                                <span class="fw-medium text-dark">35.000 đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span><span class="badge bg-light text-dark border p-1 me-1">Size M</span></span>
+                                <span class="fw-medium text-dark">+ 5.000 đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>+ Trân châu đen</span>
+                                <span class="fw-medium text-dark">+ 8.000 đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>+ Kem Cheese</span>
+                                <span class="fw-medium text-dark">+ 15.000 đ</span>
+                            </div>
+                        </div>
+
+                        <div class="text-muted small mb-3 fst-italic">
+                            <i class="fa-regular fa-comment-dots me-1"></i> Ghi chú: Ít đá, 50% đường
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between mt-auto">
+                            <div class="d-flex align-items-center gap-1">
+                                <button class="qty-btn" type="button"><i class="fa-solid fa-minus fs-7"></i></button>
+                                <input type="text" class="qty-input" value="1" readonly>
+                                <button class="qty-btn" type="button"><i class="fa-solid fa-plus fs-7"></i></button>
+                            </div>
+
+                            <span class="fw-extrabold fs-5" style="color: var(--lumitea-primary);">
+                                58.000 <span class="fs-6 text-decoration-underline fw-normal">đ</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2 -->
+                <div class="cart-item-card d-flex gap-3 flex-column flex-sm-row align-items-sm-start mt-3">
+                    <img src="~/Assets/tra_sua_chan_chau_duong_den.jpg" alt="Sữa Tươi" class="cart-img mx-auto m
+                  
+
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="fw-bold text-dark m-0 fs-6">Sữa Tươi Trân Châu Đường Đen</h5>
+                            <i class="fa-regular fa-trash-can remove-btn ms-2"></i>
+                        </div>
+
+                        <!-- CHI TIẾT -->
+                        <div class="text-muted small mb-2 border-start border-2 ps-2 ms-1" style="border-color: #cbd5e1 !important;">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Ly cơ bản</span>
+                                <span class="fw-medium text-dark">40.000 đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span><span class="badge bg-light text-dark border p-1 me-1">Size S</span></span>
+                                <span class="fw-medium text-dark">+ 0 đ</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between mt-4">
+                            <div class="d-flex align-items-center gap-1">
+                                <button class="qty-btn" type="button"><i class="fa-solid fa-minus fs-7"></i></button>
+                                <input type="text" class="qty-input" value="2" readonly>
+                                <button class="qty-btn" type="button"><i class="fa-solid fa-plus fs-7"></i></button>
+                            </div>
+
+                            <span class="fw-extrabold fs-5" style="color: var(--lumitea-primary);">
+                                80.000 <span class="fs-6 text-decoration-underline fw-normal">đ</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- THANH TOÁN -->
+                <div class="col-12 col-lg-4">
+                    <div class="summary-box shadow-sm">
+                        <h5 class="fw-bold mb-4" style="color: var(--lumitea-primary);">Tóm tắt đơn hàng</h5>
+
+                        <div class="d-flex justify-content-between mb-3 text-muted">
+                            <span>Tổng tiền hàng (3 sản phẩm)</span>
+                            <span class="fw-semibold text-dark">138.000 đ</span>
+                        </div>
+
+                        
+                        <div class="input-group mb-4">
+                            <input type="text" class="form-control bg-light border-end-0" placeholder="Nhập mã ưu đãi...">
+                            <button class="btn border border-start-0 bg-light text-success fw-bold" type="button">Áp dụng</button>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-3 text-muted">
+                            <span>Giảm giá Voucher</span>
+                            <span class="fw-semibold text-success">- 0 đ</span>
+                        </div>
+
+                        <hr class="text-muted opacity-25">
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="fw-bold fs-6">TỔNG CỘNG</span>
+                            <!-- MAP VỚI BẢNG ORDER -->
+                            <span class="fw-extrabold fs-4 text-danger" style="color: var(--lumitea-primary) !important;">
+                                138.000 <span class="fs-5 text-decoration-underline fw-normal">đ</span>
+                            </span>
+                        </div>
+
+                        <!-- ĐIỀU HƯỚNG QUA CHECK OUT  -->
+                        <a href="~/Order/Checkout" class="btn btn-checkout w-100 fs-6 d-flex justify-content-center align-items-center gap-2">
+                            Thanh toán <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+
+
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
