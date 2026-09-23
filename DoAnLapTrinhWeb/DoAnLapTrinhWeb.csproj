@@ -120,11 +120,14 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IngredientController.cs" />
+    <Compile Include="Controllers\CartController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\ShiftController.cs" />
     <Compile Include="Controllers\VoucherController.cs" />
     <Compile Include="Global.asax.cs">
@@ -153,7 +156,9 @@
     <Content Include="Css\styleCustomer_index.css" />
     <Content Include="Css\styleDashboard.css" />
     <Content Include="Css\StyleEmployee.css" />
+
     <Content Include="Css\StyleIngredient.css" />
+
     <Content Include="Css\styleNavbar.css" />
     <Content Include="Css\styleVoucher.css" />
     <Content Include="favicon.ico" />
@@ -196,9 +201,12 @@
     <Content Include="Views\Shift\Index.cshtml" />
     <Content Include="Views\Shift\Schedule.cshtml" />
     <Content Include="Views\Ingredient\Index.cshtml" />
+    <Content Include="Views\Menu\Index.cshtml" />
+    <Content Include="Views\Cart\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Assets\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
