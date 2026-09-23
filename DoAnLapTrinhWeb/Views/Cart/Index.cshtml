@@ -14,102 +14,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-    <style>
-        :root {
-            --lumitea-primary: #1A4D3E;
-            --lumitea-accent: #F6C90E;
-            --lumitea-bg: #F8FAFC;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--lumitea-bg);
-        }
-
-       
-        .cart-item-card {
-            background: #fff;
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            transition: box-shadow 0.2s;
-        }
-
-            .cart-item-card:hover {
-                box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            }
-
-        .cart-img {
-            width: 90px;
-            height: 90px;
-            object-fit: cover;
-            border-radius: 12px;
-            background-color: #f1f5f9;
-        }
-
-        
-        .summary-box {
-            background: #fff;
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
-            padding: 1.5rem;
-            position: sticky;
-            top: 20px;
-        }
-
-        .btn-checkout {
-            background-color: var(--lumitea-accent);
-            color: #000;
-            font-weight: 700;
-            border: none;
-            border-radius: 12px;
-            padding: 12px;
-            transition: all 0.2s;
-        }
-
-            .btn-checkout:hover {
-                background-color: #e5b905;
-                transform: translateY(-2px);
-            }
-
-        .qty-input {
-            width: 50px;
-            text-align: center;
-            border: none;
-            font-weight: 600;
-            background: transparent;
-        }
-
-        .qty-btn {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-            background: #fff;
-            color: #475569;
-            transition: all 0.2s;
-        }
-
-            .qty-btn:hover {
-                background: #f1f5f9;
-                color: var(--lumitea-primary);
-            }
-
-        .remove-btn {
-            color: #ef4444;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-            .remove-btn:hover {
-                opacity: 0.7;
-            }
-    </style>
+    <link rel="stylesheet" href="~/Css/StyleCart.css" />
+    
 </head>
 <body>
 
@@ -175,7 +81,7 @@
 
                 <!-- 2 -->
                 <div class="cart-item-card d-flex gap-3 flex-column flex-sm-row align-items-sm-start mt-3">
-                    <img src="~/Assets/tra_sua_chan_chau_duong_den.jpg" alt="Sữa Tươi" class="cart-img mx-auto m
+                    <img src="~/Assets/tra_sua_chan_chau_duong_den.jpg" alt="Sữa Tươi" class="cart-img mx-auto mx-sm-0">
                   
 
                     <div class="flex-grow-1">

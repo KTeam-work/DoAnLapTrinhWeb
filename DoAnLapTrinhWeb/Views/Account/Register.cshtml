@@ -1,54 +1,173 @@
-﻿@model QuanLyTraSua.Models.RegisterViewModel
+﻿@model DoAnLapTrinhWeb.Models.RegisterViewModel
 @{
     ViewBag.Title = "Đăng ký";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="tv1-card">
-    <h2>Tạo tài khoản</h2>
+<!-- THIẾT KẾ CSS TRỰC TIẾP CHO TRANG ĐĂNG KÝ -->
+<style>
+    .tv1-auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        background: #f8f9fa;
+        padding: 20px;
+    }
 
-    @if (!ViewData.ModelState.IsValid)
-    {
-        <div class="tv1-alert">
-            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-            {
-                <p>@error.ErrorMessage</p>
+    .tv1-card {
+        background: #ffffff;
+        width: 100%;
+        max-width: 460px; /* Rộng hơn một chút để chứa các trường nhập liệu vừa vặn */
+        padding: 35px 30px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid #eaeaea;
+    }
+
+        .tv1-card h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+    .tv1-form label {
+        display: block;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 6px;
+    }
+
+    .tv1-form input[type="text"],
+    .tv1-form input[type="password"],
+    .tv1-form input[type="email"] {
+        width: 100%;
+        padding: 10px 14px;
+        font-size: 14.5px;
+        border: 1.5px solid #ced4da;
+        border-radius: 10px;
+        outline: none;
+        transition: all 0.3s ease;
+        background: #fdfdfd;
+        margin-bottom: 4px;
+    }
+
+    .tv1-form input:focus {
+        border-color: #198754;
+        box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.1);
+        background: #fff;
+    }
+
+    .tv1-btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+        background-color: #198754;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        margin-top: 10px;
+    }
+
+        .tv1-btn:hover {
+            background-color: #157347;
+        }
+
+    .tv1-alert {
+        background-color: #f8d7da;
+        color: #842029;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 13.5px;
+        margin-bottom: 16px;
+        border: 1px solid #f5c2c7;
+    }
+
+        .tv1-alert p {
+            margin: 0;
+        }
+
+    .field-error {
+        color: #dc3545;
+        font-size: 12.5px;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .tv1-links {
+        text-align: center;
+        margin-top: 18px;
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+        .tv1-links a {
+            color: #198754;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+
+            .tv1-links a:hover {
+                text-decoration: underline;
+                color: #157347;
             }
+</style>
+
+<!-- KHUNG GIAO DIỆN CHÍNH -->
+<div class="tv1-auth-container">
+    <div class="tv1-card">
+        <h2>Tạo tài khoản</h2>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="tv1-alert">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
+        }
+
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "tv1-form" }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.LabelFor(m => m.FullName, "Họ và tên")
+            @Html.TextBoxFor(m => m.FullName, new { placeholder = "Nguyễn Văn A" })
+            @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "field-error" })
+
+            @Html.LabelFor(m => m.Username, "Tên đăng nhập")
+            @Html.TextBoxFor(m => m.Username, new { placeholder = "username" })
+            @Html.ValidationMessageFor(m => m.Username, "", new { @class = "field-error" })
+
+            @Html.LabelFor(m => m.Email, "Địa chỉ Email")
+            @Html.TextBoxFor(m => m.Email, new { type = "email", placeholder = "ban@email.com" })
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "field-error" })
+
+            @Html.LabelFor(m => m.Phone, "Số điện thoại")
+            @Html.TextBoxFor(m => m.Phone, new { placeholder = "09xxxxxxxx" })
+            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "field-error" })
+
+            @Html.LabelFor(m => m.Password, "Mật khẩu")
+            @Html.PasswordFor(m => m.Password, new { placeholder = "••••••••" })
+            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "field-error" })
+
+            @Html.LabelFor(m => m.ConfirmPassword, "Xác nhận mật khẩu")
+            @Html.PasswordFor(m => m.ConfirmPassword, new { placeholder = "••••••••" })
+            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "field-error" })
+
+            <button type="submit" class="tv1-btn">Đăng ký</button>
+        }
+
+        <div class="tv1-links">
+            Đã có tài khoản? <a href="@Url.Action("Login", "Account")">Đăng nhập ngay</a>
         </div>
-    }
-
-    @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "tv1-form" }))
-    {
-        @Html.AntiForgeryToken()
-
-        @Html.LabelFor(m => m.FullName)
-        @Html.TextBoxFor(m => m.FullName, new { placeholder = "Nguyễn Văn A" })
-        @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "field-error" })
-
-        @Html.LabelFor(m => m.Username)
-        @Html.TextBoxFor(m => m.Username, new { placeholder = "username" })
-        @Html.ValidationMessageFor(m => m.Username, "", new { @class = "field-error" })
-
-        @Html.LabelFor(m => m.Email)
-        @Html.TextBoxFor(m => m.Email, new { type = "email", placeholder = "ban@email.com" })
-        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "field-error" })
-
-        @Html.LabelFor(m => m.Phone)
-        @Html.TextBoxFor(m => m.Phone, new { placeholder = "09xxxxxxxx" })
-        @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "field-error" })
-
-        @Html.LabelFor(m => m.Password)
-        @Html.PasswordFor(m => m.Password, new { placeholder = "••••••••" })
-        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "field-error" })
-
-        @Html.LabelFor(m => m.ConfirmPassword)
-        @Html.PasswordFor(m => m.ConfirmPassword, new { placeholder = "••••••••" })
-        @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "field-error" })
-
-        <button type="submit" class="tv1-btn">Đăng ký</button>
-    }
-
-    <div class="tv1-links">
-        Đã có tài khoản? <a href="@Url.Action("Login", "Account")">Đăng nhập</a>
     </div>
 </div>

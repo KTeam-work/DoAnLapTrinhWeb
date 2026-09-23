@@ -120,26 +120,50 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
-
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IngredientController.cs" />
+    <Compile Include="Controllers\ProductController.cs" />
+    <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\RecipeController.cs" />
-    <Compile Include="Controllers\InventoryController.cs" />>
+    <Compile Include="Controllers\InventoryController.cs" />
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
-    <Compile Include="Controllers\OrderController.cs" />   
-
+    <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\PaymentController.cs" />
+    <Compile Include="Controllers\ReviewController.cs" />
     <Compile Include="Controllers\ShiftController.cs" />
+    <Compile Include="Controllers\SizeController.cs" />
     <Compile Include="Controllers\VoucherController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\ChangePasswordViewModel.cs" />
+    <Compile Include="Models\ForgotPasswordViewModel.cs" />
+    <Compile Include="Models\LoginViewModel.cs" />
+    <Compile Include="Models\RegisterViewModel.cs" />
+    <Compile Include="Models\UpdateProfileViewModel.cs" />
+    <Compile Include="Models\User.cs" />
+    <Compile Include="Models\UserRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="bin\Antlr3.Runtime.dll" />
+    <Content Include="bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll" />
+    <Content Include="bin\Microsoft.Web.Infrastructure.dll" />
+    <Content Include="bin\Newtonsoft.Json.dll" />
+    <Content Include="bin\System.Web.Helpers.dll" />
+    <Content Include="bin\System.Web.Mvc.dll" />
+    <Content Include="bin\System.Web.Optimization.dll" />
+    <Content Include="bin\System.Web.Razor.dll" />
+    <Content Include="bin\System.Web.WebPages.Deployment.dll" />
+    <Content Include="bin\System.Web.WebPages.dll" />
+    <Content Include="bin\System.Web.WebPages.Razor.dll" />
+    <Content Include="bin\WebGrease.dll" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-grid.rtl.css" />
@@ -156,14 +180,23 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Css\StyleCart.css" />
     <Content Include="Css\styleCustomer_Details.css" />
     <Content Include="Css\styleCustomer_index.css" />
     <Content Include="Css\styleDashboard.css" />
     <Content Include="Css\StyleEmployee.css" />
     <Content Include="Css\StyleIngredient.css" />
-<Content Include="Css\StyleInventory_Index.css" />
+    <Content Include="Css\StyleInventory_Index.css" />
     <Content Include="Css\StyleInventory_LichSuNhap.css" />
+    <Content Include="Css\StyleMenu.css" />
     <Content Include="Css\styleNavbar.css" />
+    <Content Include="Css\StyleOrder_Checkout.css" />
+    <Content Include="Css\StyleOrder_Details.css" />
+    <Content Include="Css\StyleOrder_History.css" />
+    <Content Include="Css\StyleOrder_Tracking.css" />
+    <Content Include="Css\StylePayment_Index.css" />
+    <Content Include="Css\StylePayment_Result.css" />
+    <Content Include="Css\styleProduct_index.css" />
     <Content Include="Css\styleRecipe.css" />
     <Content Include="Css\styleVoucher.css" />
     <Content Include="favicon.ico" />
@@ -215,11 +248,28 @@
     <Content Include="Views\Order\Details.cshtml" />
     <Content Include="Views\Order\History.cshtml" />
     <Content Include="Views\Order\Tracking.cshtml" />
+    <Content Include="Views\Payment\Index.cshtml" />
+    <Content Include="Views\Payment\Result.cshtml" />
+    <Content Include="Views\Product\Details.cshtml" />
+    <Content Include="Views\Product\Index.cshtml" />
+    <Content Include="Views\Profile\ChangePassword.cshtml" />
+    <Content Include="Views\Profile\Index.cshtml" />
+    <Content Include="Views\Category\Create.cshtml" />
+    <Content Include="Views\Category\Edit.cshtml" />
+    <Content Include="Views\Category\Index.cshtml" />
+    <Content Include="Views\Account\ForgotPassword.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
+    <Content Include="Views\Size\Index.cshtml" />
+    <Content Include="Views\Review\Index.cshtml" />
+    <Content Include="Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Assets\" />
-    <Folder Include="Models\" />
+    <Folder Include="bin\roslyn\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
