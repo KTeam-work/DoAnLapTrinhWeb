@@ -1,0 +1,28 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - TV1</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header class="tv1-header">
+        <div class="brand">🧋 TV1</div>
+        <nav>
+            <a asp-page="/Home/Index">Trang chủ</a>
+            <a asp-page="/Account/Login">Đăng nhập</a>
+            <a asp-page="/Profile/Index">Hồ sơ</a>
+        </nav>
+    </header>
+
+    <main class="tv1-container">
+        @RenderBody()
+    </main>
+
+    <footer class="tv1-footer">© 2026 TV1 - Milk Tea Theme</footer>
+</body>
+</html>

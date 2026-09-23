@@ -1,0 +1,129 @@
+﻿:root {
+    --lumitea-green: #21554A;
+    --lumitea-green-hover: #194138;
+    --bg-light-cream: #fbf9f4;
+    --border-color: #e2ded4;
+}
+
+body {
+    background-color: var(--bg-light-cream);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #333;
+}
+
+.text-lumitea {
+    color: var(--lumitea-green) !important;
+}
+
+.bg-lumitea {
+    background-color: var(--lumitea-green) !important;
+    color: #fff;
+}
+
+.btn-lumitea {
+    background-color: var(--lumitea-green);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+}
+
+    .btn-lumitea:hover {
+        background-color: var(--lumitea-green-hover);
+        color: #fff;
+    }
+
+.card-custom {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card-danger {
+    border-left: 4px solid #dc3545;
+}
+
+.icon-box {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.table-custom thead {
+    background-color: #f8f9fa;
+}
+
+.table-custom th {
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--lumitea-green);
+    border-bottom: 2px solid var(--border-color);
+    padding: 12px 16px;
+}
+
+.table-custom td {
+    padding: 14px 16px;
+    vertical-align: middle;
+}
+
+.batch-subtext {
+    font-size: 0.825rem;
+    color: #6c757d;
+}
+
+.badge-fifo {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+    font-weight: 600;
+}
+
+
+.btn-action-more {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    border: 1px solid transparent;
+    background: transparent;
+    transition: all 0.2s ease;
+}
+
+    .btn-action-more:hover, .btn-action-more:focus {
+        background-color: #e9ecef;
+        color: var(--lumitea-green);
+        border-color: #dee2e6;
+    }
+
+.dropdown-menu-custom {
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    border: 1px solid var(--border-color);
+    font-size: 0.875rem;
+    min-width: 190px;
+    padding: 6px 0;
+}
+
+.dropdown-menu-custom .dropdown-item {
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #333;
+}
+
+.dropdown-menu-custom .dropdown-item:hover {
+            background-color: #f8f9fa;
+            color: var(--lumitea-green);
+}
