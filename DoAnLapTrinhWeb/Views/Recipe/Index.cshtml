@@ -1,0 +1,542 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cấu Trúc Định Lượng & Công Thức - LumiTea</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="~/Css/styleRecipe.css" rel="stylesheet" />
+
+</head>
+<body>
+
+    <div class="container-fluid py-3 px-4">
+
+        <!-- HEADER -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
+            <div>
+                <div class="text-muted small mb-1">
+                    <span>BẾP, VẬN HÀNH & SOP PRA</span> / <span class="text-success fw-bold">v3.1 Production</span>
+                </div>
+                <h3 class="page-title mb-0">Cấu Trúc Định Lượng & Công Thức</h3>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-muted small me-2" id="lastUpdated"><i class="fa-regular fa-clock me-1"></i> Lần cập nhật cuối: 10:42 Hôm nay</span>
+                <button class="btn btn-lumitea-dark btn-sm" onclick="showHistory()"><i class="fa-solid fa-history me-1"></i> Lịch sử điều chỉnh</button>
+                <button class="btn btn-lumitea-primary btn-sm" onclick="openDrinkModal()"><i class="fa-solid fa-plus me-1"></i> Tạo thức uống mới</button>
+            </div>
+        </div>
+
+        <!-- MAIN LAYOUT -->
+        <div class="row g-3">
+
+            <!-- CỘT TRÁI: DANH SÁCH MÓN -->
+            <div class="col-12 col-lg-4 col-xl-3">
+                <div class="kem-card p-3">
+                    <div class="input-group mb-2">
+                        <span class="input-group-text bg-white border-end-0 text-muted" style="border-color: var(--border-color);">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                        <input type="text" id="searchDrinkInput" class="form-control border-start-0" style="border-color: var(--border-color);" placeholder="Lọc đồ uống, mã SP...">
+                    </div>
+
+                    <div class="d-flex gap-2 mb-3 overflow-auto small py-1" id="categoryFilterContainer">
+                        <span class="badge bg-secondary category-badge active" data-cat="all">Tất cả (3)</span>
+                        <span class="badge text-dark bg-light category-badge" data-cat="trasua">Trà sữa (2)</span>
+                        <span class="badge text-dark bg-light category-badge" data-cat="traicay">Trái cây (1)</span>
+                    </div>
+
+                    <div class="recipe-list" id="drinkListContainer" style="max-height: 650px; overflow-y: auto;">
+                        <!-- JS Render danh sách món ở đây -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- CỘT PHẢI: CHI TIẾT CÔNG THỨC -->
+            <div class="col-12 col-lg-8 col-xl-9">
+                <div class="kem-card p-3 p-md-4">
+
+                    <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="badge-status-sale" id="detailStatus">ĐANG PHỤC VỤ</span>
+                                <span class="text-muted small" id="detailCode">MÃ SP: PRD001 | SKU: TS-THE-01</span>
+                            </div>
+                            <h4 class="fw-bold mb-1" id="detailName" style="color: var(--lumitea-green);">Trà Sữa Trần Châu Hoàng Gia</h4>
+                            <div class="text-muted small" id="detailDesc">Cốt hồng trà Ceylon uốn lạnh 12 tiếng, kèm bảo thực vật, trần châu đen hoàng gia mật mía.</div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-secondary btn-sm" onclick="printSOP()"><i class="fa-solid fa-print me-1"></i> In SOP</button>
+                            <button class="btn btn-lumitea-primary btn-sm" onclick="saveRecipe()"><i class="fa-solid fa-floppy-disk me-1"></i> Lưu công thức</button>
+                        </div>
+                    </div>
+
+                    <!-- Stat Boxes -->
+                    <div class="row g-2 mb-4">
+                        <div class="col-6 col-md-3">
+                            <div class="stat-box">
+                                <div class="text-muted small">GIÁ VỐN NGUYÊN LIỆU</div>
+                                <div class="fs-5 fw-bold text-dark mt-1" id="statCost">0 đ/ly</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-box">
+                                <div class="text-muted small">GIÁ BÁN LẺ ĐỀ XUẤT</div>
+                                <div class="fs-5 fw-bold text-dark mt-1" id="statPrice">0 đ</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-box">
+                                <div class="text-muted small">BIÊN LỢI NHUẬN SỐP</div>
+                                <div class="fs-5 fw-bold text-success mt-1" id="statMargin">0%</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-box">
+                                <div class="text-muted small">KHẢ NĂNG CHẾ BIẾN</div>
+                                <div class="fs-5 fw-bold text-primary mt-1" id="statCapacity">0 ly</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Size Tabs -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex gap-2" id="sizeTabsContainer">
+                            <div class="size-tab" data-size="S">Size S (400ml)</div>
+                            <div class="size-tab active" data-size="M">Size M (500ml)</div>
+                            <div class="size-tab" data-size="L">Size L (700ml)</div>
+                        </div>
+                        <button class="btn btn-lumitea-primary btn-sm" onclick="openIngredientModal()"><i class="fa-solid fa-plus me-1"></i> Thêm nguyên liệu thành phần</button>
+                    </div>
+
+                    <!-- Ingredient Table -->
+                    <div class="table-responsive mb-4">
+                        <table class="table table-ingredient">
+                            <thead>
+                                <tr>
+                                    <th>MÃ NL</th>
+                                    <th>TÊN NGUYÊN LIỆU</th>
+                                    <th class="text-center">ĐỊNH LƯỢNG MẺ (<span class="batch-multiplier-label">1x</span>)</th>
+                                    <th class="text-end">GIÁ VỐN / ĐƠN VỊ</th>
+                                    <th class="text-end">THÀNH TIỀN COST</th>
+                                    <th class="text-end">TỒN KHO HIỆN TẠI</th>
+                                    <th class="text-center">THAO TÁC</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ingredientTableBody">
+                                <!-- JS Render ở đây -->
+                            </tbody>
+                        </table>
+                    </div>
+
+
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL THÊM NGUYÊN LIỆU VÀO CÔNG THỨC -->
+    <div class="modal fade" id="addIngModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content kem-card border-0 p-3">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold" id="modalIngTitle" style="color: var(--lumitea-green);">Thêm Nguyên Liệu Thành Phần</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="ingForm">
+                        <input type="hidden" id="editIngIndex" value="-1">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Mã Nguyên Liệu</label>
+                            <input type="text" class="form-control" id="ingCode" placeholder="VD: ING099" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Tên Nguyên Liệu</label>
+                            <input type="text" class="form-control" id="ingName" placeholder="VD: Sữa Tươi Thanh Trùng" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Ghi chú chi tiết</label>
+                            <input type="text" class="form-control" id="ingNote" placeholder="VD: Ướp lạnh 4 độ C">
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label small fw-bold">Định lượng (Size M)</label>
+                                <input type="number" step="0.01" class="form-control" id="ingAmount" placeholder="100" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small fw-bold">Đơn vị</label>
+                                <select class="form-select" id="ingUnit">
+                                    <option value="ml">ml</option>
+                                    <option value="g">g (gram)</option>
+                                    <option value="cái">cái</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label small fw-bold">Đơn giá vốn (đ/đơn vị)</label>
+                                <input type="number" class="form-control" id="ingUnitPrice" placeholder="20" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small fw-bold">Tồn kho hiện tại</label>
+                                <input type="number" class="form-control" id="ingStock" placeholder="5000" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-lumitea-primary" onclick="saveIngredientItem()">Lưu vào công thức</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // --- DỮ LIỆU MẪU CỦA ỨNG DỤNG ---
+        let drinksData = [
+            {
+                id: 1,
+                code: "PRD001",
+                sku: "TS-THE-01",
+                name: "Trà Sữa Trần Châu Hoàng Gia",
+                category: "trasua",
+                status: "sale",
+                statusText: "ĐANGBÁN",
+                desc: "Cốt hồng trà Ceylon uốn lạnh 12 tiếng, kèm bảo thực vật, trần châu đen hoàng gia mật mía.",
+                prices: { S: 30000, M: 35000, L: 40000 },
+                sizesRatio: { S: 0.8, M: 1.0, L: 1.4 },
+                ingredients: [
+                    { code: "ING001", name: "Cốt Hồng Trà Ceylon", note: "Đậm, Chiết xuất nước 1 (1:25)", amount: 120, unit: "ml", unitPrice: 15, stock: 48000 },
+                    { code: "ING002", name: "Bột Sữa Non Dairy Creamer", note: "Độ béo 35% nhập khẩu Đài Loan", amount: 35, unit: "g", unitPrice: 85, stock: 14500 },
+                    { code: "ING032", name: "Trân Châu Đen Nấu Mật", note: "Topping mặc định - Luộc mới mỗi 4h", amount: 50, unit: "g", unitPrice: 42, stock: 8250 }
+                ]
+            },
+            {
+                id: 2,
+                code: "PRD002",
+                sku: "TC-DAO-02",
+                name: "Trà Đào Cẩm Sả Tươi",
+                category: "traicay",
+                status: "sale",
+                statusText: "ĐANGBÁN",
+                desc: "Trà oolong ngâm sả tươi kết hợp đào miếng giòn ngọt thanh mát.",
+                prices: { S: 28000, M: 32000, L: 38000 },
+                sizesRatio: { S: 0.8, M: 1.0, L: 1.3 },
+                ingredients: [
+                    { code: "ING005", name: "Cốt Trà Oolong", note: "Ủ 88 độ C trong 10 phút", amount: 150, unit: "ml", unitPrice: 12, stock: 20000 },
+                    { code: "ING012", name: "Siro Đào Tươi", note: "Nhập khẩu Pháp", amount: 25, unit: "ml", unitPrice: 120, stock: 5000 },
+                    { code: "ING015", name: "Đào Miếng Đóng Hộp", note: "2 miếng cắt lát", amount: 2, unit: "cái", unitPrice: 1200, stock: 120 }
+                ]
+            },
+            {
+                id: 3,
+                code: "PRD005",
+                sku: "TS-OOL-05",
+                name: "Trà Oolong Tứ Quý Mật Ong",
+                category: "trasua",
+                status: "out",
+                statusText: "HẾT CỐT",
+                desc: "Trà Oolong Tứ Quý kết hợp mật ong rừng nguyên chất.",
+                prices: { S: 32000, M: 38000, L: 44000 },
+                sizesRatio: { S: 0.8, M: 1.0, L: 1.4 },
+                ingredients: [
+                    { code: "ING008", name: "Cốt Trà Oolong Tứ Quý", note: "Chiết xuất đậm đặc", amount: 130, unit: "ml", unitPrice: 18, stock: 0 },
+                    { code: "ING020", name: "Mật Ong Rừng", note: "Nguyên chất 100%", amount: 20, unit: "ml", unitPrice: 200, stock: 3000 }
+                ]
+            }
+        ];
+
+        // Trạng thái ứng dụng hiện tại
+        let currentDrinkId = 1;
+        let currentSize = 'M';
+        let currentBatch = 1;
+
+        // --- HÀM KHỞI TẠO TẢI TRANG ---
+        $(document).ready(function () {
+            renderDrinkList();
+            loadDrinkDetail(currentDrinkId);
+
+            // Bắt sự kiện tìm kiếm đồ uống
+            $('#searchDrinkInput').on('keyup', function () {
+                let keyword = $(this).val().toLowerCase();
+                renderDrinkList(keyword);
+            });
+
+            // Bắt sự kiện lọc theo Category
+            $('.category-badge').on('click', function () {
+                $('.category-badge').removeClass('active bg-secondary').addClass('bg-light text-dark');
+                $(this).removeClass('bg-light text-dark').addClass('active bg-secondary');
+                let cat = $(this).data('cat');
+                renderDrinkList($('#searchDrinkInput').val(), cat);
+            });
+
+            // Bắt sự kiện đổi Size
+            $(document).on('click', '.size-tab', function () {
+                $('.size-tab').removeClass('active');
+                $(this).addClass('active');
+                currentSize = $(this).data('size');
+                updateCalculations();
+            });
+
+            // Bắt sự kiện chọn Batch Prep (Mẻ nấu lớn)
+            $(document).on('click', '.btn-qty', function () {
+                $('.btn-qty').removeClass('active');
+                $(this).addClass('active');
+                currentBatch = parseInt($(this).data('batch'));
+                $('.batch-multiplier-label').text(currentBatch + 'x');
+                updateCalculations();
+            });
+        });
+
+        // --- RENDER DANH SÁCH MÓN CỘT TRÁI ---
+        function renderDrinkList(keyword = '', category = 'all') {
+            let container = $('#drinkListContainer');
+            container.empty();
+
+            let filtered = drinksData.filter(d => {
+                let matchKey = d.name.toLowerCase().includes(keyword) || d.code.toLowerCase().includes(keyword);
+                let matchCat = (category === 'all') || (d.category === category);
+                return matchKey && matchCat;
+            });
+
+            filtered.forEach(drink => {
+                let activeClass = drink.id === currentDrinkId ? 'active' : '';
+                let statusBadge = drink.status === 'sale'
+                    ? `<span class="badge-status-sale">ĐANGBÁN</span>`
+                    : `<span class="badge-status-out">HẾT CỐT</span>`;
+
+                let html = `
+                        <div class="recipe-item ${activeClass}" onclick="selectDrink(${drink.id})">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                ${statusBadge}
+                                <span class="text-muted small">${drink.code}</span>
+                            </div>
+                            <div class="fw-bold drink-title" style="color: ${drink.id === currentDrinkId ? 'var(--lumitea-green)' : 'inherit'}">${drink.name}</div>
+                            <div class="d-flex justify-content-between text-muted small mt-2">
+                                <span><i class="fa-solid fa-mug-hot me-1"></i>3 Size (S/M/L)</span>
+                                <span class="fw-semibold text-dark">Cost: ${formatMoney(calculateBaseCost(drink))} đ</span>
+                            </div>
+                        </div>
+                    `;
+                container.append(html);
+            });
+        }
+
+        // --- CHỌN MÓN ---
+        function selectDrink(id) {
+            currentDrinkId = id;
+            renderDrinkList($('#searchDrinkInput').val());
+            loadDrinkDetail(id);
+        }
+
+        // --- TẢI CHI TIẾT MÓN BÊN CỘT PHẢI ---
+        function loadDrinkDetail(id) {
+            let drink = drinksData.find(d => d.id === id);
+            if (!drink) return;
+
+            $('#detailName').text(drink.name);
+            $('#detailCode').text(`MÃ SP: ${drink.code} | SKU: ${drink.sku}`);
+            $('#detailDesc').text(drink.desc);
+
+            if (drink.status === 'sale') {
+                $('#detailStatus').attr('class', 'badge-status-sale').text('ĐANG PHỤC VỤ');
+            } else {
+                $('#detailStatus').attr('class', 'badge-status-out').text('TẠM NGỪNG/HẾT CỐT');
+            }
+
+            updateCalculations();
+        }
+
+        // --- TÍNH TOÁN LẠI TOÀN BỘ BẢNG VÀ STAT CARDS ---
+        function updateCalculations() {
+            let drink = drinksData.find(d => d.id === currentDrinkId);
+            if (!drink) return;
+
+            let ratio = drink.sizesRatio[currentSize] || 1.0;
+            let currentPrice = drink.prices[currentSize] || 0;
+
+            let tbody = $('#ingredientTableBody');
+            tbody.empty();
+
+            let singleCupCost = 0;
+            let minCapacity = Infinity;
+
+            drink.ingredients.forEach((ing, index) => {
+                let actualAmount = ing.amount * ratio * currentBatch;
+                let singleAmountCost = (ing.amount * ratio) * ing.unitPrice;
+                singleCupCost += singleAmountCost;
+
+                // Khả năng chế biến dựa vào tồn kho
+                let possibleCups = Math.floor(ing.stock / (ing.amount * ratio));
+                if (possibleCups < minCapacity) minCapacity = possibleCups;
+
+                let stockClass = ing.stock <= 0 ? 'text-danger fw-bold' : (ing.stock < 10000 ? 'text-warning fw-bold' : '');
+
+                let row = `
+                        <tr>
+                            <td class="text-muted fw-bold">${ing.code}</td>
+                            <td>
+                                <div class="fw-bold">${ing.name}</div>
+                                <div class="text-muted small">${ing.note}</div>
+                            </td>
+                            <td class="text-center fw-bold text-success">${formatNumber(actualAmount)} <small class="text-muted">${ing.unit}</small></td>
+                            <td class="text-end text-muted">${formatMoney(ing.unitPrice)} đ/${ing.unit}</td>
+                            <td class="text-end fw-bold">${formatMoney(singleAmountCost * currentBatch)} đ</td>
+                            <td class="text-end ${stockClass}">${formatNumber(ing.stock)} ${ing.unit}</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-light border" onclick="editIngredient(${index})"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn btn-sm btn-light border text-danger" onclick="deleteIngredient(${index})"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                tbody.append(row);
+            });
+
+            // Cập nhật Thống kê
+            let margin = currentPrice > 0 ? (((currentPrice - singleCupCost) / currentPrice) * 100).toFixed(1) : 0;
+            $('#statCost').html(`${formatMoney(singleCupCost)} <small class="fs-6">đ/ly</small>`);
+            $('#statPrice').html(`${formatMoney(currentPrice)} <small class="fs-6">đ</small>`);
+            $('#statMargin').text(`${margin}%`);
+            $('#statCapacity').html(`${minCapacity === Infinity ? 0 : minCapacity} <small class="fs-6">ly</small>`);
+
+            // Cập nhật tổng tiền mẻ nấu lớn
+            let batchTotal = singleCupCost * currentBatch;
+            $('#batchTotalCost').text(`${formatMoney(batchTotal)} đ`);
+        }
+
+        // --- CÁC HÀM XỬ LÝ NGUYÊN LIỆU (MODAL) ---
+        function openIngredientModal() {
+            $('#editIngIndex').val('-1');
+            $('#ingForm')[0].reset();
+            $('#modalIngTitle').text('Thêm Nguyên Liệu Thành Phần');
+            var modal = new bootstrap.Modal(document.getElementById('addIngModal'));
+            modal.show();
+        }
+
+        function editIngredient(index) {
+            let drink = drinksData.find(d => d.id === currentDrinkId);
+            let ing = drink.ingredients[index];
+
+            $('#editIngIndex').val(index);
+            $('#ingCode').val(ing.code);
+            $('#ingName').val(ing.name);
+            $('#ingNote').val(ing.note);
+            $('#ingAmount').val(ing.amount);
+            $('#ingUnit').val(ing.unit);
+            $('#ingUnitPrice').val(ing.unitPrice);
+            $('#ingStock').val(ing.stock);
+
+            $('#modalIngTitle').text('Chỉnh Sửa Nguyên Liệu');
+            var modal = new bootstrap.Modal(document.getElementById('addIngModal'));
+            modal.show();
+        }
+
+        function saveIngredientItem() {
+            let drink = drinksData.find(d => d.id === currentDrinkId);
+            let index = parseInt($('#editIngIndex').val());
+
+            let newItem = {
+                code: $('#ingCode').val(),
+                name: $('#ingName').val(),
+                note: $('#ingNote').val() || "Định lượng tiêu chuẩn",
+                amount: parseFloat($('#ingAmount').val()) || 0,
+                unit: $('#ingUnit').val(),
+                unitPrice: parseFloat($('#ingUnitPrice').val()) || 0,
+                stock: parseFloat($('#ingStock').val()) || 0
+            };
+
+            if (!newItem.code || !newItem.name) {
+                alert("Vui lòng điền đầy đủ Mã và Tên nguyên liệu!");
+                return;
+            }
+
+            if (index === -1) {
+                drink.ingredients.push(newItem);
+            } else {
+                drink.ingredients[index] = newItem;
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById('addIngModal')).hide();
+            updateCalculations();
+            renderDrinkList($('#searchDrinkInput').val());
+        }
+
+        function deleteIngredient(index) {
+            if (confirm("Bạn có chắc muốn xóa nguyên liệu này khỏi công thức?")) {
+                let drink = drinksData.find(d => d.id === currentDrinkId);
+                drink.ingredients.splice(index, 1);
+                updateCalculations();
+                renderDrinkList($('#searchDrinkInput').val());
+            }
+        }
+
+        // --- TIỆN ÍCH KHÁC ---
+        function calculateBaseCost(drink) {
+            return drink.ingredients.reduce((sum, ing) => sum + (ing.amount * ing.unitPrice), 0);
+        }
+
+        function formatMoney(num) {
+            return Math.round(num).toLocaleString('vi-VN');
+        }
+
+        function formatNumber(num) {
+            return num.toLocaleString('vi-VN');
+        }
+
+        function saveRecipe() {
+            let now = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+            $('#lastUpdated').html(`<i class="fa-regular fa-clock me-1"></i> Lần cập nhật cuối: ${now} Hôm nay`);
+            alert("Đã lưu cấu trúc công thức thành công!");
+        }
+
+        function printSOP() {
+            window.print();
+        }
+
+        function exportKitchenTicket() {
+            let drink = drinksData.find(d => d.id === currentDrinkId);
+            alert(`Đã xuất phiếu bếp cho ${currentBatch}x Mẻ nấu: ${drink.name} (Size ${currentSize})!`);
+        }
+
+        function showHistory() {
+            alert("Lịch sử điều chỉnh công thức: Chưa có thay đổi mới trong phiên làm việc này.");
+        }
+
+        function openDrinkModal() {
+            let name = prompt("Nhập tên thức uống mới:");
+            if (name) {
+                let newId = drinksData.length + 1;
+                drinksData.push({
+                    id: newId,
+                    code: "PRD00" + newId,
+                    sku: "NEW-" + newId,
+                    name: name,
+                    category: "trasua",
+                    status: "sale",
+                    statusText: "ĐANGBÁN",
+                    desc: "Mô tả công thức món mới...",
+                    prices: { S: 25000, M: 30000, L: 35000 },
+                    sizesRatio: { S: 0.8, M: 1.0, L: 1.4 },
+                    ingredients: []
+                });
+                selectDrink(newId);
+            }
+        }
+    </script>
+</body>
+</html>
