@@ -1,0 +1,52 @@
+﻿@{
+    Layout = null;
+    bool isLoggedIn = Session["UserId"] != null;
+    string displayName = Session["UserName"] as string;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewBag.Title - TV1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/Site.css" />
+</head>
+<body>
+    <header class="tv1-header">
+        <a class="brand" href="@Url.Action("Index", "Home")">🧋 TV1</a>
+        <nav>
+            <a href="@Url.Action("Index", "Home")">Trang chủ</a>
+            @if (isLoggedIn)
+            {
+                <a href="@Url.Action("Index", "Profile")" class="nav-user">👤 @displayName</a>
+                <a href="@Url.Action("Logout", "Account")">Đăng xuất</a>
+            }
+            else
+            {
+                <a href="@Url.Action("Login", "Account")">Đăng nhập</a>
+                <a href="@Url.Action("Register", "Account")" class="nav-cta">Đăng ký</a>
+            }
+        </nav>
+    </header>
+
+    <main class="tv1-container">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="tv1-success" style="max-width:1100px;margin:18px auto 0;">@TempData["SuccessMessage"]</div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="tv1-alert" style="max-width:1100px;margin:18px auto 0;">@TempData["ErrorMessage"]</div>
+        }
+        @RenderBody()
+    </main>
+
+    <footer class="tv1-footer">© 2026 TV1 - Milk Tea Theme</footer>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
