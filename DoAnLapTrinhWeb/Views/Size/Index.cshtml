@@ -1,0 +1,1110 @@
+﻿@using System.Web.Helpers
+
+@{
+    ViewData["Title"] = "Quản lý size";
+
+    var sizes = new[]
+    {
+        new
+        {
+            Id = "SZ0000001",
+            Name = "Size S",
+            Letter = "S",
+            Description = "Kích thước nhỏ, phù hợp với khẩu phần cá nhân.",
+            ProductCount = 8,
+            Status = "Đang sử dụng"
+        },
+        new
+        {
+            Id = "SZ0000002",
+            Name = "Size M",
+            Letter = "M",
+            Description = "Kích thước tiêu chuẩn được sử dụng phổ biến.",
+            ProductCount = 10,
+            Status = "Đang sử dụng"
+        },
+        new
+        {
+            Id = "SZ0000003",
+            Name = "Size L",
+            Letter = "L",
+            Description = "Kích thước lớn dành cho khách hàng muốn uống nhiều.",
+            ProductCount = 9,
+            Status = "Đang sử dụng"
+        }
+    };
+}
+
+<link rel="stylesheet" href="~/Css/styleProduct_index.css" />
+
+<div class="product-page">
+
+    <!-- HEADER -->
+
+    <div class="product-heading">
+
+        <div class="heading-left">
+
+            <div class="heading-icon">
+                <i class="bi bi-rulers"></i>
+            </div>
+
+            <div>
+                <h1 class="page-title">
+                    Kích thước ly
+                </h1>
+
+                <p class="page-subtitle">
+                    Quản lý các kích thước được sử dụng cho sản phẩm.
+                </p>
+            </div>
+
+        </div>
+
+
+        <button type="button"
+                class="btn-tea"
+                onclick="openAddSize()">
+
+            <i class="bi bi-plus-lg me-1"></i>
+
+            Thêm kích thước
+
+        </button>
+
+    </div>
+
+
+    <!-- HERO SIZE -->
+
+    <div class="row g-4 mb-4"
+         id="sizeCardContainer">
+    </div>
+
+
+    <!-- INFO -->
+
+    <div class="border rounded-4 p-4 mb-4"
+         style="background:#fff7d7;border-color:#e6dcc2 !important;">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-8">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div class="rounded-circle d-flex align-items-center justify-content-center"
+                         style="width:50px;height:50px;background:#f5c84b;color:#17463e;">
+
+                        <i class="bi bi-lightbulb-fill"></i>
+
+                    </div>
+
+                    <div>
+
+                        <div style="font-weight:800;color:#213430;">
+                            Quản lý kích thước
+                        </div>
+
+                        <div style="font-size:13px;color:#78837e;">
+                            Dữ liệu dưới đây là dữ liệu demo và sẽ được lưu tạm trên trình duyệt.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-4 mt-3 mt-lg-0 text-lg-end">
+
+                <span class="table-note">
+                    Tổng:
+                    <strong id="sizeTotal">
+                        0
+                    </strong>
+                    size
+                </span>
+
+                <span class="mx-2">
+                    •
+                </span>
+
+                <span class="table-note">
+                    Sản phẩm dùng:
+                    <strong id="sizeProductTotal">
+                        0
+                    </strong>
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SEARCH -->
+
+    <div class="product-table-card">
+
+        <div class="table-top">
+
+            <div>
+
+                <h2 class="table-title">
+                    Danh sách kích thước
+                </h2>
+
+                <span class="table-note">
+                    Dữ liệu cập nhật trực tiếp
+                </span>
+
+            </div>
+
+
+            <div style="width:300px;">
+
+                <div class="input-group">
+
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+
+                    <input type="text"
+                           id="sizeKeyword"
+                           class="form-control"
+                           placeholder="Tìm mã hoặc tên size..."
+                           oninput="renderSizes()" />
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-responsive">
+
+            <table class="table align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Mã</th>
+                        <th>Kích thước</th>
+                        <th>Mô tả</th>
+                        <th>Sản phẩm</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">
+                            Thao tác
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="sizeTableBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     MODAL SIZE
+     ============================================================= -->
+
+<div class="modal fade product-page-modal"
+     id="sizeModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h5 class="modal-title"
+                        id="sizeModalTitle">
+
+                        <i class="bi bi-rulers me-2"></i>
+
+                        Thêm kích thước
+
+                    </h5>
+
+                    <div class="description mt-1">
+                        Nhập thông tin kích thước.
+                    </div>
+
+                </div>
+
+                <button type="button"
+                        class="btn-close"
+                        onclick="closeSizeModal()">
+                </button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <input type="hidden"
+                       id="sizeEditId" />
+
+
+                <div class="mb-3">
+
+                    <label class="modal-label">
+                        Mã size
+                    </label>
+
+                    <input type="text"
+                           id="sizeId"
+                           class="form-control"
+                           readonly />
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="modal-label">
+                        Tên size
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <input type="text"
+                           id="sizeName"
+                           class="form-control"
+                           placeholder="Ví dụ: Size S..." />
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="modal-label">
+                        Ký hiệu
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <input type="text"
+                           id="sizeLetter"
+                           class="form-control"
+                           maxlength="3"
+                           placeholder="S" />
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="modal-label">
+                        Mô tả
+                    </label>
+
+                    <textarea id="sizeDescription"
+                              class="form-control"
+                              rows="3"
+                              placeholder="Nhập mô tả..."></textarea>
+
+                </div>
+
+
+                <div>
+
+                    <label class="modal-label">
+                        Trạng thái
+                    </label>
+
+                    <select id="sizeStatus"
+                            class="form-select">
+
+                        <option value="Đang sử dụng">
+                            Đang sử dụng
+                        </option>
+
+                        <option value="Ngừng sử dụng">
+                            Ngừng sử dụng
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn-filter"
+                        onclick="closeSizeModal()">
+
+                    Hủy
+
+                </button>
+
+
+                <button type="button"
+                        class="btn-save"
+                        onclick="saveSize()">
+
+                    <i class="bi bi-check-lg me-1"></i>
+
+                    Lưu thay đổi
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     MODAL XEM
+     ============================================================= -->
+
+<div class="modal fade product-page-modal"
+     id="sizeViewModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h5 class="modal-title">
+                        <i class="bi bi-eye-fill me-2"></i>
+                        Chi tiết kích thước
+                    </h5>
+
+                </div>
+
+                <button type="button"
+                        class="btn-close"
+                        onclick="closeSizeViewModal()">
+                </button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <div class="text-center mb-4">
+
+                    <div id="viewSizeLetter"
+                         class="rounded-circle d-inline-flex align-items-center justify-content-center"
+                         style="width:82px;height:82px;background:#eaf3ef;color:#20584f;font-size:32px;font-weight:800;">
+                    </div>
+
+                    <div id="viewSizeName"
+                         style="font-size:23px;font-weight:800;color:#213430;margin-top:12px;">
+                    </div>
+
+                    <div id="viewSizeStatus"
+                         class="mt-2">
+                    </div>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="modal-label">
+                        Mã
+                    </label>
+
+                    <input type="text"
+                           id="viewSizeId"
+                           class="form-control"
+                           readonly />
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="modal-label">
+                        Mô tả
+                    </label>
+
+                    <textarea id="viewSizeDescription"
+                              class="form-control"
+                              rows="3"
+                              readonly></textarea>
+
+                </div>
+
+
+                <div>
+
+                    <label class="modal-label">
+                        Số sản phẩm đang dùng
+                    </label>
+
+                    <input type="text"
+                           id="viewSizeProductCount"
+                           class="form-control"
+                           readonly />
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn-filter"
+                        onclick="closeSizeViewModal()">
+
+                    Đóng
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    var initialSizes =
+        @Html.Raw(Json.Encode(sizes));
+
+    var sizeStorageKey =
+        "demo_milktea_sizes";
+
+    var sizeData =
+        JSON.parse(
+            localStorage.getItem(sizeStorageKey)
+            || JSON.stringify(initialSizes)
+        );
+
+    var sizeModalInstance = null;
+    var sizeViewModalInstance = null;
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var modalElement =
+            document.getElementById("sizeModal");
+
+        sizeModalInstance =
+            new bootstrap.Modal(modalElement);
+
+
+        var viewElement =
+            document.getElementById("sizeViewModal");
+
+        sizeViewModalInstance =
+            new bootstrap.Modal(viewElement);
+
+
+        renderSizes();
+
+    });
+
+
+    function saveSizeData() {
+
+        localStorage.setItem(
+            sizeStorageKey,
+            JSON.stringify(sizeData)
+        );
+
+    }
+
+
+    function generateSizeId() {
+
+        var maxNumber = 0;
+
+        sizeData.forEach(function (item) {
+
+            var number =
+                parseInt(
+                    item.Id.replace("SZ", ""),
+                    10
+                );
+
+            if (!isNaN(number) && number > maxNumber) {
+                maxNumber = number;
+            }
+
+        });
+
+
+        return "SZ" +
+            String(maxNumber + 1)
+                .padStart(7, "0");
+
+    }
+
+
+    function openAddSize() {
+
+        document.getElementById("sizeModalTitle")
+            .innerHTML =
+            '<i class="bi bi-plus-circle-fill me-2"></i>Thêm kích thước';
+
+
+        document.getElementById("sizeEditId").value = "";
+
+        document.getElementById("sizeId").value =
+            generateSizeId();
+
+        document.getElementById("sizeName").value = "";
+
+        document.getElementById("sizeLetter").value = "";
+
+        document.getElementById("sizeDescription").value = "";
+
+        document.getElementById("sizeStatus").value =
+            "Đang sử dụng";
+
+
+        sizeModalInstance.show();
+
+    }
+
+
+    function editSize(id) {
+
+        var item =
+            sizeData.find(function (x) {
+                return x.Id === id;
+            });
+
+
+        if (!item) {
+            return;
+        }
+
+
+        document.getElementById("sizeModalTitle")
+            .innerHTML =
+            '<i class="bi bi-pencil-fill me-2"></i>Chỉnh sửa kích thước';
+
+
+        document.getElementById("sizeEditId").value =
+            item.Id;
+
+        document.getElementById("sizeId").value =
+            item.Id;
+
+        document.getElementById("sizeName").value =
+            item.Name;
+
+        document.getElementById("sizeLetter").value =
+            item.Letter;
+
+        document.getElementById("sizeDescription").value =
+            item.Description;
+
+        document.getElementById("sizeStatus").value =
+            item.Status;
+
+
+        sizeModalInstance.show();
+
+    }
+
+
+    function saveSize() {
+
+        var editId =
+            document.getElementById("sizeEditId").value;
+
+
+        var id =
+            document.getElementById("sizeId").value.trim();
+
+        var name =
+            document.getElementById("sizeName").value.trim();
+
+        var letter =
+            document.getElementById("sizeLetter").value.trim();
+
+        var description =
+            document.getElementById("sizeDescription")
+                .value.trim();
+
+        var status =
+            document.getElementById("sizeStatus").value;
+
+
+        if (name === "") {
+
+            alert("Vui lòng nhập tên size.");
+
+            return;
+        }
+
+
+        if (letter === "") {
+
+            alert("Vui lòng nhập ký hiệu size.");
+
+            return;
+        }
+
+
+        if (editId === "") {
+
+            sizeData.push({
+
+                Id: id,
+                Name: name,
+                Letter: letter.toUpperCase(),
+                Description: description,
+                ProductCount: 0,
+                Status: status
+
+            });
+
+            alert("Đã thêm kích thước thành công.");
+
+        }
+        else {
+
+            var item =
+                sizeData.find(function (x) {
+                    return x.Id === editId;
+                });
+
+
+            if (item) {
+
+                item.Name = name;
+
+                item.Letter =
+                    letter.toUpperCase();
+
+                item.Description =
+                    description;
+
+                item.Status =
+                    status;
+
+            }
+
+
+            alert("Đã cập nhật kích thước thành công.");
+
+        }
+
+
+        saveSizeData();
+
+        renderSizes();
+
+        sizeModalInstance.hide();
+
+    }
+
+
+    function viewSize(id) {
+
+        var item =
+            sizeData.find(function (x) {
+                return x.Id === id;
+            });
+
+
+        if (!item) {
+            return;
+        }
+
+
+        document.getElementById("viewSizeLetter")
+            .textContent =
+            item.Letter;
+
+
+        document.getElementById("viewSizeName")
+            .textContent =
+            item.Name;
+
+
+        document.getElementById("viewSizeId")
+            .value =
+            item.Id;
+
+
+        document.getElementById("viewSizeDescription")
+            .value =
+            item.Description;
+
+
+        document.getElementById("viewSizeProductCount")
+            .value =
+            item.ProductCount + " sản phẩm";
+
+
+        document.getElementById("viewSizeStatus")
+            .innerHTML =
+            item.Status === "Đang sử dụng"
+                ? '<span class="status-badge available"><i class="bi bi-circle-fill"></i> Đang sử dụng</span>'
+                : '<span class="status-badge unavailable"><i class="bi bi-circle-fill"></i> Ngừng sử dụng</span>';
+
+
+        sizeViewModalInstance.show();
+
+    }
+
+
+    function deleteSize(id) {
+
+        var item =
+            sizeData.find(function (x) {
+                return x.Id === id;
+            });
+
+
+        if (!item) {
+            return;
+        }
+
+
+        var confirmed =
+            confirm(
+                "Bạn có chắc chắn muốn xóa size này không?\n\n" +
+                "Mã: " + item.Id +
+                "\nTên: " + item.Name
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        sizeData =
+            sizeData.filter(function (x) {
+                return x.Id !== id;
+            });
+
+
+        saveSizeData();
+
+        renderSizes();
+
+
+        alert(
+            "Đã xóa " +
+            item.Name +
+            " khỏi danh sách demo."
+        );
+
+    }
+
+
+    function renderSizes() {
+
+        var keyword =
+            document.getElementById("sizeKeyword")
+                ? document.getElementById("sizeKeyword")
+                    .value
+                    .toLowerCase()
+                    .trim()
+                : "";
+
+
+        var filtered =
+            sizeData.filter(function (item) {
+
+                var text =
+                    (
+                        item.Id +
+                        " " +
+                        item.Name +
+                        " " +
+                        item.Letter
+                    ).toLowerCase();
+
+                return text.includes(keyword);
+
+            });
+
+
+        var cardContainer =
+            document.getElementById("sizeCardContainer");
+
+
+        cardContainer.innerHTML = "";
+
+
+        filtered.forEach(function (item) {
+
+            var col =
+                document.createElement("div");
+
+            col.className = "col-lg-4";
+
+
+            col.innerHTML =
+
+                '<div class="size-card border rounded-4 h-100 p-4 shadow-sm" style="background:linear-gradient(145deg,#ffffff,#f7faf8);">' +
+
+                    '<div class="d-flex justify-content-between align-items-start">' +
+
+                        '<div>' +
+
+                            '<div class="small text-uppercase fw-bold" style="color:#78837e;letter-spacing:1px;">Kích thước</div>' +
+
+                            '<div class="product-name mt-1" style="font-size:22px;">' +
+                                escapeHtml(item.Name) +
+                            '</div>' +
+
+                        '</div>' +
+
+            '<div class="size-letter rounded-circle d-flex align-items-center justify-content-center" style="width:72px;height:72px;background:#eaf3ef;color:#20584f;font-size:32px;font-weight:800;">' +
+                            escapeHtml(item.Letter) +
+                        '</div>' +
+
+                    '</div>' +
+
+                    '<div class="mt-4">' +
+
+                        '<div class="description" style="min-height:45px;">' +
+                            escapeHtml(item.Description) +
+                        '</div>' +
+
+                    '</div>' +
+
+                    '<div class="d-flex align-items-center justify-content-between mt-4 pt-3 border-top">' +
+
+                        '<div>' +
+
+                            '<div class="small" style="color:#78837e;">Đang dùng cho</div>' +
+
+                            '<div style="font-size:20px;font-weight:800;color:#20584f;">' +
+                                item.ProductCount +
+                            '</div>' +
+
+                            '<div class="small" style="color:#78837e;">sản phẩm</div>' +
+
+                        '</div>' +
+
+                        '<div class="text-end">' +
+
+                            (
+                                item.Status === "Đang sử dụng"
+                                    ? '<span class="status-badge available"><i class="bi bi-circle-fill"></i> Đang dùng</span>'
+                                    : '<span class="status-badge unavailable"><i class="bi bi-circle-fill"></i> Ngừng dùng</span>'
+                            ) +
+
+                        '</div>' +
+
+                    '</div>' +
+
+                    '<div class="d-flex gap-2 mt-4">' +
+
+                        '<button type="button" class="btn-filter flex-grow-1" onclick="viewSize(\'' +
+                            item.Id +
+                        '\')">' +
+
+                            '<i class="bi bi-eye-fill me-1"></i>Xem' +
+
+                        '</button>' +
+
+                        '<button type="button" class="btn-filter" onclick="editSize(\'' +
+                            item.Id +
+                        '\')">' +
+
+                            '<i class="bi bi-pencil-fill"></i>' +
+
+                        '</button>' +
+
+                        '<button type="button" class="action-btn delete-btn" onclick="deleteSize(\'' +
+                            item.Id +
+                        '\')">' +
+
+                            '<i class="bi bi-trash-fill"></i>' +
+
+                        '</button>' +
+
+                    '</div>' +
+
+                '</div>';
+
+
+            cardContainer.appendChild(col);
+
+        });
+
+
+        var tableBody =
+            document.getElementById("sizeTableBody");
+
+        tableBody.innerHTML = "";
+
+
+        filtered.forEach(function (item) {
+
+            var row =
+                document.createElement("tr");
+
+
+            row.innerHTML =
+
+                '<td>' +
+
+                    '<span class="product-code">' +
+                        escapeHtml(item.Id) +
+                    '</span>' +
+
+                '</td>' +
+
+                '<td>' +
+
+                    '<div class="d-flex align-items-center gap-3">' +
+
+                        '<div class="rounded-3 d-flex align-items-center justify-content-center" style="width:42px;height:42px;background:#eaf3ef;color:#20584f;font-weight:800;">' +
+                            escapeHtml(item.Letter) +
+                        '</div>' +
+
+                        '<div class="product-name">' +
+                            escapeHtml(item.Name) +
+                        '</div>' +
+
+                    '</div>' +
+
+                '</td>' +
+
+                '<td>' +
+
+                    '<div class="description">' +
+                        escapeHtml(item.Description) +
+                    '</div>' +
+
+                '</td>' +
+
+                '<td>' +
+
+                    '<span class="category-badge">' +
+                        '<i class="bi bi-cup-straw me-1"></i>' +
+                        item.ProductCount +
+                        ' sản phẩm' +
+                    '</span>' +
+
+                '</td>' +
+
+                '<td>' +
+
+                    (
+                        item.Status === "Đang sử dụng"
+                            ? '<span class="status-badge available"><i class="bi bi-circle-fill"></i> Đang sử dụng</span>'
+                            : '<span class="status-badge unavailable"><i class="bi bi-circle-fill"></i> Ngừng sử dụng</span>'
+                    ) +
+
+                '</td>' +
+
+                '<td class="text-center">' +
+
+                    '<button type="button" class="action-btn edit-btn" onclick="viewSize(\'' +
+                        item.Id +
+                    '\')" title="Xem">' +
+
+                        '<i class="bi bi-eye-fill"></i>' +
+
+                    '</button>' +
+
+                    '<button type="button" class="action-btn edit-btn" onclick="editSize(\'' +
+                        item.Id +
+                    '\')" title="Sửa">' +
+
+                        '<i class="bi bi-pencil-fill"></i>' +
+
+                    '</button>' +
+
+                    '<button type="button" class="action-btn delete-btn" onclick="deleteSize(\'' +
+                        item.Id +
+                    '\')" title="Xóa">' +
+
+                        '<i class="bi bi-trash-fill"></i>' +
+
+                    '</button>' +
+
+                '</td>';
+
+
+            tableBody.appendChild(row);
+
+        });
+
+
+        document.getElementById("sizeTotal")
+            .textContent =
+            sizeData.length;
+
+
+        document.getElementById("sizeProductTotal")
+            .textContent =
+            sizeData.reduce(
+                function (sum, item) {
+                    return sum + Number(item.ProductCount || 0);
+                },
+                0
+            );
+
+    }
+
+
+    function closeSizeModal() {
+
+        if (sizeModalInstance) {
+            sizeModalInstance.hide();
+        }
+
+    }
+
+
+    function closeSizeViewModal() {
+
+        if (sizeViewModalInstance) {
+            sizeViewModalInstance.hide();
+        }
+
+    }
+
+
+    function escapeHtml(value) {
+
+        return String(value == null ? "" : value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+</script>

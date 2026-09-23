@@ -1,0 +1,444 @@
+﻿@{
+    ViewData["Title"] = "Thêm danh mục";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/Css/styleProduct_index.css" />
+
+<div class="product-page">
+
+    <!-- =========================
+         HEADER
+         ========================= -->
+    <div class="product-heading">
+
+        <div class="heading-left">
+
+            <div class="heading-icon">
+                <i class="bi bi-folder-plus"></i>
+            </div>
+
+            <div>
+                <h1 class="page-title">
+                    Thêm danh mục
+                </h1>
+
+                <p class="page-subtitle">
+                    Tạo danh mục sản phẩm mới cho cửa hàng
+                </p>
+            </div>
+
+        </div>
+
+
+        <a href="@Url.Action("Index", "Category")"
+           class="btn btn-filter">
+
+            <i class="bi bi-arrow-left me-2"></i>
+            Quay lại danh sách
+
+        </a>
+
+    </div>
+
+
+    <!-- =========================
+         FORM
+         ========================= -->
+    <div class="product-table-card">
+
+        <div class="table-top">
+
+            <div>
+
+                <h2 class="table-title">
+                    Thông tin danh mục
+                </h2>
+
+                <span class="table-note">
+                    Nhập đầy đủ thông tin bên dưới để tạo danh mục.
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="p-4 p-lg-5">
+
+            <form id="createCategoryForm"
+                  novalidate>
+
+                <div class="row g-4">
+
+
+                    <!-- MÃ -->
+                    <div class="col-lg-6">
+
+                        <label class="form-label">
+                            Mã danh mục
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                <i class="bi bi-upc-scan"></i>
+                            </span>
+
+                            <input type="text"
+                                   id="categoryId"
+                                   class="form-control"
+                                   readonly />
+
+                        </div>
+
+                        <div class="mt-2">
+                            <span class="table-note">
+                                <i class="bi bi-lock-fill me-1"></i>
+                                Mã được hệ thống tự động tạo.
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- TÊN -->
+                    <div class="col-lg-6">
+
+                        <label class="form-label">
+                            Tên danh mục
+                            <span class="text-danger">*</span>
+                        </label>
+
+                        <input type="text"
+                               id="categoryName"
+                               class="form-control"
+                               maxlength="100"
+                               placeholder="Ví dụ: Trà sữa" />
+
+                        <div id="nameError"
+                             class="text-danger mt-2 d-none"
+                             style="font-size:12px;">
+                            Vui lòng nhập tên danh mục.
+                        </div>
+
+                    </div>
+
+
+                    <!-- MÔ TẢ -->
+                    <div class="col-12">
+
+                        <label class="form-label">
+                            Mô tả
+                        </label>
+
+                        <textarea id="categoryDescription"
+                                  class="form-control"
+                                  rows="5"
+                                  maxlength="500"
+                                  placeholder="Nhập mô tả cho danh mục..."></textarea>
+
+                    </div>
+
+
+                    <!-- TRẠNG THÁI -->
+                    <div class="col-lg-6">
+
+                        <label class="form-label">
+                            Trạng thái
+                        </label>
+
+                        <select id="categoryStatus"
+                                class="form-select">
+
+                            <option value="Active">
+                                Đang hoạt động
+                            </option>
+
+                            <option value="Inactive">
+                                Ngừng hoạt động
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =========================
+                     ACTION
+                     ========================= -->
+                <div class="d-flex justify-content-end gap-2 mt-5 pt-4 border-top">
+
+                    <a href="@Url.Action("Index", "Category")"
+                       class="btn btn-filter px-4">
+
+                        Hủy
+
+                    </a>
+
+
+                    <button type="submit"
+                            class="btn btn-save px-4">
+
+                        <i class="bi bi-check-lg me-1"></i>
+                        Lưu danh mục
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    function getCategories() {
+
+        const data =
+            localStorage.getItem("milkTeaCategories");
+
+
+        if (!data) {
+
+            const defaults = [
+
+                {
+                    id: "CAT0000001",
+                    name: "Trà sữa",
+                    description:
+                        "Các sản phẩm trà sữa truyền thống và hiện đại.",
+                    status: "Active"
+                },
+
+                {
+                    id: "CAT0000002",
+                    name: "Trà trái cây",
+                    description:
+                        "Các loại trà kết hợp cùng trái cây tươi.",
+                    status: "Active"
+                },
+
+                {
+                    id: "CAT0000003",
+                    name: "Trà truyền thống",
+                    description:
+                        "Các sản phẩm trà nguyên bản.",
+                    status: "Active"
+                },
+
+                {
+                    id: "CAT0000004",
+                    name: "Macchiato",
+                    description:
+                        "Các sản phẩm trà kết hợp lớp kem Macchiato.",
+                    status: "Active"
+                },
+
+                {
+                    id: "CAT0000005",
+                    name: "Topping",
+                    description:
+                        "Các loại topping dùng kèm đồ uống.",
+                    status: "Active"
+                },
+
+                {
+                    id: "CAT0000006",
+                    name: "Bánh",
+                    description:
+                        "Các loại bánh dùng kèm trà và trà sữa.",
+                    status: "Inactive"
+                }
+
+            ];
+
+
+            localStorage.setItem(
+                "milkTeaCategories",
+                JSON.stringify(defaults)
+            );
+
+
+            return defaults;
+        }
+
+
+        try {
+
+            return JSON.parse(data);
+
+        } catch {
+
+            return [];
+
+        }
+
+    }
+
+
+    function saveCategories(categories) {
+
+        localStorage.setItem(
+            "milkTeaCategories",
+            JSON.stringify(categories)
+        );
+
+    }
+
+
+    function generateNextCategoryId(categories) {
+
+        let maxNumber = 0;
+
+
+        categories.forEach(category => {
+
+            const match =
+                /^CAT(\d{7})$/
+                    .exec(category.id);
+
+
+            if (match) {
+
+                const number =
+                    parseInt(match[1], 10);
+
+
+                if (number > maxNumber) {
+                    maxNumber = number;
+                }
+
+            }
+
+        });
+
+
+        const nextNumber =
+            maxNumber + 1;
+
+
+        return "CAT" +
+            String(nextNumber)
+                .padStart(7, "0");
+
+    }
+
+
+    const categories =
+        getCategories();
+
+
+    const newCategoryId =
+        generateNextCategoryId(categories);
+
+
+    document
+        .getElementById("categoryId")
+        .value = newCategoryId;
+
+
+    document
+        .getElementById("createCategoryForm")
+        .addEventListener(
+            "submit",
+            function (event) {
+
+                event.preventDefault();
+
+
+                const name =
+                    document
+                        .getElementById("categoryName")
+                        .value
+                        .trim();
+
+
+                const description =
+                    document
+                        .getElementById("categoryDescription")
+                        .value
+                        .trim();
+
+
+                const status =
+                    document
+                        .getElementById("categoryStatus")
+                        .value;
+
+
+                const error =
+                    document.getElementById("nameError");
+
+
+                error.classList.add("d-none");
+
+
+                if (!name) {
+
+                    error.textContent =
+                        "Vui lòng nhập tên danh mục.";
+
+                    error.classList.remove("d-none");
+
+                    return;
+                }
+
+
+                const duplicate =
+                    categories.some(
+                        item =>
+                            item.name
+                                .trim()
+                                .toLowerCase() ===
+                            name.toLowerCase()
+                    );
+
+
+                if (duplicate) {
+
+                    error.textContent =
+                        "Tên danh mục này đã tồn tại.";
+
+                    error.classList.remove("d-none");
+
+                    return;
+                }
+
+
+                categories.push({
+
+                    id: newCategoryId,
+
+                    name: name,
+
+                    description: description,
+
+                    status: status
+
+                });
+
+
+                saveCategories(categories);
+
+
+                alert(
+                    "Thêm danh mục thành công!"
+                );
+
+
+                window.location.href =
+                    "@Url.Action("Index", "Category")";
+
+            }
+        );
+
+</script>
