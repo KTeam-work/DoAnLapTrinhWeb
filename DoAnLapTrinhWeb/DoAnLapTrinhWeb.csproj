@@ -130,7 +130,8 @@
     <Compile Include="Controllers\InventoryController.cs" />>
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
-    <Compile Include="Controllers\OrderController.cs" />   
+    <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\PaymentController.cs" />
 
     <Compile Include="Controllers\ShiftController.cs" />
     <Compile Include="Controllers\VoucherController.cs" />
@@ -215,6 +216,8 @@
     <Content Include="Views\Order\Details.cshtml" />
     <Content Include="Views\Order\History.cshtml" />
     <Content Include="Views\Order\Tracking.cshtml" />
+    <Content Include="Views\Payment\Index.cshtml" />
+    <Content Include="Views\Payment\Result.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
