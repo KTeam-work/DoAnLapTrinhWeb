@@ -1,0 +1,695 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LumiTea ERP - Lập Phiếu Nhập Kho</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/Css/StyleInventory_Index.css" />
+
+</head>
+<body>
+
+  
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="container-fluid px-3 px-md-4 mt-4">
+
+        <!-- PAGE HEADER -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <a href="#" class="text-decoration-none text-muted small hover-green">
+                        <i class="bi bi-arrow-left"></i> Về danh sách kho
+                    </a>
+                    <span class="badge badge-draft rounded-pill px-2.5 py-1 fs-12">
+                        <i class="bi bi-pencil-fill me-1"></i> Phiếu Nháp
+                    </span>
+                </div>
+                <h2 class="h4 mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+                    Lập Phiếu Nhập Kho Nguyên Liệu
+                </h2>
+            </div>
+
+            <!-- Action buttons header -->
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" onclick="saveDraft()" class="btn btn-outline-lumitea btn-sm px-3">
+                    <i class="bi bi-bookmark-check me-1"></i> Lưu Nháp
+                </button>
+                <button type="button" onclick="confirmSubmit()" class="btn btn-lumitea btn-sm px-3 shadow-sm">
+                    <i class="bi bi-check2-circle me-1"></i> Hoàn Tất Nhập Kho
+                </button>
+            </div>
+        </div>
+
+        <form id="stockImportForm">
+            <div class="row g-4">
+
+                <!-- GENERAL INFORMATION CARD -->
+                <div class="col-12">
+                    <div class="lumitea-card">
+                        <div class="lumitea-card-header d-flex justify-content-between align-items-center">
+                            <h5 class="h6 mb-0 fw-bold text-dark">
+                                <i class="bi bi-info-circle-fill me-2 text-success"></i> 1. Thông Tin Chung
+                            </h5>
+                            <span class="text-muted small">* Trường bắt buộc nhập</span>
+                        </div>
+                        <div class="card-body p-3 p-md-4">
+                            <div class="row g-3">
+
+                                <!-- Mã phiếu -->
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <label class="form-label">Mã Phiếu Nhập *</label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-light text-muted"><i class="bi bi-hash"></i></span>
+                                        <input type="text" id="importCode" class="form-control fw-semibold text-success" value="PNK-20260923-001" readonly>
+                                    </div>
+                                </div>
+
+                                <!-- Nhà cung cấp -->
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <label class="form-label">Nhà Cung Cấp *</label>
+                                    <select id="supplierSelect" class="form-select form-select-sm" required onchange="handleSupplierChange(this)">
+                                        <option value="" disabled>-- Chọn Nhà Cung Cấp --</option>
+                                        <option value="Phúc Long Tea" selected>Phúc Long Heritage Co.</option>
+                                        <option value="Dalat Milk">Dalat Milk Việt Nam</option>
+                                        <option value="Rich Products">Rich's Products Vietnam</option>
+                                        <option value="Vinamilk">Công ty CP Sữa Vinamilk</option>
+                                        <option value="Tân Nhất Hương">Nguyên Liệu Tân Nhất Hương</option>
+                                    </select>
+                                </div>
+
+                                <!-- Ngày & Giờ nhập -->
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <label class="form-label">Ngày & Giờ Nhập *</label>
+                                    <input type="datetime-local" id="importDateTime" class="form-control form-control-sm" required>
+                                </div>
+
+                                <!-- Kho nhập -->
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <label class="form-label">Kho Nhập *</label>
+                                    <select id="warehouseSelect" class="form-select form-select-sm" required>
+                                        <option value="Kho Chính Q1" selected>Kho Chính - Trụ sở Quận 1</option>
+                                        <option value="Kho Topping & Bột">Kho Topping & Bột Nguyên Liệu</option>
+                                        <option value="Kho Lạnh Bảo Quản">Kho Lạnh (Sữa tươi & Cream)</option>
+                                        <option value="Kho Bao Bì">Kho Bao Bì & Muỗng Ly</option>
+                                    </select>
+                                </div>
+
+                                <!-- Người thực hiện -->
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <label class="form-label">Người Thực Hiện</label>
+                                    <input type="text" class="form-control form-control-sm bg-light" value="Nguyễn Văn Tuấn (Thủ Kho)" readonly>
+                                </div>
+
+                                <!-- Lý do nhập -->
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <label class="form-label">Lý Do Nhập *</label>
+                                    <select id="reasonSelect" class="form-select form-select-sm">
+                                        <option value="Nhập mua hàng định kỳ" selected>Nhập mua hàng định kỳ</option>
+                                        <option value="Nhập bổ sung gấp (Chạy Event)">Nhập bổ sung gấp (Chạy Event)</option>
+                                        <option value="Nhập điều chuyển nội bộ">Nhập điều chuyển nội bộ</option>
+                                        <option value="Khác">Khác...</option>
+                                    </select>
+                                </div>
+
+                                <!-- Số hóa đơn chứng từ kèm -->
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <label class="form-label">Số Hóa Đơn / Chứng Từ Kèm</label>
+                                    <input type="text" id="invoiceDocNo" class="form-control form-control-sm" placeholder="VD: HD-PL-88912">
+                                </div>
+
+                                <!-- Ghi chú -->
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <label class="form-label">Ghi Chú Đơn Hàng</label>
+                                    <input type="text" id="importNotes" class="form-control form-control-sm" placeholder="Ghi chú điều kiện giao hàng, bảo quản...">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DETAILED ITEMS TABLE CARD -->
+                <div class="col-12">
+                    <div class="lumitea-card">
+                        <div class="lumitea-card-header d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
+                            <div>
+                                <h5 class="h6 mb-0 fw-bold text-dark">
+                                    <i class="bi bi-box-seam-fill me-2 text-success"></i> 2. Danh Sách Nguyên Liệu Nhập Kho
+                                </h5>
+                                <span class="text-muted small">Thêm các nguyên liệu vào danh sách nhập kho. Chi phí tự động tính toán.</span>
+                            </div>
+                            <button type="button" onclick="addNewRow()" class="btn btn-outline-lumitea btn-sm px-3">
+                                <i class="bi bi-plus-circle-fill me-1"></i> Thêm Nguyên Liệu
+                            </button>
+                        </div>
+
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-custom align-middle" id="itemsTable">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 40px;" class="text-center">#</th>
+                                            <th style="min-width: 220px;">Tên Nguyên Liệu / Mã NL</th>
+                                            <th style="width: 100px;" class="text-center">ĐVT</th>
+                                            <th style="width: 120px;" class="text-end">SL Nhập</th>
+                                            <th style="width: 140px;" class="text-end">Đơn Giá (VNĐ)</th>
+                                            <th style="width: 140px;">Mã Lô Hàng</th>
+                                            <th style="width: 140px;">Hạn Sử Dụng</th>
+                                            <th style="width: 150px;" class="text-end">Thành Tiền (VNĐ)</th>
+                                            <th style="width: 50px;" class="text-center"><i class="bi bi-gear-fill"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="itemsTableBody">
+                                        <!-- Dynamic rows will be rendered here by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Table Footer Quick Actions -->
+                        <div class="p-3 bg-light border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <button type="button" onclick="addNewRow()" class="btn btn-sm btn-link text-success text-decoration-none fw-semibold">
+                                <i class="bi bi-plus-circle"></i> + Thêm dòng nguyên liệu mới
+                            </button>
+                            <span class="text-muted small">
+                                <i class="bi bi-info-circle me-1"></i> Nhấn biểu tượng <i class="bi bi-trash text-danger"></i> để xóa mặt hàng khỏi phiếu.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COST BREAKDOWN & ADJUSTMENTS -->
+                <div class="col-12 col-lg-7">
+                    <div class="lumitea-card h-100">
+                        <div class="lumitea-card-header">
+                            <h5 class="h6 mb-0 fw-bold text-dark">
+                                <i class="bi bi-card-text me-2 text-success"></i> Điều Khoản Thanh Toán & Ghi Chú Kho
+                            </h5>
+                        </div>
+                        <div class="card-body p-3 p-md-4">
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">Hình thức thanh toán</label>
+                                    <select class="form-select form-select-sm" id="paymentMethod">
+                                        <option value="Chuyển khoản ngân hàng (Công nợ)" selected>Chuyển khoản (Công nợ 30 ngày)</option>
+                                        <option value="Tiền mặt trực tiếp">Tiền mặt trực tiếp khi nhận hàng</option>
+                                        <option value="Đã thanh toán trước">Đã thanh toán trước (Tiền tạm ứng)</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">Trạng thái kiểm định chất lượng</label>
+                                    <select class="form-select form-select-sm" id="qualityStatus">
+                                        <option value="Đạt 100% chất lượng" selected>🟢 Đạt 100% chất lượng & Đóng gói</option>
+                                        <option value="Đang chờ kiểm mẫu">🟡 Đang chờ kiểm mẫu phòng Lab</option>
+                                        <option value="Nhập kho có điều kiện">🟠 Nhập kho có điều kiện (Theo dõi)</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Hướng dẫn bảo quản đặc biệt</label>
+                                    <textarea class="form-control form-control-sm" rows="2" placeholder="Ví dụ: Sữa tươi bảo quản 2-4 độ C. Trà đen cất nơi khô ráo thoáng mát..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUMMARY BREAKDOWN CARD -->
+                <div class="col-12 col-lg-5">
+                    <div class="lumitea-card">
+                        <div class="lumitea-card-header bg-light">
+                            <h5 class="h6 mb-0 fw-bold text-dark">
+                                <i class="bi bi-calculator-fill me-2 text-success"></i> Tổng Chi Phí Phiếu Nhập
+                            </h5>
+                        </div>
+                        <div class="card-body p-3 p-md-4 space-y-2">
+
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted small">Tổng số mặt hàng:</span>
+                                <span class="fw-bold" id="summaryTotalItemsCount">0 loại</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted small">Tổng tiền hàng (Chưa thuế):</span>
+                                <span class="fw-semibold" id="summarySubtotal">0 đ</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex align-items-center gap-1">
+                                    <span class="text-muted small">Chiết khấu / Giảm giá:</span>
+                                </div>
+                                <div class="input-group input-group-sm w-50">
+                                    <input type="number" id="discountInput" class="form-control text-end" value="0" min="0" oninput="calculateTotals()">
+                                    <span class="input-group-text">đ</span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex align-items-center gap-1">
+                                    <span class="text-muted small">Chi phí vận chuyển:</span>
+                                </div>
+                                <div class="input-group input-group-sm w-50">
+                                    <input type="number" id="shippingFeeInput" class="form-control text-end" value="0" min="0" oninput="calculateTotals()">
+                                    <span class="input-group-text">đ</span>
+                                </div>
+                            </div>
+
+                            <hr class="my-3">
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-bold text-dark d-block">TỔNG THANH TOÁN</span>
+                                    <span class="text-muted fs-12">(Đã bao gồm chi phí phát sinh)</span>
+                                </div>
+                                <span class="total-amount-display" id="summaryFinalTotal">0 đ</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </main>
+
+    <!-- STICKY BOTTOM SUMMARY & ACTION FOOTER -->
+    <div class="sticky-summary-footer">
+        <div class="container-fluid px-3 px-md-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+                <div class="d-flex align-items-center gap-3">
+                    <div>
+                        <span class="text-muted fs-12 d-block">TỔNG CỘNG PHIẾU NHẬP:</span>
+                        <span class="total-amount-display" id="footerFinalTotal">0 đ</span>
+                    </div>
+                    <div class="vr d-none d-sm-block" style="height: 35px;"></div>
+                    <div class="d-none d-sm-block">
+                        <span class="text-muted fs-12 d-block">Mặt hàng nhập:</span>
+                        <span class="fw-bold text-dark" id="footerItemsCount">0 mặt hàng</span>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 w-100 w-md-auto justify-content-end">
+                    <button type="button" onclick="saveDraft()" class="btn btn-outline-secondary btn-sm px-3">
+                        <i class="bi bi-bookmark"></i> Lưu Nháp
+                    </button>
+                    <button type="button" onclick="confirmSubmit()" class="btn btn-lumitea btn-sm px-4 shadow-sm">
+                        <i class="bi bi-box-arrow-in-down me-1"></i> Hoàn Tất Nhập Kho
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PRINT / PREVIEW RECEIPT -->
+    <div class="modal fade" id="printableReceiptModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-light border-bottom no-print">
+                    <h5 class="modal-title fw-bold text-dark">
+                        <i class="bi bi-printer me-2 text-success"></i> Xem Trước & In Phiếu Nhập Kho
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4" id="printReceiptContent">
+
+                    <!-- Print Header -->
+                    <div class="d-flex justify-content-between align-items-start pb-3 border-bottom mb-4">
+                        <div>
+                            <h3 class="fw-bold text-success mb-1 brand-font">LUMI TEA ENTERPRISE</h3>
+                            <p class="mb-0 text-muted small">Hệ thống Chuỗi Trà Sữa & Pha Chế LumiTea</p>
+                            <p class="mb-0 text-muted small">Chi nhánh: 128 Nguyễn Trãi, Phường Bến Thành, Quận 1, TP.HCM</p>
+                        </div>
+                        <div class="text-end">
+                            <h4 class="fw-bold text-dark mb-0">PHIẾU NHẬP KHO</h4>
+                            <p class="fw-semibold text-success mb-1" id="printCode">PNK-20260923-001</p>
+                            <p class="text-muted small mb-0" id="printDate">Ngày: --/--/----</p>
+                        </div>
+                    </div>
+
+                    <!-- Print Details Info -->
+                    <div class="row g-3 mb-4 small">
+                        <div class="col-6">
+                            <p class="mb-1"><strong>Nhà cung cấp:</strong> <span id="printSupplier">--</span></p>
+                            <p class="mb-1"><strong>Kho nhập:</strong> <span id="printWarehouse">--</span></p>
+                            <p class="mb-0"><strong>Lý do nhập:</strong> <span id="printReason">--</span></p>
+                        </div>
+                        <div class="col-6">
+                            <p class="mb-1"><strong>Thủ kho thực hiện:</strong> Nguyễn Văn Tuấn</p>
+                            <p class="mb-1"><strong>Số chứng từ kèm:</strong> <span id="printInvoice">--</span></p>
+                            <p class="mb-0"><strong>Trạng thái:</strong> <span class="badge bg-success">Đã nhập kho</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Print Table -->
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered table-sm align-middle small">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-center">STT</th>
+                                    <th>Tên Nguyên Liệu</th>
+                                    <th class="text-center">ĐVT</th>
+                                    <th class="text-end">SL Nhập</th>
+                                    <th class="text-end">Đơn Giá (đ)</th>
+                                    <th>Mã Lô</th>
+                                    <th>HSD</th>
+                                    <th class="text-end">Thành Tiền (đ)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="printTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Print Totals -->
+                    <div class="row justify-content-end mb-4 small">
+                        <div class="col-6 text-end">
+                            <p class="mb-1">Tổng tiền hàng: <strong id="printSubtotal">0 đ</strong></p>
+                            <p class="mb-1">Chiết khấu: <strong id="printDiscount">0 đ</strong></p>
+                            <p class="mb-1">Phí vận chuyển: <strong id="printShipping">0 đ</strong></p>
+                            <h5 class="fw-bold text-success mt-2">Tổng Thanh Toán: <span id="printFinalTotal">0 đ</span></h5>
+                        </div>
+                    </div>
+
+                    <!-- Print Signatures -->
+                    <div class="row text-center mt-5 pt-3 small">
+                        <div class="col-4">
+                            <p class="fw-bold mb-5">Người Lập Phiếu</p>
+                            <p class="text-muted">(Ký & ghi rõ họ tên)</p>
+                        </div>
+                        <div class="col-4">
+                            <p class="fw-bold mb-5">Thủ Kho Nhận Hàng</p>
+                            <p class="text-muted">(Ký & ghi rõ họ tên)</p>
+                        </div>
+                        <div class="col-4">
+                            <p class="fw-bold mb-5">Đại Diện Giao Hàng</p>
+                            <p class="text-muted">(Ký & ghi rõ họ tên)</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer bg-light no-print">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" onclick="window.print()" class="btn btn-lumitea btn-sm">
+                        <i class="bi bi-printer me-1"></i> In Phiếu Nhập
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast align-items-center text-white bg-dark border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center gap-2" id="toastMessage">
+                    <i class="bi bi-check-circle-fill text-success fs-5"></i> Đã cập nhật phiếu nhập kho.
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JavaScript Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    // PREDEFINED INGREDIENT CATALOG
+    const ingredientCatalog = [
+        { code: 'ING001', name: 'Trà Đen Ceylon Phúc Long', unit: 'g', price: 280 },
+        { code: 'ING002', name: 'Bột Sữa B-One Indo', unit: 'g', price: 95 },
+        { code: 'ING003', name: 'Trân Châu Đen Ô Long Dẻo', unit: 'g', price: 42 },
+        { code: 'ING004', name: 'Đường Nước Daesang Hàn Quốc', unit: 'ml', price: 35 },
+        { code: 'ING005', name: 'Sữa Tươi Thanh Trùng Dalat Milk', unit: 'ml', price: 48 },
+        { code: 'ING006', name: 'Kem Béo Thực Vật Rich\'s Creamer', unit: 'ml', price: 72 },
+        { code: 'ING007', name: 'Bột Matcha Uji Nhật Bản', unit: 'g', price: 650 },
+        { code: 'ING008', name: 'Siro Đào Teisseire Pháp', unit: 'ml', price: 210 },
+        { code: 'ING009', name: 'Ly Nhựa PP 500ml LumiTea', unit: 'cái', price: 850 },
+        { code: 'ING010', name: 'Ống Hút Trân Châu Màng Bọc', unit: 'cái', price: 120 }
+    ];
+
+    // INITIAL SAMPLE DATA FOR ROWS
+    let rowCounter = 0;
+
+    // ON DOM LOAD INITIALIZATION
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set Default Date Time to Now
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('importDateTime').value = now.toISOString().slice(0,16);
+
+        // Render Initial Sample Rows
+        addPresetRow('ING001', 5000, 280, 'PL-202609-01', '2025-11-18');
+        addPresetRow('ING002', 10000, 95, 'BO-202609-12', '2026-03-30');
+        addPresetRow('ING005', 24000, 48, 'DL-202609-88', '2026-10-15');
+
+        calculateTotals();
+    });
+
+    // FUNCTION TO ADD PRESET ROW
+    function addPresetRow(code, qty, price, batch, expiry) {
+        rowCounter++;
+        const tbody = document.getElementById('itemsTableBody');
+        const tr = document.createElement('tr');
+        tr.id = `row-${rowCounter}`;
+
+        const item = ingredientCatalog.find(i => i.code === code) || ingredientCatalog[0];
+
+        tr.innerHTML = `
+            <td class="text-center fw-semibold text-muted row-number">${tbody.children.length + 1}</td>
+            <td>
+                <select class="form-select form-select-sm item-select" onchange="onIngredientChange(${rowCounter})">
+                    ${ingredientCatalog.map(ing => `<option value="${ing.code}" ${ing.code === item.code ? 'selected' : ''}>${ing.name} (${ing.code})</option>`).join('')}
+                </select>
+            </td>
+            <td class="text-center">
+                <span class="badge bg-light text-dark border font-mono item-unit">${item.unit}</span>
+            </td>
+            <td>
+                <input type="number" step="0.01" class="form-control form-control-sm text-end fw-semibold item-qty" value="${qty}" min="1" oninput="calculateRow(${rowCounter})">
+            </td>
+            <td>
+                <input type="number" class="form-control form-control-sm text-end item-price" value="${price}" min="0" oninput="calculateRow(${rowCounter})">
+            </td>
+            <td>
+                <input type="text" class="form-control form-control-sm font-mono item-batch" value="${batch}">
+            </td>
+            <td>
+                <input type="date" class="form-control form-control-sm item-expiry" value="${expiry}">
+            </td>
+            <td class="text-end fw-bold text-success item-total">
+                ${(qty * price).toLocaleString('vi-VN')} đ
+            </td>
+            <td class="text-center">
+                <button type="button" onclick="removeRow(${rowCounter})" class="btn btn-sm btn-link text-danger p-0 hover-scale">
+                    <i class="bi bi-trash fs-6"></i>
+                </button>
+            </td>
+        `;
+
+        tbody.appendChild(tr);
+        updateRowNumbers();
+    }
+
+    // ADD NEW DYNAMIC BLANK ROW
+    function addNewRow() {
+        rowCounter++;
+        const tbody = document.getElementById('itemsTableBody');
+        const tr = document.createElement('tr');
+        tr.id = `row-${rowCounter}`;
+
+        const defaultItem = ingredientCatalog[0];
+
+        tr.innerHTML = `
+            <td class="text-center fw-semibold text-muted row-number">${tbody.children.length + 1}</td>
+            <td>
+                <select class="form-select form-select-sm item-select" onchange="onIngredientChange(${rowCounter})">
+                    ${ingredientCatalog.map(ing => `<option value="${ing.code}">${ing.name} (${ing.code})</option>`).join('')}
+                </select>
+            </td>
+            <td class="text-center">
+                <span class="badge bg-light text-dark border font-mono item-unit">${defaultItem.unit}</span>
+            </td>
+            <td>
+                <input type="number" step="0.01" class="form-control form-control-sm text-end fw-semibold item-qty" value="1000" min="1" oninput="calculateRow(${rowCounter})">
+            </td>
+            <td>
+                <input type="number" class="form-control form-control-sm text-end item-price" value="${defaultItem.price}" min="0" oninput="calculateRow(${rowCounter})">
+            </td>
+            <td>
+                <input type="text" class="form-control form-control-sm font-mono item-batch" placeholder="Mã lô...">
+            </td>
+            <td>
+                <input type="date" class="form-control form-control-sm item-expiry">
+            </td>
+            <td class="text-end fw-bold text-success item-total">
+                ${(1000 * defaultItem.price).toLocaleString('vi-VN')} đ
+            </td>
+            <td class="text-center">
+                <button type="button" onclick="removeRow(${rowCounter})" class="btn btn-sm btn-link text-danger p-0 hover-scale">
+                    <i class="bi bi-trash fs-6"></i>
+                </button>
+            </td>
+        `;
+
+        tbody.appendChild(tr);
+        updateRowNumbers();
+        calculateTotals();
+        showToast("Đã thêm 1 dòng nguyên liệu mới.");
+    }
+
+    // REMOVE ROW
+    function removeRow(id) {
+        const row = document.getElementById(`row-${id}`);
+        if (row) {
+            row.remove();
+            updateRowNumbers();
+            calculateTotals();
+            showToast("Đã xóa nguyên liệu khỏi danh sách.");
+        }
+    }
+
+    // UPDATE ROW NUMBERS
+    function updateRowNumbers() {
+        const rows = document.querySelectorAll('#itemsTableBody tr');
+        rows.forEach((row, index) => {
+            const numCell = row.querySelector('.row-number');
+            if (numCell) numCell.textContent = index + 1;
+        });
+    }
+
+    // ON INGREDIENT SELECT CHANGE
+    function onIngredientChange(id) {
+        const row = document.getElementById(`row-${id}`);
+        const select = row.querySelector('.item-select');
+        const code = select.value;
+        const item = ingredientCatalog.find(i => i.code === code);
+
+        if (item) {
+            row.querySelector('.item-unit').textContent = item.unit;
+            row.querySelector('.item-price').value = item.price;
+            calculateRow(id);
+        }
+    }
+
+    // CALCULATE SINGLE ROW TOTAL
+    function calculateRow(id) {
+        const row = document.getElementById(`row-${id}`);
+        const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+        const price = parseFloat(row.querySelector('.item-price').value) || 0;
+        const total = qty * price;
+
+        row.querySelector('.item-total').textContent = total.toLocaleString('vi-VN') + ' đ';
+        calculateTotals();
+    }
+
+    // CALCULATE GRAND TOTALS
+    function calculateTotals() {
+        const rows = document.querySelectorAll('#itemsTableBody tr');
+        let subtotal = 0;
+        let itemCount = rows.length;
+
+        rows.forEach(row => {
+            const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+            const price = parseFloat(row.querySelector('.item-price').value) || 0;
+            subtotal += (qty * price);
+        });
+
+        const discount = parseFloat(document.getElementById('discountInput').value) || 0;
+        const shipping = parseFloat(document.getElementById('shippingFeeInput').value) || 0;
+        const finalTotal = Math.max(0, subtotal - discount + shipping);
+
+        // Update Summary Cards
+        document.getElementById('summaryTotalItemsCount').textContent = `${itemCount} loại`;
+        document.getElementById('summarySubtotal').textContent = subtotal.toLocaleString('vi-VN') + ' đ';
+        document.getElementById('summaryFinalTotal').textContent = finalTotal.toLocaleString('vi-VN') + ' đ';
+
+        // Update Sticky Footer
+        document.getElementById('footerFinalTotal').textContent = finalTotal.toLocaleString('vi-VN') + ' đ';
+        document.getElementById('footerItemsCount').textContent = `${itemCount} mặt hàng`;
+    }
+
+    // HANDLE SUPPLIER SELECTION CHANGE
+    function handleSupplierChange(select) {
+        showToast(`Đã chọn nhà cung cấp: ${select.value}`);
+    }
+
+    // SAVE DRAFT ACTION
+    function saveDraft() {
+        showToast("Đã lưu nháp phiếu nhập kho PNK-20260923-001.");
+    }
+
+    // CONFIRM SUBMIT & SHOW PRINT MODAL
+    function confirmSubmit() {
+        const rows = document.querySelectorAll('#itemsTableBody tr');
+        if (rows.length === 0) {
+            alert("Vui lòng thêm ít nhất 01 nguyên liệu vào phiếu nhập kho!");
+            return;
+        }
+
+        // Populate Print Preview
+        document.getElementById('printCode').textContent = document.getElementById('importCode').value;
+        document.getElementById('printDate').textContent = 'Ngày: ' + new Date().toLocaleDateString('vi-VN');
+        document.getElementById('printSupplier').textContent = document.getElementById('supplierSelect').value;
+        document.getElementById('printWarehouse').textContent = document.getElementById('warehouseSelect').value;
+        document.getElementById('printReason').textContent = document.getElementById('reasonSelect').value;
+        document.getElementById('printInvoice').textContent = document.getElementById('invoiceDocNo').value || 'Không có';
+
+        // Build Print Table
+        const printTbody = document.getElementById('printTableBody');
+        printTbody.innerHTML = '';
+
+        let subtotal = 0;
+        rows.forEach((row, idx) => {
+            const code = row.querySelector('.item-select').value;
+            const item = ingredientCatalog.find(i => i.code === code);
+            const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+            const price = parseFloat(row.querySelector('.item-price').value) || 0;
+            const batch = row.querySelector('.item-batch').value || '---';
+            const expiry = row.querySelector('.item-expiry').value || '---';
+            const lineTotal = qty * price;
+            subtotal += lineTotal;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="text-center">${idx + 1}</td>
+                <td><strong>${item ? item.name : code}</strong></td>
+                <td class="text-center">${item ? item.unit : ''}</td>
+                <td class="text-end fw-bold">${qty.toLocaleString('vi-VN')}</td>
+                <td class="text-end">${price.toLocaleString('vi-VN')}</td>
+                <td>${batch}</td>
+                <td>${expiry}</td>
+                <td class="text-end fw-bold">${lineTotal.toLocaleString('vi-VN')}</td>
+            `;
+            printTbody.appendChild(tr);
+        });
+
+        const discount = parseFloat(document.getElementById('discountInput').value) || 0;
+        const shipping = parseFloat(document.getElementById('shippingFeeInput').value) || 0;
+        const finalTotal = Math.max(0, subtotal - discount + shipping);
+
+        document.getElementById('printSubtotal').textContent = subtotal.toLocaleString('vi-VN') + ' đ';
+        document.getElementById('printDiscount').textContent = discount.toLocaleString('vi-VN') + ' đ';
+        document.getElementById('printShipping').textContent = shipping.toLocaleString('vi-VN') + ' đ';
+        document.getElementById('printFinalTotal').textContent = finalTotal.toLocaleString('vi-VN') + ' đ';
+
+        // Show Modal
+        const printModal = new bootstrap.Modal(document.getElementById('printableReceiptModal'));
+        printModal.show();
+    }
+
+    // TOAST HELPER
+    function showToast(message) {
+        const toastEl = document.getElementById('liveToast');
+        document.getElementById('toastMessage').innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i> ${message}`;
+        const toast = new bootstrap.Toast(toastEl, { delay: 2500 });
+        toast.show();
+    }
+    </script>
+</body>
+</html>

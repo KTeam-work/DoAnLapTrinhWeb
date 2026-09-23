@@ -1,0 +1,169 @@
+﻿
+:root {
+    --bg-kem: #f8f6f2;
+    --bg-card: #ffffff;
+    --border-color: #e5dfd5;
+    --text-primary: #1e2825;
+    --text-muted: #737d77;
+    --lumitea-green: #1c5249;
+    --lumitea-green-hover: #143d36;
+    --lumitea-gold: #d99b26;
+    --badge-warn-bg: #fef7e0;
+    --badge-warn-text: #b06000;
+    --badge-danger-bg: #fce8e6;
+    --badge-danger-text: #c5221f;
+}
+
+body {
+    background-color: var(--bg-kem) !important;
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.page-title {
+    color: var(--lumitea-green);
+    font-weight: 700;
+}
+
+.btn-lumitea-primary {
+    background-color: var(--lumitea-green);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 8px 16px;
+}
+
+    .btn-lumitea-primary:hover {
+        background-color: var(--lumitea-green-hover);
+        color: #ffffff;
+    }
+
+.btn-lumitea-dark {
+    background-color: #2b3a36;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.kem-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+/* CỘT TRÁI */
+.recipe-item {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fff;
+}
+
+    .recipe-item:hover {
+        border-color: var(--lumitea-green);
+        background-color: #fcfbf9;
+    }
+
+    .recipe-item.active {
+        border: 2px solid var(--lumitea-green);
+        background-color: #f2f7f5;
+    }
+
+.badge-status-out {
+    background-color: var(--badge-danger-bg);
+    color: var(--badge-danger-text);
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.badge-status-sale {
+    background-color: #e6f4ea;
+    color: #137333;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+/* CỘT PHẢI */
+.stat-box {
+    background: #fbf9f5;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+}
+
+.size-tab {
+    border: 1px solid var(--border-color);
+    background: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    transition: all 0.2s;
+}
+
+.size-tab.active {
+    border-color: var(--lumitea-green);
+    background-color: var(--lumitea-green);
+    color: #fff;
+}
+
+.table-ingredient th {
+    background-color: #f3efe8;
+    color: var(--lumitea-green);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px;
+}
+
+.table-ingredient td {
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 10px;
+}
+
+.batch-calc-box {
+    background: #f4efe6;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.btn-qty {
+    border: 1px solid var(--border-color);
+    background: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-qty.active {
+   background: var(--lumitea-green);
+   color: #fff;
+   border-color: var(--lumitea-green);
+}
+
+.category-badge {
+    cursor: pointer;
+    user-select: none;
+}
+
+.category-badge.active {
+   background-color: var(--lumitea-green) !important;
+   color: #fff !important;
+}

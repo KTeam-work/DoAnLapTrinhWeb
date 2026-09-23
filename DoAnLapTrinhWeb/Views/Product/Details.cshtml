@@ -1,0 +1,479 @@
+﻿@model DoAnLapTrinhWeb.Controllers.ProductViewModel
+
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm";
+
+    var minPrice = Model.Sizes.Any()
+        ? Model.Sizes.Min(x => x.Price)
+        : 0;
+
+    var maxPrice = Model.Sizes.Any()
+        ? Model.Sizes.Max(x => x.Price)
+        : 0;
+}
+
+<link rel="stylesheet" href="~/Css/styleProduct_index.css" />
+
+<div class="product-page">
+
+    <!-- =========================================================
+         HEADER
+         ========================================================= -->
+    <div class="product-heading">
+
+        <div class="heading-left">
+
+            <div class="heading-icon">
+                <i class="bi bi-cup-hot-fill"></i>
+            </div>
+
+            <div>
+
+                <h1 class="page-title">
+                    Chi tiết sản phẩm
+                </h1>
+
+                <p class="page-subtitle">
+                    Xem thông tin chi tiết về sản phẩm, giá bán và topping.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <a href="@Url.Action("Index", "Product")"
+           class="btn-filter d-inline-flex align-items-center px-3 text-decoration-none">
+
+            <i class="bi bi-arrow-left me-2"></i>
+
+            Quay lại danh sách
+
+        </a>
+
+    </div>
+
+
+    <!-- =========================================================
+         PRODUCT DETAIL
+         ========================================================= -->
+    <div class="row g-4">
+
+        <!-- =====================================================
+             LEFT - PRODUCT INFORMATION
+             ===================================================== -->
+        <div class="col-lg-5">
+
+            <div class="product-table-card h-100">
+
+                <div class="p-4 text-center">
+
+                    <!-- PRODUCT ICON -->
+                    <div class="d-flex justify-content-center mb-4">
+
+                        <div style="
+                            width:130px;
+                            height:130px;
+                            border-radius:24px;
+                            background:#eaf3ef;
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            border:1px solid #e6dcc2;
+                        ">
+
+                            <i class="bi bi-cup-straw"
+                               style="
+                               font-size:55px;
+                               color:#20584f;
+                               ">
+                            </i>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- NAME -->
+                    <h2 style="
+                        margin:0;
+                        color:#17463e;
+                        font-size:22px;
+                        font-weight:800;
+                    ">
+                        @Model.ProductName
+                    </h2>
+
+
+                    <!-- CODE -->
+                    <div class="mt-3">
+
+                        <span class="product-code">
+                            @Model.ProductId
+                        </span>
+
+                    </div>
+
+
+                    <!-- STATUS -->
+                    <div class="mt-3">
+
+                        @if (Model.Status == "Đang bán")
+                        {
+                            <span class="status-badge available">
+
+                                <i class="bi bi-circle-fill"></i>
+
+                                Đang bán
+
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="status-badge unavailable">
+
+                                <i class="bi bi-circle-fill"></i>
+
+                                Ngừng bán
+
+                            </span>
+                        }
+
+                    </div>
+
+                </div>
+
+
+                <!-- BASIC INFO -->
+
+                <div class="px-4 pb-4">
+
+                    <div style="
+                        border-top:1px solid #eee8da;
+                        padding-top:20px;
+                    ">
+
+                        <div class="mb-3">
+
+                            <div class="form-label">
+                                Danh mục
+                            </div>
+
+                            <div>
+
+                                <span class="category-badge">
+
+                                    <i class="bi bi-tag-fill me-1"></i>
+
+                                    @Model.CategoryName
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="form-label">
+                                Mô tả sản phẩm
+                            </div>
+
+                            <div style="
+                                color:#78837e;
+                                font-size:13px;
+                                line-height:1.7;
+                            ">
+                                @Model.Description
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             RIGHT - PRICE + TOPPING
+             ===================================================== -->
+        <div class="col-lg-7">
+
+            <!-- PRICE CARD -->
+            <div class="product-table-card mb-4">
+
+                <div class="table-top">
+
+                    <div>
+
+                        <h2 class="table-title">
+                            <i class="bi bi-cash-stack me-2"></i>
+                            Giá bán theo size
+                        </h2>
+
+                        <span class="table-note">
+                            Giá được quản lý theo bảng ProductSizes
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="p-4">
+
+                    <div class="row g-3">
+
+                        @foreach (var size in Model.Sizes)
+                        {
+                            <div class="col-md-4">
+
+                                <div style="
+                                    border:1px solid #e6dcc2;
+                                    border-radius:14px;
+                                    padding:20px;
+                                    text-align:center;
+                                    background:#fffdf8;
+                                ">
+
+                                    <div style="
+                                        width:48px;
+                                        height:48px;
+                                        margin:0 auto 12px;
+                                        border-radius:50%;
+                                        display:flex;
+                                        align-items:center;
+                                        justify-content:center;
+                                        background:#eaf3ef;
+                                        color:#20584f;
+                                        font-weight:800;
+                                    ">
+                                        @size.SizeName
+                                    </div>
+
+
+                                    <div style="
+                                        color:#78837e;
+                                        font-size:12px;
+                                        font-weight:700;
+                                        margin-bottom:6px;
+                                    ">
+                                        SIZE @size.SizeName
+                                    </div>
+
+
+                                    <div style="
+                                        color:#c65b4a;
+                                        font-size:18px;
+                                        font-weight:800;
+                                    ">
+                                        @size.Price.ToString("N0") đ
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- TOPPING CARD -->
+            <div class="product-table-card">
+
+                <div class="table-top">
+
+                    <div>
+
+                        <h2 class="table-title">
+
+                            <i class="bi bi-plus-circle me-2"></i>
+
+                            Topping đi kèm
+
+                        </h2>
+
+                        <span class="table-note">
+                            Danh sách topping thuộc sản phẩm
+                        </span>
+
+                    </div>
+
+                    <span class="category-badge">
+                        @Model.Toppings.Count topping
+                    </span>
+
+                </div>
+
+
+                <div class="p-4">
+
+                    @if (Model.Toppings.Any())
+                    {
+                        <div class="row g-3">
+
+                            @foreach (var topping in Model.Toppings)
+                            {
+                                <div class="col-md-6">
+
+                                    <div style="
+                                        display:flex;
+                                        align-items:center;
+                                        gap:12px;
+                                        padding:14px 15px;
+                                        border:1px solid #e6dcc2;
+                                        border-radius:12px;
+                                        background:#fffdf8;
+                                    ">
+
+                                        <div style="
+                                            width:38px;
+                                            height:38px;
+                                            flex:0 0 38px;
+                                            border-radius:10px;
+                                            display:flex;
+                                            align-items:center;
+                                            justify-content:center;
+                                            background:#fff7d7;
+                                            color:#9a6b00;
+                                        ">
+
+                                            <i class="bi bi-stars"></i>
+
+                                        </div>
+
+                                        <div style="
+                                            color:#213430;
+                                            font-size:13px;
+                                            font-weight:700;
+                                        ">
+                                            @topping
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+
+                            <i class="bi bi-info-circle"
+                               style="
+                               font-size:30px;
+                               color:#b7c5bf;
+                               ">
+                            </i>
+
+                            <p style="
+                                margin:10px 0 0;
+                                color:#78837e;
+                                font-size:13px;
+                            ">
+                                Sản phẩm chưa có topping.
+                            </p>
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         BOTTOM INFORMATION
+         ========================================================= -->
+    <div class="product-table-card mt-4">
+
+        <div class="table-top">
+
+            <div>
+
+                <h2 class="table-title">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Tổng quan sản phẩm
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="p-4">
+
+            <div class="row g-4">
+
+                <div class="col-md-4">
+
+                    <div class="form-label">
+                        Mã sản phẩm
+                    </div>
+
+                    <span class="product-code">
+                        @Model.ProductId
+                    </span>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <div class="form-label">
+                        Danh mục
+                    </div>
+
+                    <div class="category-badge">
+                        @Model.CategoryName
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <div class="form-label">
+                        Khoảng giá
+                    </div>
+
+                    <div class="product-price">
+
+                        @if (minPrice == maxPrice)
+                        {
+                            @minPrice.ToString("N0") <text>đ</text>
+                        }
+                        else
+                        {
+                            @minPrice.ToString("N0")
+                            <text> - </text>
+                            @maxPrice.ToString("N0")
+                            <text>đ</text>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

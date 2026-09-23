@@ -1,0 +1,44 @@
+﻿@model QuanLyTraSua.Models.LoginViewModel
+@{
+    ViewBag.Title = "Đăng nhập";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="tv1-card">
+    <h2>Đăng nhập</h2>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="tv1-alert">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <p>@error.ErrorMessage</p>
+            }
+        </div>
+    }
+
+    @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "tv1-form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.LabelFor(m => m.UsernameOrEmail)
+        @Html.TextBoxFor(m => m.UsernameOrEmail, new { placeholder = "username hoặc email" })
+        @Html.ValidationMessageFor(m => m.UsernameOrEmail, "", new { @class = "field-error" })
+
+        @Html.LabelFor(m => m.Password)
+        @Html.PasswordFor(m => m.Password, new { placeholder = "••••••••" })
+        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "field-error" })
+
+        <div class="checkbox-row">
+            @Html.CheckBoxFor(m => m.RememberMe, new { id = "RememberMe" })
+            @Html.Label("RememberMe", "Ghi nhớ đăng nhập")
+        </div>
+
+        <button type="submit" class="tv1-btn">Đăng nhập</button>
+    }
+
+    <div class="tv1-links">
+        <a href="@Url.Action("ForgotPassword", "Account")">Quên mật khẩu?</a> &nbsp;•&nbsp;
+        <a href="@Url.Action("Register", "Account")">Đăng ký tài khoản</a>
+    </div>
+</div>

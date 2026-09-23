@@ -1,0 +1,648 @@
+﻿@{
+    ViewData["Title"] = "Quản lý danh mục";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/Css/styleProduct_index.css" />
+
+<div class="product-page">
+
+    <!-- =========================
+         HEADER
+         ========================= -->
+    <div class="product-heading">
+
+        <div class="heading-left">
+
+            <div class="heading-icon">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+            </div>
+
+            <div>
+                <h1 class="page-title">Quản lý danh mục</h1>
+                <p class="page-subtitle">
+                    Quản lý các danh mục sản phẩm của cửa hàng
+                </p>
+            </div>
+
+        </div>
+
+        <a href="@Url.Action("Create", "Category")"
+           class="btn btn-tea">
+            <i class="bi bi-plus-lg me-2"></i>
+            Thêm danh mục
+        </a>
+
+    </div>
+
+
+    <!-- =========================
+         SUMMARY
+         ========================= -->
+    <div class="summary-grid">
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Tổng danh mục
+            </span>
+
+            <strong class="summary-number" id="totalCategories">
+                0
+            </strong>
+
+            <div class="summary-icon">
+                <i class="bi bi-grid"></i>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Đang hoạt động
+            </span>
+
+            <strong class="summary-number" id="activeCategories">
+                0
+            </strong>
+
+            <div class="summary-icon">
+                <i class="bi bi-check-circle"></i>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Ngừng hoạt động
+            </span>
+
+            <strong class="summary-number" id="inactiveCategories">
+                0
+            </strong>
+
+            <div class="summary-icon">
+                <i class="bi bi-pause-circle"></i>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Kết quả hiển thị
+            </span>
+
+            <strong class="summary-number" id="displayCategories">
+                0
+            </strong>
+
+            <div class="summary-icon">
+                <i class="bi bi-list-check"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         FILTER
+         ========================= -->
+    <div class="filter-card">
+
+        <div class="filter-head">
+
+            <i class="bi bi-funnel-fill"></i>
+
+            <span>
+                Tìm kiếm & lọc danh mục
+            </span>
+
+        </div>
+
+
+        <div class="filter-body">
+
+            <div class="row g-4 align-items-end">
+
+                <div class="col-lg-7">
+
+                    <label class="form-label">
+                        Từ khóa
+                    </label>
+
+                    <div class="input-group">
+
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+
+                        <input type="text"
+                               id="searchCategory"
+                               class="form-control"
+                               placeholder="Nhập mã hoặc tên danh mục..." />
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-lg-3">
+
+                    <label class="form-label">
+                        Trạng thái
+                    </label>
+
+                    <select id="statusFilter"
+                            class="form-select">
+
+                        <option value="all">
+                            Tất cả trạng thái
+                        </option>
+
+                        <option value="active">
+                            Đang hoạt động
+                        </option>
+
+                        <option value="inactive">
+                            Ngừng hoạt động
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="col-lg-2">
+
+                    <button type="button"
+                            id="btnReset"
+                            class="btn btn-filter w-100">
+
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>
+                        Đặt lại
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         TABLE
+         ========================= -->
+    <div class="product-table-card">
+
+        <div class="table-top">
+
+            <div>
+
+                <h2 class="table-title">
+                    Danh sách danh mục
+                </h2>
+
+                <span class="table-note">
+                    Các danh mục sản phẩm đang được quản lý
+                </span>
+
+            </div>
+
+            <span class="table-note" id="resultText">
+                0 danh mục
+            </span>
+
+        </div>
+
+
+        <div class="table-responsive">
+
+            <table class="table align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th style="width: 160px;">
+                            Mã danh mục
+                        </th>
+
+                        <th style="width: 240px;">
+                            Tên danh mục
+                        </th>
+
+                        <th>
+                            Mô tả
+                        </th>
+
+                        <th style="width: 170px;">
+                            Trạng thái
+                        </th>
+
+                        <th style="width: 150px;"
+                            class="text-center">
+                            Thao tác
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="categoryTableBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- =========================
+             EMPTY
+             ========================= -->
+        <div id="emptyState"
+             class="text-center py-5 d-none">
+
+            <div class="mb-3">
+
+                <i class="bi bi-inbox"
+                   style="font-size: 42px; color: #78837e;"></i>
+
+            </div>
+
+            <h6 class="fw-bold mb-2"
+                style="color:#17463e;">
+                Không tìm thấy danh mục
+            </h6>
+
+            <p class="mb-0"
+               style="color:#78837e; font-size:13px;">
+                Hãy thử thay đổi từ khóa hoặc bộ lọc.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             FOOTER
+             ========================= -->
+        <div class="table-footer">
+
+            <span class="table-note">
+                Hiển thị danh mục sản phẩm
+            </span>
+
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            Trước
+                        </span>
+                    </li>
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            1
+                        </span>
+                    </li>
+
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            Sau
+                        </span>
+                    </li>
+
+                </ul>
+            </nav>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* =====================================================
+       DỮ LIỆU DEMO
+       Sau này thay bằng dữ liệu từ Database
+       ===================================================== */
+
+    const defaultCategories = [
+        {
+            id: "CAT0000001",
+            name: "Trà sữa",
+            description: "Các sản phẩm trà sữa truyền thống và hiện đại.",
+            status: "Active"
+        },
+        {
+            id: "CAT0000002",
+            name: "Trà trái cây",
+            description: "Các loại trà kết hợp cùng trái cây tươi.",
+            status: "Active"
+        },
+        {
+            id: "CAT0000003",
+            name: "Trà truyền thống",
+            description: "Các sản phẩm trà nguyên bản.",
+            status: "Active"
+        },
+        {
+            id: "CAT0000004",
+            name: "Macchiato",
+            description: "Các sản phẩm trà kết hợp lớp kem Macchiato.",
+            status: "Active"
+        },
+        {
+            id: "CAT0000005",
+            name: "Topping",
+            description: "Các loại topping dùng kèm đồ uống.",
+            status: "Active"
+        },
+        {
+            id: "CAT0000006",
+            name: "Bánh",
+            description: "Các loại bánh dùng kèm trà và trà sữa.",
+            status: "Inactive"
+        }
+    ];
+
+
+    function getCategories() {
+
+        const data = localStorage.getItem("milkTeaCategories");
+
+        if (!data) {
+
+            localStorage.setItem(
+                "milkTeaCategories",
+                JSON.stringify(defaultCategories)
+            );
+
+            return [...defaultCategories];
+        }
+
+        try {
+
+            return JSON.parse(data);
+
+        } catch {
+
+            localStorage.setItem(
+                "milkTeaCategories",
+                JSON.stringify(defaultCategories)
+            );
+
+            return [...defaultCategories];
+        }
+    }
+
+
+    function saveCategories(categories) {
+
+        localStorage.setItem(
+            "milkTeaCategories",
+            JSON.stringify(categories)
+        );
+
+    }
+
+
+    function renderCategories() {
+
+        const categories = getCategories();
+
+        const keyword =
+            document
+                .getElementById("searchCategory")
+                .value
+                .trim()
+                .toLowerCase();
+
+        const status =
+            document.getElementById("statusFilter").value;
+
+
+        const filtered = categories.filter(category => {
+
+            const matchKeyword =
+                !keyword ||
+                category.id.toLowerCase().includes(keyword) ||
+                category.name.toLowerCase().includes(keyword) ||
+                (category.description || "")
+                    .toLowerCase()
+                    .includes(keyword);
+
+
+            const matchStatus =
+                status === "all" ||
+                (status === "active" &&
+                    category.status === "Active") ||
+                (status === "inactive" &&
+                    category.status === "Inactive");
+
+
+            return matchKeyword && matchStatus;
+
+        });
+
+
+        const tbody =
+            document.getElementById("categoryTableBody");
+
+        const emptyState =
+            document.getElementById("emptyState");
+
+
+        tbody.innerHTML = "";
+
+
+        if (filtered.length === 0) {
+
+            emptyState.classList.remove("d-none");
+
+        } else {
+
+            emptyState.classList.add("d-none");
+
+            filtered.forEach(category => {
+
+                const row =
+                    document.createElement("tr");
+
+
+                const statusHtml =
+                    category.status === "Active"
+
+                        ? `
+                            <span class="status-badge available">
+                                <i class="bi bi-check-circle-fill"></i>
+                                Đang hoạt động
+                            </span>
+                          `
+
+                        : `
+                            <span class="status-badge unavailable">
+                                <i class="bi bi-pause-circle-fill"></i>
+                                Ngừng hoạt động
+                            </span>
+                          `;
+
+
+                row.innerHTML = `
+
+                    <td>
+                        <span class="product-code">
+                            ${escapeHtml(category.id)}
+                        </span>
+                    </td>
+
+
+                    <td>
+                        <span class="product-name">
+                            ${escapeHtml(category.name)}
+                        </span>
+                    </td>
+
+
+                    <td>
+
+                        <div class="description">
+                            ${escapeHtml(
+                                category.description || "Chưa có mô tả"
+                            )}
+                        </div>
+
+                    </td>
+
+
+                    <td>
+                        ${statusHtml}
+                    </td>
+
+
+                    <td class="text-center">
+
+    <a href="@Url.Action("Edit", "Category")?id=${encodeURIComponent(category.id)}"
+       class="action-btn edit-btn"
+       title="Chỉnh sửa">
+
+        <i class="bi bi-pencil-square"></i>
+
+    </a>
+
+</td>
+
+                `;
+
+
+                tbody.appendChild(row);
+
+            });
+
+        }
+
+
+        updateSummary(categories, filtered);
+
+    }
+
+
+    function updateSummary(categories, filtered) {
+
+        const active =
+            categories.filter(
+                item => item.status === "Active"
+            ).length;
+
+
+        const inactive =
+            categories.filter(
+                item => item.status === "Inactive"
+            ).length;
+
+
+        document.getElementById("totalCategories")
+            .textContent = categories.length;
+
+        document.getElementById("activeCategories")
+            .textContent = active;
+
+        document.getElementById("inactiveCategories")
+            .textContent = inactive;
+
+        document.getElementById("displayCategories")
+            .textContent = filtered.length;
+
+
+        document.getElementById("resultText")
+            .textContent =
+            `${filtered.length} danh mục`;
+    }
+
+
+    
+
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+
+    }
+
+
+    document
+        .getElementById("searchCategory")
+        .addEventListener(
+            "input",
+            renderCategories
+        );
+
+
+    document
+        .getElementById("statusFilter")
+        .addEventListener(
+            "change",
+            renderCategories
+        );
+
+
+    document
+        .getElementById("btnReset")
+        .addEventListener(
+            "click",
+            function () {
+
+                document
+                    .getElementById("searchCategory")
+                    .value = "";
+
+                document
+                    .getElementById("statusFilter")
+                    .value = "all";
+
+                renderCategories();
+
+            }
+        );
+
+
+    renderCategories();
+
+</script>

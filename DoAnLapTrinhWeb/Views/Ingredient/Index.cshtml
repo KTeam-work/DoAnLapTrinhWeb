@@ -1,0 +1,400 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LumiTea - Quản Lý Danh Mục Nguyên Liệu & Lô Hàng</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link href="/Css/StyleIngredient.css?v=1.0" rel="stylesheet" />
+
+</head>
+<body>
+
+    <main class="container-fluid px-4 py-4">
+
+        <!-- BREADCRUMB & HEADER -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1 small text-muted">
+                        <li class="breadcrumb-item">Vận hành Kho</li>
+                        <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Danh mục Nguyên liệu</li>
+                    </ol>
+                </nav>
+                <h3 class="fw-bold mb-0 text-lumitea">
+                    <i class="bi bi-boxes me-2"></i>Quản Lý Danh Mục Nguyên Liệu
+                </h3>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-secondary btn-sm fw-semibold bg-white">
+                    <i class="bi bi-arrow-repeat me-1"></i> Đồng bộ POS
+                </button>
+                <button class="btn btn-outline-secondary btn-sm fw-semibold bg-white" onclick="alert('Mở màn hình Nhập/Xuất kho')">
+                    <i class="bi bi-download me-1"></i> Nhập/Xuất kho
+                </button>
+                <button class="btn btn-lumitea btn-sm fw-semibold px-3" onclick="alert('Mở form thêm nguyên liệu mới')">
+                    <i class="bi bi-plus-lg me-1"></i> Thêm nguyên liệu
+                </button>
+            </div>
+        </div>
+
+        <!-- STATS CARDS -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card-custom p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="small fw-bold text-muted text-uppercase mb-1">Nguyên Liệu Hoạt Động</div>
+                            <div class="h3 fw-bold mb-0">48 <span class="fs-6 text-muted fw-normal">/ 51 SKU</span></div>
+                            <div class="small text-success mt-2"><i class="bi bi-check-circle me-1"></i>94.1% khả dụng chuẩn</div>
+                        </div>
+                        <div class="icon-box bg-light text-dark">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card-custom p-3 h-100 stat-card-danger">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="small fw-bold text-danger text-uppercase mb-1">Sắp Hết Tồn / Cần Nhập</div>
+                            <div class="h3 fw-bold mb-0 text-danger">05 <span class="fs-6 text-muted fw-normal">loại chạm ngưỡng</span></div>
+                            <div class="small text-muted mt-2">Ưu tiên: Trà Đen, Bột Sữa...</div>
+                        </div>
+                        <div class="icon-box bg-danger-subtle text-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card-custom p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="small fw-bold text-muted text-uppercase mb-1">Tổng Giá Trị Tồn Kho</div>
+                            <div class="h3 fw-bold mb-0">42,850,000 <span class="fs-6 fw-normal">đ</span></div>
+                            <div class="small text-muted mt-2">Chi phí vốn hàng tồn (COGS)</div>
+                        </div>
+                        <div class="icon-box bg-primary-subtle text-primary">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card-custom p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="small fw-bold text-muted text-uppercase mb-1">Tạm Ngừng Sử Dụng</div>
+                            <div class="h3 fw-bold mb-0">03 <span class="fs-6 text-muted fw-normal">loại lưu kho</span></div>
+                            <div class="small text-muted mt-2">Hứa vụ cũ & bao bì ngừng dùng</div>
+                        </div>
+                        <div class="icon-box bg-light text-muted">
+                            <i class="bi bi-slash-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BẢNG FILTER & TÌM KIẾM -->
+        <div class="card-custom p-3 mb-4">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-5">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Tìm theo mã NL (ING001), tên trà, siro...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select form-select-sm" id="statusFilter">
+                        <option value="">Tất cả trạng thái tồn</option>
+                        <option value="SẮP HẾT">Sắp hết</option>
+                        <option value="AN TOÀN">An toàn</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select form-select-sm">
+                        <option value="">Tất cả Đơn vị tính</option>
+                        <option value="gram">gram</option>
+                        <option value="ml">ml</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex gap-2 justify-content-end">
+                    <button class="btn btn-outline-secondary btn-sm fw-semibold w-100"><i class="bi bi-file-earmark-excel me-1"></i> Xuất Excel</button>
+                    <button class="btn btn-outline-secondary btn-sm fw-semibold w-100"><i class="bi bi-clipboard-check me-1"></i> Kiểm kê</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BẢNG DANH SÁCH NGUYÊN LIỆU -->
+        <div class="card-custom overflow-hidden mb-4">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 table-custom">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;"><input type="checkbox" class="form-check-input"></th>
+                            <th>MÃ NL</th>
+                            <th>TÊN NGUYÊN LIỆU / QUY CÁCH</th>
+                            <th>ĐVT</th>
+                            <th>TỔNG TỒN KHO HIỆN TẠI</th>
+                            <th>ĐỊNH MỨC TỐI THIỂU</th>
+                            <th>MỨC ĐỘ AN TOÀN</th>
+                            <th class="text-center" style="width: 60px;">THAO TÁC</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ingredientTableBody">
+                        <!-- Render dữ liệu bằng Javascript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PAGINATION -->
+            <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light">
+                <span class="small text-muted">Hiển thị <span id="showingCount">1 - 3</span> trên tổng số <span id="totalCount">3</span> nguyên liệu</span>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
+                        <li class="page-item active"><a class="page-link bg-lumitea border-0" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="#">Sau</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODAL CHI TIẾT CÁC LÔ HÀNG (FEFO / FIFO) -->
+    <div class="modal fade" id="batchDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-lumitea text-white">
+                    <h5 class="modal-title fw-bold fs-6">
+                        <i class="bi bi-layers-half me-2"></i>Chi Tiết Lô Hàng: <span id="modalIngTitle" class="text-warning">---</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-info py-2 px-3 small d-flex align-items-center mb-3">
+                        <i class="bi bi-info-circle-fill fs-5 me-2 text-info"></i>
+                        <div>
+                            Hệ thống tự động sắp xếp theo quy tắc <b>FEFO (Hết hạn trước - Xuất trước)</b>.
+                            Lô nằm trên cùng sẽ được ưu tiên trừ trước khi hệ thống ghi nhận bán hàng POS.
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle mb-0">
+                            <thead class="table-light small fw-bold">
+                                <tr>
+                                    <th>MÃ LÔ HÀNG</th>
+                                    <th>NGÀY NHẬP KHO</th>
+                                    <th>HẠN SỬ DỤNG</th>
+                                    <th>SỐ LƯỢNG TỒN LÔ</th>
+                                    <th>TRẠNG THÁI ƯU TIÊN</th>
+                                </tr>
+                            </thead>
+                            <tbody id="batchDetailTableBody">
+                                <!-- Lô con render bằng JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm fw-semibold" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-lumitea btn-sm fw-semibold" onclick="alert('Mở form nhập lô mới cho nguyên liệu này!')">
+                        <i class="bi bi-plus-circle me-1"></i> Nhập Thêm Lô Mới
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JQUERY & BOOTSTRAP 5 JS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // CƠ SỞ DỮ LIỆU MẪU
+        const ingredientsData = [
+            {
+                id: 'ING001',
+                name: 'Trà Đen Phúc Long Thượng Hạng',
+                spec: 'Cốt trà nền',
+                unit: 'gram',
+                minLimit: 3000,
+                batches: [
+                    { batchCode: 'PL-2024-08', importDate: '15/08/2026', expiryDate: '18/11/2026', qty: 850 },
+                    { batchCode: 'PL-2024-09', importDate: '01/09/2026', expiryDate: '30/12/2026', qty: 1000 }
+                ]
+            },
+            {
+                id: 'ING002',
+                name: 'Bột Sữa B-one Indo Chuyên Béo',
+                spec: 'Bao 25kg chiết • Bột kem béo',
+                unit: 'gram',
+                minLimit: 5000,
+                batches: [
+                    { batchCode: 'IND-BV2', importDate: '10/08/2026', expiryDate: '15/12/2026', qty: 4200 }
+                ]
+            },
+            {
+                id: 'ING003',
+                name: 'Trân Châu Đen Ô Long Dẻo',
+                spec: 'Túi hút chân không 2kg • Topping',
+                unit: 'gram',
+                minLimit: 4000,
+                batches: [
+                    { batchCode: 'TC-9912', importDate: '20/08/2026', expiryDate: '28/02/2027', qty: 4500 },
+                    { batchCode: 'TC-9915', importDate: '05/09/2026', expiryDate: '15/04/2027', qty: 10000 }
+                ]
+            }
+        ];
+
+        let batchModal;
+
+        $(document).ready(function () {
+            batchModal = new bootstrap.Modal(document.getElementById('batchDetailModal'));
+            renderTable(ingredientsData);
+
+            // Tìm kiếm dữ liệu
+            $('#searchInput').on('keyup', function () {
+                const val = $(this).val().toLowerCase();
+                const filtered = ingredientsData.filter(item =>
+                    item.id.toLowerCase().includes(val) ||
+                    item.name.toLowerCase().includes(val)
+                );
+                renderTable(filtered);
+            });
+        });
+
+        // HÀM RENDER BẢNG CHÍNH
+        function renderTable(data) {
+            let html = '';
+            data.forEach(item => {
+                const totalQty = item.batches.reduce((sum, b) => sum + b.qty, 0);
+                const primaryBatch = item.batches[0];
+                const safetyPercent = ((totalQty / item.minLimit) * 100).toFixed(1);
+                const isLow = totalQty < item.minLimit;
+
+                const statusBadge = isLow
+                    ? `<span class="badge bg-danger-subtle text-danger border border-danger-subtle fw-bold">SẮP HẾT</span>`
+                    : `<span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">AN TOÀN</span>`;
+
+                const progressColor = isLow ? 'bg-danger' : 'bg-success';
+                const diffQty = totalQty - item.minLimit;
+                const diffText = diffQty < 0
+                    ? `<span class="text-danger small">${diffQty.toLocaleString('vi-VN')} so với an toàn</span>`
+                    : `<span class="text-success small">+${diffQty.toLocaleString('vi-VN')} an toàn</span>`;
+
+                html += `
+                    <tr>
+                        <td><input type="checkbox" class="form-check-input"></td>
+                        <td class="fw-bold text-lumitea">${item.id}</td>
+                        <td>
+                            <div class="fw-bold text-dark">${item.name}</div>
+                            <div class="batch-subtext">
+                                <span class="badge badge-fifo me-1">Lô: ${primaryBatch.batchCode}</span>
+                                <span>• HSD: <b>${primaryBatch.expiryDate}</b></span>
+                                <span>• ${item.spec}</span>
+                            </div>
+                        </td>
+                        <td><span class="badge bg-light text-dark border">${item.unit}</span></td>
+                        <td>
+                            <div class="fw-bold ${isLow ? 'text-danger' : 'text-success'} fs-6">
+                                ${totalQty.toLocaleString('vi-VN')} ${item.unit}
+                            </div>
+                            <div>${diffText}</div>
+                        </td>
+                        <td class="fw-semibold text-muted">${item.minLimit.toLocaleString('vi-VN')} ${item.unit}</td>
+                        <td style="width: 160px;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                ${statusBadge}
+                                <span class="small fw-bold ${isLow ? 'text-danger' : 'text-success'}">${safetyPercent}%</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar ${progressColor}" role="progressbar" style="width: ${Math.min(safetyPercent, 100)}%"></div>
+                            </div>
+                        </td>
+
+                        <!-- THAO TÁC 3 CHẤM (DROPDOWN) -->
+                        <td class="text-center">
+                            <div class="dropdown">
+                                <button class="btn btn-action-more" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Thao tác khác">
+                                    <i class="bi bi-three-dots-vertical fs-6"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom">
+                                    <li>
+                                        <a class="dropdown-item fw-semibold text-dark" href="#" onclick="viewBatches('${item.id}'); return false;">
+                                            <i class="bi bi-layers-fill text-info"></i> Xem chi tiết Lô (${item.batches.length})
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#" onclick="alert('Nhập lô mới cho ${item.id}'); return false;">
+                                            <i class="bi bi-plus-circle text-success"></i> Nhập lô mới
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#" onclick="alert('Sửa thông tin ${item.id}'); return false;">
+                                            <i class="bi bi-pencil text-primary"></i> Chỉnh sửa thông tin
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider my-1"></li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="#" onclick="alert('Xóa nguyên liệu ${item.id}'); return false;">
+                                            <i class="bi bi-trash"></i> Xóa nguyên liệu
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    `;
+            });
+
+            $('#ingredientTableBody').html(html);
+            $('#showingCount').text(`1 - ${data.length}`);
+            $('#totalCount').text(data.length);
+        }
+
+        // HÀM MỞ MODAL XEM CHI TIẾT CÁC LÔ
+        function viewBatches(ingId) {
+            const item = ingredientsData.find(i => i.id === ingId);
+            if (!item) return;
+
+            $('#modalIngTitle').text(`${item.id} - ${item.name}`);
+
+            let batchHtml = '';
+            item.batches.forEach((b, index) => {
+                const isFirst = index === 0;
+                batchHtml += `
+                        <tr class="${isFirst ? 'table-warning' : ''}">
+                            <td class="fw-bold text-dark">${b.batchCode}</td>
+                            <td>${b.importDate}</td>
+                            <td class="fw-bold ${isFirst ? 'text-danger' : ''}">${b.expiryDate}</td>
+                            <td class="fw-bold text-dark fs-6">${b.qty.toLocaleString('vi-VN')} ${item.unit}</td>
+                            <td>
+                                ${isFirst
+                        ? '<span class="badge bg-danger"><i class="bi bi-arrow-right-circle me-1"></i>Đang xuất (FEFO)</span>'
+                        : '<span class="badge bg-secondary">Chờ xuất (Lô ' + (index + 1) + ')</span>'}
+                            </td>
+                        </tr>
+                    `;
+            });
+
+            $('#batchDetailTableBody').html(batchHtml);
+            batchModal.show();
+        }
+    </script>
+</body>
+</html>

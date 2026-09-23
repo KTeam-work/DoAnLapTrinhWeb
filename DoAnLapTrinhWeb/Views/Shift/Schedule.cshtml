@@ -1,0 +1,362 @@
+﻿@{
+    ViewData["Title"] = "Bảng Lịch Phân Ca Tuần";
+}
+
+<!-- Fonts, FontAwesome, jQuery & Select2 -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<style>
+    :root {
+        --primary-color: #10b981;
+        --primary-dark: #059669;
+        --bg-main: #FCF9F2;
+        --card-bg: #ffffff;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+    }
+
+    body {
+        background-color: var(--bg-main);
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: #334155;
+    }
+
+    .page-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--text-dark);
+    }
+
+    .app-card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.03);
+        padding: 24px;
+    }
+
+    /* Bảng Thời Khóa Biểu Phân Ca */
+    .schedule-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .schedule-table th {
+            background-color: #0f382c !important;
+            color: #ffffff;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 14px 10px;
+            border: 1px solid #165b46;
+        }
+
+            .schedule-table th.time-col {
+                background-color: #0b2920 !important;
+                width: 150px;
+            }
+
+        .schedule-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            vertical-align: top;
+            height: 130px;
+            background-color: #fff;
+        }
+
+    /* Thẻ Nhân Viên Trong Ca */
+    .shift-chip {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-left: 4px solid #10b981;
+        border-radius: 8px;
+        padding: 6px 10px;
+        margin-bottom: 6px;
+        font-size: 0.8rem;
+        position: relative;
+        transition: all 0.2s;
+    }
+
+        .shift-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+        }
+
+        .shift-chip .emp-name {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .shift-chip .emp-role {
+            font-size: 0.72rem;
+            color: #64748b;
+        }
+
+    .btn-add-shift {
+        width: 100%;
+        border: 2px dashed #cbd5e1;
+        background: transparent;
+        color: #94a3b8;
+        border-radius: 8px;
+        padding: 6px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+        .btn-add-shift:hover {
+            border-color: #10b981;
+            color: #10b981;
+            background-color: #f0fdf4;
+        }
+
+    /* Custom CSS cho Select2 */
+    .select2-container--default .select2-selection--single {
+        height: 46px !important;
+        border-radius: 10px !important;
+        border: 1px solid #cbd5e1 !important;
+        display: flex !important;
+        align-items: center !important;
+        background-color: #f8fafc !important;
+    }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #1e293b !important;
+            font-weight: 600 !important;
+            padding-left: 12px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 44px !important;
+        }
+
+    .select2-dropdown {
+        border-radius: 10px !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+        z-index: 1060 !important;
+    }
+</style>
+
+<div class="container-fluid px-4 py-4">
+
+    <!-- 1. Header Navigation -->
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+        <div>
+            <h1 class="page-title mb-1">Bảng Lịch Phân Ca Tuần</h1>
+            <p class="text-muted small mb-0">Quản lý và xếp lịch trực cho danh sách 50+ nhân viên LumiTea</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a href="@Url.Action("Index", "Shift")" class="btn btn-outline-secondary fw-bold px-3 py-2" style="border-radius: 12px;">
+                <i class="fa-solid fa-fingerprint me-1"></i> Trang Điểm Danh Ca
+            </a>
+            <button class="btn btn-success fw-bold px-3 py-2" style="border-radius: 12px; background-color: #10b981;" data-bs-toggle="modal" data-bs-target="#assignShiftModal">
+                <i class="fa-solid fa-plus me-1"></i> Phân Ca Mới
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. Thanh Chọn Tuần & Lọc Theo Bộ Phận -->
+    <div class="app-card mb-4 py-3">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-light btn-sm fw-bold"><i class="fa-solid fa-chevron-left"></i> Tuần Trước</button>
+                <span class="fw-bold text-dark px-2"><i class="fa-regular fa-calendar-check text-success me-1"></i> Tuần: 21/09/2026 - 27/09/2026</span>
+                <button class="btn btn-light btn-sm fw-bold">Tuần Sau <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+
+            <!-- BỘ LỌC TÌM KIẾM CHO 50+ NHÂN VIÊN -->
+            <div class="d-flex align-items-center gap-2">
+                <select class="form-select form-select-sm bg-light fw-semibold" style="border-radius: 8px; width: 160px;">
+                    <option value="">-- Tất cả bộ phận --</option>
+                    <option value="Pha chế">Pha chế</option>
+                    <option value="Thu ngân">Thu ngân</option>
+                    <option value="Phục vụ">Phục vụ</option>
+                    <option value="Bảo vệ">Bảo vệ</option>
+                </select>
+                <button class="btn btn-outline-success btn-sm fw-bold" style="border-radius: 8px;"><i class="fa-solid fa-file-excel me-1"></i> Xuất Excel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Bảng Thời Khóa Biểu 7 Ngày Tuần -->
+    <div class="app-card p-0 overflow-hidden">
+        <div class="table-responsive">
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th class="time-col">CA LÀM / NGÀY</th>
+                        <th>THỨ 2<br><small class="fw-normal opacity-75">21/09</small></th>
+                        <th>THỨ 3<br><small class="fw-normal opacity-75">22/09</small></th>
+                        <th>THỨ 4<br><small class="fw-normal opacity-75">23/09</small></th>
+                        <th>THỨ 5<br><small class="fw-normal opacity-75">24/09</small></th>
+                        <th>THỨ 6<br><small class="fw-normal opacity-75">25/09</small></th>
+                        <th>THỨ 7<br><small class="fw-normal opacity-75">26/09</small></th>
+                        <th>CHỦ NHẬT<br><small class="fw-normal opacity-75">27/09</small></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <!-- CA SÁNG -->
+                    <tr>
+                        <td class="bg-light fw-bold text-dark align-middle text-center">
+                            <i class="fa-solid fa-sun text-warning me-1"></i> CA SÁNG<br>
+                            <small class="text-muted fw-normal">(07:00 - 12:30)</small>
+                        </td>
+                        <td>
+                            <div class="shift-chip">
+                                <div class="emp-name">Richard Blais</div>
+                                <div class="emp-role"><i class="fa-solid fa-mug-hot"></i> Pha chế</div>
+                            </div>
+                            <div class="shift-chip">
+                                <div class="emp-name">Lê Thị Mai</div>
+                                <div class="emp-role"><i class="fa-solid fa-cash-register"></i> Thu ngân</div>
+                            </div>
+                            <button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button>
+                        </td>
+                        <td>
+                            <div class="shift-chip">
+                                <div class="emp-name">Nguyen Tan Ky</div>
+                                <div class="emp-role"><i class="fa-solid fa-user-shield"></i> Quản lý</div>
+                            </div>
+                            <button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button>
+                        </td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                    </tr>
+
+                    <!-- CA CHIỀU -->
+                    <tr>
+                        <td class="bg-light fw-bold text-dark align-middle text-center">
+                            <i class="fa-solid fa-cloud-sun text-primary me-1"></i> CA CHIỀU<br>
+                            <small class="text-muted fw-normal">(12:30 - 18:00)</small>
+                        </td>
+                        <td>
+                            <div class="shift-chip">
+                                <div class="emp-name">Richard Blais</div>
+                                <div class="emp-role"><i class="fa-solid fa-mug-hot"></i> Pha chế</div>
+                            </div>
+                            <button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button>
+                        </td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                    </tr>
+
+                    <!-- CA TỐI -->
+                    <tr>
+                        <td class="bg-light fw-bold text-dark align-middle text-center">
+                            <i class="fa-solid fa-moon text-indigo me-1"></i> CA TỐI<br>
+                            <small class="text-muted fw-normal">(18:00 - 23:00)</small>
+                        </td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                        <td><button class="btn-add-shift" data-bs-toggle="modal" data-bs-target="#assignShiftModal">+ Thêm</button></td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PHÂN CA CÓ Ô TÌM KIẾM THÔNG MINH CỦA QUẢN LÝ -->
+<div class="modal fade" id="assignShiftModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px; border: none; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+            <form asp-action="AssignShift" method="post">
+                <div class="modal-header px-4 pt-4 border-0">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #d1fae5; color: #059669;">
+                            <i class="fa-solid fa-calendar-plus fs-5"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold text-dark mb-0">Phân Ca Làm Việc</h5>
+                            <p class="text-muted small mb-0">Xếp lịch làm việc mới cho nhân viên</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-4 py-3">
+
+                    <!-- LỰA CHỌN TÌM KIẾM NHÂN VIÊN TRONG CẢ DANH SÁCH 50+ NGƯỜI -->
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">CHỌN NHÂN VIÊN (GÕ TÊN / MÃ NV)</label>
+                        <select name="UserId" class="form-select select2-assign" style="width: 100%;" required>
+                            <option value="" disabled selected>-- Gõ tên hoặc Mã NV để tìm --</option>
+                            <optgroup label="Bộ Phận Pha Chế">
+                                <option value="1">NV002 - Richard Blais</option>
+                                <option value="5">NV005 - Phạm Hoàng Nam</option>
+                                <option value="7">NV007 - Đặng Quốc Bảo</option>
+                            </optgroup>
+                            <optgroup label="Bộ Phận Thu Ngân">
+                                <option value="3">NV003 - Lê Thị Mai</option>
+                                <option value="6">NV006 - Nguyễn Hồng Phấn</option>
+                                <option value="8">NV008 - Võ Thảo Nhi</option>
+                            </optgroup>
+                            <optgroup label="Bộ Phận Phục Vụ">
+                                <option value="4">NV004 - Trần Văn An</option>
+                                <option value="9">NV009 - Hoàng Trọng Nghĩa</option>
+                            </optgroup>
+                            <optgroup label="Quản Lý & Khác">
+                                <option value="1">NV001 - Nguyen Tan Ky (Quản lý)</option>
+                                <option value="10">NV010 - Bùi Minh Tuấn (Bảo vệ)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">NGÀY LÀM VIỆC</label>
+                        <input type="date" name="ShiftDate" class="form-control bg-light fw-semibold" style="border-radius: 10px; padding: 11px; border: 1px solid #cbd5e1;" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">CHỌN CA LÀM</label>
+                        <select name="ShiftType" class="form-select bg-light text-dark fw-semibold" style="border-radius: 10px; padding: 11px; border: 1px solid #cbd5e1;" required>
+                            <option value="Ca Sáng">Ca Sáng (07:00 - 12:30)</option>
+                            <option value="Ca Chiều">Ca Chiều (12:30 - 18:00)</option>
+                            <option value="Ca Tối">Ca Tối (18:00 - 23:00)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">GHI CHÚ (NẾU CÓ)</label>
+                        <input type="text" name="Note" class="form-control bg-light" style="border-radius: 10px; padding: 11px; border: 1px solid #cbd5e1;" placeholder="Trực máy POS, đứng quầy pha chế..." />
+                    </div>
+                </div>
+                <div class="modal-footer px-4 pb-4 border-0">
+                    <button type="button" class="btn btn-light fw-semibold px-4" data-bs-dismiss="modal" style="border-radius: 10px;">Hủy</button>
+                    <button type="submit" class="btn btn-success fw-bold px-4" style="border-radius: 10px; background-color: #10b981; padding: 10px 24px;">Lưu Phân Ca</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Khởi tạo Select2 trong Modal phân ca
+        $('.select2-assign').select2({
+            dropdownParent: $('#assignShiftModal'),
+            placeholder: "-- Gõ tên hoặc Mã NV để tìm --",
+            allowClear: true
+        });
+    });
+</script>

@@ -1,0 +1,1487 @@
+﻿@using System.Web.Helpers
+
+@{
+    ViewData["Title"] = "Quản lý đánh giá";
+
+    var reviews = new[]
+    {
+        new
+        {
+            Id = "RV0000001",
+            Customer = "Nguyễn Minh Anh",
+            Initial = "MA",
+            Product = "Trà sữa truyền thống",
+            Rating = 5,
+            Content = "Trà thơm, vị sữa vừa phải, trân châu ngon. Đóng gói cũng rất ổn.",
+            Date = "20/09/2026",
+            Status = "Đã duyệt"
+        },
+
+        new
+        {
+            Id = "RV0000002",
+            Customer = "Trần Hoàng Nam",
+            Initial = "TN",
+            Product = "Trà đào cam sả",
+            Rating = 4,
+            Content = "Vị trà khá thanh, đào thơm. Mình sẽ thử lại lần sau.",
+            Date = "19/09/2026",
+            Status = "Đã duyệt"
+        },
+
+        new
+        {
+            Id = "RV0000003",
+            Customer = "Lê Ngọc Hân",
+            Initial = "NH",
+            Product = "Matcha Macchiato",
+            Rating = 5,
+            Content = "Matcha thơm, lớp macchiato béo nhẹ rất hợp.",
+            Date = "18/09/2026",
+            Status = "Đã duyệt"
+        },
+
+        new
+        {
+            Id = "RV0000004",
+            Customer = "Phạm Gia Huy",
+            Initial = "GH",
+            Product = "Trà dâu tươi",
+            Rating = 3,
+            Content = "Vị hơi ngọt so với khẩu vị của mình.",
+            Date = "17/09/2026",
+            Status = "Chờ duyệt"
+        },
+
+        new
+        {
+            Id = "RV0000005",
+            Customer = "Võ Thảo Vy",
+            Initial = "TV",
+            Product = "Bánh flan",
+            Rating = 5,
+            Content = "Bánh mềm và thơm, ăn cùng trà rất hợp.",
+            Date = "16/09/2026",
+            Status = "Đã duyệt"
+        },
+
+        new
+        {
+            Id = "RV0000006",
+            Customer = "Đỗ Thành Đạt",
+            Initial = "ĐD",
+            Product = "Trà tắc mật ong",
+            Rating = 2,
+            Content = "Hơi chua và chưa hợp khẩu vị của mình.",
+            Date = "15/09/2026",
+            Status = "Không duyệt"
+        }
+    };
+}
+
+<link rel="stylesheet" href="~/Css/styleProduct_index.css" />
+
+<div class="product-page">
+
+    <!-- =========================================================
+         HEADER
+         ========================================================= -->
+
+    <div class="product-heading">
+
+        <div class="heading-left">
+
+            <div class="heading-icon">
+                <i class="bi bi-chat-heart-fill"></i>
+            </div>
+
+            <div>
+
+                <h1 class="page-title">
+                    Quản lý đánh giá
+                </h1>
+
+                <p class="page-subtitle">
+                    Kiểm duyệt phản hồi của khách hàng trước khi hiển thị.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         THỐNG KÊ LỚN
+         ========================================================= -->
+
+    <div class="row g-4 mb-4">
+
+        <!-- ĐÁNH GIÁ TRUNG BÌNH -->
+
+        <div class="col-lg-4">
+
+            <div class="border rounded-4 h-100 p-4"
+                 style="background:#20584f;">
+
+                <div class="small text-white-50 text-uppercase fw-bold"
+                     style="letter-spacing:1px;">
+
+                    Đánh giá trung bình
+
+                </div>
+
+
+                <div class="d-flex align-items-end gap-3 mt-3">
+
+                    <div id="averageRating"
+                         class="text-white"
+                         style="font-size:58px;font-weight:800;line-height:1;">
+
+                        0.0
+
+                    </div>
+
+
+                    <div class="text-white-50"
+                         style="padding-bottom:7px;">
+
+                        / 5
+
+                    </div>
+
+                </div>
+
+
+                <div id="averageStars"
+                     class="mt-3"
+                     style="color:#f5c84b;font-size:21px;letter-spacing:3px;">
+                </div>
+
+
+                <div class="text-white-50 small mt-3">
+
+                    Dựa trên
+
+                    <strong id="approvedReviewCount">
+                        0
+                    </strong>
+
+                    bài đã duyệt.
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PHÂN BỐ SAO -->
+
+        <div class="col-lg-5">
+
+            <div class="border rounded-4 h-100 p-4">
+
+                <div class="product-name"
+                     style="font-size:18px;">
+
+                    Phân bố đánh giá
+
+                </div>
+
+                <div class="description mt-1">
+
+                    Chỉ tính những bài đánh giá đã được duyệt.
+
+                </div>
+
+
+                <div class="mt-4">
+
+                    @for (int star = 5; star >= 1; star--)
+                    {
+                        <div class="d-flex align-items-center gap-2 mb-2">
+
+                            <div style="width:35px;">
+                                @star ★
+                            </div>
+
+
+                            <div class="flex-grow-1 rounded-pill"
+                                 style="height:9px;background:#edf1ef;overflow:hidden;">
+
+                                <div id="bar@(star)"
+                                     style="height:100%;width:0;background:#f5c84b;transition:width .35s ease;">
+                                </div>
+
+                            </div>
+
+
+                            <div id="count@(star)"
+                                 style="width:25px;text-align:right;font-size:12px;">
+
+                                0
+
+                            </div>
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CHỜ DUYỆT -->
+
+        <div class="col-lg-3">
+
+            <div class="border rounded-4 h-100 p-4"
+                 style="background:#fff7d7;">
+
+                <div class="small"
+                     style="color:#78837e;">
+
+                    Chờ duyệt
+
+                </div>
+
+
+                <div id="pendingCount"
+                     class="mt-2"
+                     style="font-size:38px;font-weight:800;color:#8a6a00;">
+
+                    0
+
+                </div>
+
+
+                <div class="mt-3"
+                     style="font-size:13px;color:#78837e;">
+
+                    bài đánh giá đang chờ xử lý
+
+                </div>
+
+
+                <div class="mt-4">
+
+                    <span class="status-badge"
+                          style="background:#fff;color:#8a6a00;border:1px solid #e6dcc2;">
+
+                        <i class="bi bi-clock-fill"></i>
+
+                        Cần xử lý
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         BỘ LỌC
+         ========================================================= -->
+
+    <div class="border rounded-4 p-3 mb-4">
+
+        <div class="row g-3 align-items-center">
+
+            <div class="col-lg-6">
+
+                <div class="input-group">
+
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+
+                    <input type="text"
+                           id="reviewKeyword"
+                           class="form-control"
+                           placeholder="Tìm khách hàng hoặc sản phẩm..."
+                           oninput="renderReviews()" />
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-2">
+
+                <select id="reviewRatingFilter"
+                        class="form-select"
+                        onchange="renderReviews()">
+
+                    <option value="">
+                        Tất cả sao
+                    </option>
+
+                    <option value="5">
+                        ★★★★★
+                    </option>
+
+                    <option value="4">
+                        ★★★★
+                    </option>
+
+                    <option value="3">
+                        ★★★
+                    </option>
+
+                    <option value="2">
+                        ★★
+                    </option>
+
+                    <option value="1">
+                        ★
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="col-lg-2">
+
+                <select id="reviewStatusFilter"
+                        class="form-select"
+                        onchange="renderReviews()">
+
+                    <option value="">
+                        Tất cả trạng thái
+                    </option>
+
+                    <option value="Đã duyệt">
+                        Đã duyệt
+                    </option>
+
+                    <option value="Chờ duyệt">
+                        Chờ duyệt
+                    </option>
+
+                    <option value="Không duyệt">
+                        Không duyệt
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="col-lg-2 text-lg-end">
+
+                <span class="table-note">
+
+                    <strong id="reviewTotal">
+                        0
+                    </strong>
+
+                    bài viết
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         DANH SÁCH REVIEW
+         ========================================================= -->
+
+    <div class="row g-4"
+         id="reviewContainer">
+
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     MODAL XEM CHI TIẾT
+     ============================================================= -->
+
+<div class="modal fade product-page-modal"
+     id="reviewViewModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h5 class="modal-title">
+
+                        <i class="bi bi-eye-fill me-2"></i>
+
+                        Chi tiết đánh giá
+
+                    </h5>
+
+                    <div class="description mt-1">
+
+                        Chỉ xem nội dung, không chỉnh sửa.
+
+                    </div>
+
+                </div>
+
+
+                <button type="button"
+                        class="btn-close"
+                        onclick="closeReviewViewModal()">
+                </button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <div class="text-center mb-4">
+
+                    <div id="viewReviewInitial"
+                         class="review-avatar rounded-circle d-inline-flex align-items-center justify-content-center"
+                         style="width:62px;height:62px;background:#eaf3ef;color:#20584f;font-weight:800;font-size:18px;">
+                    </div>
+
+
+                    <div id="viewReviewCustomer"
+                         style="font-size:21px;font-weight:800;color:#213430;margin-top:10px;">
+                    </div>
+
+
+                    <div id="viewReviewDate"
+                         class="description mt-1">
+                    </div>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="modal-label">
+                        Sản phẩm
+                    </label>
+
+                    <input type="text"
+                           id="viewReviewProduct"
+                           class="form-control"
+                           readonly />
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="modal-label">
+                        Số sao
+                    </label>
+
+                    <input type="text"
+                           id="viewReviewRating"
+                           class="form-control"
+                           readonly />
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="modal-label">
+                        Trạng thái
+                    </label>
+
+                    <input type="text"
+                           id="viewReviewStatus"
+                           class="form-control"
+                           readonly />
+
+                </div>
+
+
+                <div>
+
+                    <label class="modal-label">
+                        Nội dung
+                    </label>
+
+                    <textarea id="viewReviewContent"
+                              class="form-control"
+                              rows="5"
+                              readonly></textarea>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn-filter"
+                        onclick="closeReviewViewModal()">
+
+                    Đóng
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // =========================================================
+    // DỮ LIỆU DEMO
+    // =========================================================
+
+    var initialReviews =
+        @Html.Raw(Json.Encode(reviews));
+
+
+    var reviewStorageKey =
+        "demo_milktea_reviews";
+
+
+    var reviewData =
+        JSON.parse(
+            localStorage.getItem(reviewStorageKey)
+            || JSON.stringify(initialReviews)
+        );
+
+
+    /*
+     * Nếu trước đó localStorage của em đang còn dữ liệu
+     * dùng trạng thái "Ẩn" từ bản cũ thì tự đổi thành
+     * "Không duyệt".
+     */
+
+    reviewData.forEach(function (item) {
+
+        if (item.Status === "Ẩn") {
+
+            item.Status = "Không duyệt";
+
+        }
+
+    });
+
+
+    var reviewViewModalInstance = null;
+
+
+    // =========================================================
+    // KHỞI TẠO
+    // =========================================================
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        reviewViewModalInstance =
+            new bootstrap.Modal(
+                document.getElementById("reviewViewModal")
+            );
+
+
+        saveReviewData();
+
+        renderReviews();
+
+    });
+
+
+    // =========================================================
+    // LƯU DỮ LIỆU
+    // =========================================================
+
+    function saveReviewData() {
+
+        localStorage.setItem(
+            reviewStorageKey,
+            JSON.stringify(reviewData)
+        );
+
+    }
+
+
+    // =========================================================
+    // RENDER SAO
+    // =========================================================
+
+    function renderStars(rating) {
+
+        var html = "";
+
+
+        for (var i = 1; i <= 5; i++) {
+
+            if (i <= rating) {
+
+                html +=
+                    '<i class="bi bi-star-fill"></i>';
+
+            }
+            else {
+
+                html +=
+                    '<i class="bi bi-star"></i>';
+
+            }
+
+        }
+
+
+        return html;
+
+    }
+
+
+    // =========================================================
+    // RENDER DANH SÁCH
+    // =========================================================
+
+    function renderReviews() {
+
+        var keyword =
+            document.getElementById("reviewKeyword")
+                .value
+                .toLowerCase()
+                .trim();
+
+
+        var rating =
+            document.getElementById("reviewRatingFilter")
+                .value;
+
+
+        var status =
+            document.getElementById("reviewStatusFilter")
+                .value;
+
+
+        var filtered =
+            reviewData.filter(function (item) {
+
+                var customer =
+                    item.Customer.toLowerCase();
+
+
+                var product =
+                    item.Product.toLowerCase();
+
+
+                var matchKeyword =
+                    keyword === ""
+                    ||
+                    customer.includes(keyword)
+                    ||
+                    product.includes(keyword);
+
+
+                var matchRating =
+                    rating === ""
+                    ||
+                    String(item.Rating) === rating;
+
+
+                var matchStatus =
+                    status === ""
+                    ||
+                    item.Status === status;
+
+
+                return (
+                    matchKeyword &&
+                    matchRating &&
+                    matchStatus
+                );
+
+            });
+
+
+        var container =
+            document.getElementById(
+                "reviewContainer"
+            );
+
+
+        container.innerHTML = "";
+
+
+        filtered.forEach(function (item) {
+
+            var col =
+                document.createElement("div");
+
+
+            col.className =
+                "col-xl-6";
+
+
+            // -----------------------------------------------------
+            // TRẠNG THÁI
+            // -----------------------------------------------------
+
+            var statusHtml = "";
+
+
+            if (item.Status === "Đã duyệt") {
+
+                statusHtml =
+                    '<span class="status-badge available">' +
+
+                        '<i class="bi bi-check-circle-fill"></i>' +
+
+                        ' Đã duyệt' +
+
+                    '</span>';
+
+            }
+            else if (item.Status === "Chờ duyệt") {
+
+                statusHtml =
+                    '<span class="status-badge" style="background:#fff7d7;color:#8a6a00;">' +
+
+                        '<i class="bi bi-clock-fill"></i>' +
+
+                        ' Chờ duyệt' +
+
+                    '</span>';
+
+            }
+            else {
+
+                statusHtml =
+                    '<span class="status-badge unavailable">' +
+
+                        '<i class="bi bi-x-circle-fill"></i>' +
+
+                        ' Không duyệt' +
+
+                    '</span>';
+
+            }
+
+
+            // -----------------------------------------------------
+            // NÚT THAO TÁC
+            // -----------------------------------------------------
+
+            var actionButtons = "";
+
+
+            /*
+             * BÀI CHỜ DUYỆT
+             */
+
+            if (item.Status === "Chờ duyệt") {
+
+                actionButtons =
+
+                    '<button type="button" class="btn-filter" onclick="viewReview(\'' +
+
+                        item.Id +
+
+                    '\')">' +
+
+                        '<i class="bi bi-eye-fill me-1"></i>' +
+
+                        'Xem' +
+
+                    '</button>' +
+
+
+                    '<button type="button" class="btn-filter" onclick="approveReview(\'' +
+
+                        item.Id +
+
+                    '\')" style="background:#eaf3ef;color:#20584f;">' +
+
+                        '<i class="bi bi-check-lg me-1"></i>' +
+
+                        'Duyệt' +
+
+                    '</button>' +
+
+
+                    '<button type="button" class="btn-filter" onclick="rejectReview(\'' +
+
+                        item.Id +
+
+                    '\')" style="background:#fff7d7;color:#8a6a00;">' +
+
+                        '<i class="bi bi-x-lg me-1"></i>' +
+
+                        'Không duyệt' +
+
+                    '</button>' +
+
+
+                    '<button type="button" class="action-btn delete-btn" onclick="deleteReview(\'' +
+
+                        item.Id +
+
+                    '\')" title="Xóa bài viết">' +
+
+                        '<i class="bi bi-trash-fill"></i>' +
+
+                    '</button>';
+
+            }
+
+
+            /*
+             * BÀI ĐÃ DUYỆT
+             */
+
+            else if (item.Status === "Đã duyệt") {
+
+                actionButtons =
+
+                    '<button type="button" class="btn-filter" onclick="viewReview(\'' +
+
+                        item.Id +
+
+                    '\')">' +
+
+                        '<i class="bi bi-eye-fill me-1"></i>' +
+
+                        'Xem' +
+
+                    '</button>' +
+
+
+                    '<button type="button" class="btn-filter" onclick="rejectReview(\'' +
+
+                        item.Id +
+
+                    '\')" style="background:#fff7d7;color:#8a6a00;">' +
+
+                        '<i class="bi bi-x-circle-fill me-1"></i>' +
+
+                        'Không duyệt' +
+
+                    '</button>' +
+
+
+                    '<button type="button" class="action-btn delete-btn" onclick="deleteReview(\'' +
+
+                        item.Id +
+
+                    '\')" title="Xóa bài viết">' +
+
+                        '<i class="bi bi-trash-fill"></i>' +
+
+                    '</button>';
+
+            }
+
+
+            /*
+             * BÀI KHÔNG DUYỆT
+             */
+
+            else {
+
+                actionButtons =
+
+                    '<button type="button" class="btn-filter" onclick="viewReview(\'' +
+
+                        item.Id +
+
+                    '\')">' +
+
+                        '<i class="bi bi-eye-fill me-1"></i>' +
+
+                        'Xem' +
+
+                    '</button>' +
+
+
+                    '<button type="button" class="btn-filter" onclick="approveReview(\'' +
+
+                        item.Id +
+
+                    '\')" style="background:#eaf3ef;color:#20584f;">' +
+
+                        '<i class="bi bi-check-lg me-1"></i>' +
+
+                        'Duyệt lại' +
+
+                    '</button>' +
+
+
+                    '<button type="button" class="action-btn delete-btn" onclick="deleteReview(\'' +
+
+                        item.Id +
+
+                    '\')" title="Xóa bài viết">' +
+
+                        '<i class="bi bi-trash-fill"></i>' +
+
+                    '</button>';
+
+            }
+
+
+            // -----------------------------------------------------
+            // CARD
+            // -----------------------------------------------------
+
+            col.innerHTML =
+
+                '<div class="review-card border rounded-4 h-100 p-4" style="background:#fff;box-shadow:0 8px 24px rgba(33,52,48,.05);">' +
+
+
+                    '<div class="d-flex justify-content-between align-items-start">' +
+
+
+                        '<div class="d-flex align-items-center gap-3">' +
+
+
+                            '<div class="review-avatar rounded-circle d-flex align-items-center justify-content-center" style="width:48px;height:48px;background:#eaf3ef;color:#20584f;font-weight:800;">' +
+
+                                escapeHtml(item.Initial) +
+
+                            '</div>' +
+
+
+                            '<div>' +
+
+                                '<div class="product-name">' +
+
+                                    escapeHtml(item.Customer) +
+
+                                '</div>' +
+
+
+                                '<div class="small" style="color:#78837e;">' +
+
+                                    escapeHtml(item.Date) +
+
+                                '</div>' +
+
+                            '</div>' +
+
+                        '</div>' +
+
+
+                        statusHtml +
+
+
+                    '</div>' +
+
+
+                    '<div class="mt-4">' +
+
+
+                        '<span class="category-badge">' +
+
+                            '<i class="bi bi-cup-straw me-1"></i>' +
+
+                            escapeHtml(item.Product) +
+
+                        '</span>' +
+
+
+                    '</div>' +
+
+
+                    '<div class="review-stars mt-3" style="color:#f5c84b;font-size:18px;letter-spacing:2px;">' +
+
+                        renderStars(item.Rating) +
+
+                    '</div>' +
+
+
+                    '<div class="mt-3" style="font-size:14px;line-height:1.7;color:#213430;min-height:70px;">' +
+
+                        '&ldquo;' +
+
+                        escapeHtml(item.Content) +
+
+                        '&rdquo;' +
+
+                    '</div>' +
+
+
+                    '<div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">' +
+
+
+                        '<span class="small" style="color:#78837e;">' +
+
+                            escapeHtml(item.Id) +
+
+                        '</span>' +
+
+
+                        '<div class="d-flex gap-2 flex-wrap justify-content-end">' +
+
+                            actionButtons +
+
+                        '</div>' +
+
+
+                    '</div>' +
+
+
+                '</div>';
+
+
+            container.appendChild(col);
+
+        });
+
+
+        updateReviewStatistics();
+
+    }
+
+
+    // =========================================================
+    // CẬP NHẬT CÁC THẺ LỚN
+    // =========================================================
+
+    function updateReviewStatistics() {
+
+        /*
+         * Chỉ bài "Đã duyệt" mới được tính vào
+         * điểm trung bình và biểu đồ sao.
+         */
+
+        var approvedReviews =
+            reviewData.filter(function (item) {
+
+                return item.Status === "Đã duyệt";
+
+            });
+
+
+        /*
+         * Bài đang chờ xử lý
+         */
+
+        var pendingReviews =
+            reviewData.filter(function (item) {
+
+                return item.Status === "Chờ duyệt";
+
+            });
+
+
+        /*
+         * Tổng rating của bài đã duyệt
+         */
+
+        var totalRating =
+            approvedReviews.reduce(
+                function (sum, item) {
+
+                    return sum +
+                        Number(item.Rating);
+
+                },
+                0
+            );
+
+
+        /*
+         * Điểm trung bình
+         */
+
+        var average =
+            approvedReviews.length === 0
+                ? 0
+                : totalRating /
+                  approvedReviews.length;
+
+
+        document.getElementById(
+            "averageRating"
+        ).textContent =
+            average.toFixed(1);
+
+
+        /*
+         * Sao trung bình
+         */
+
+        document.getElementById(
+            "averageStars"
+        ).innerHTML =
+            renderStars(
+                Math.round(average)
+            );
+
+
+        /*
+         * Số bài đã duyệt
+         */
+
+        document.getElementById(
+            "approvedReviewCount"
+        ).textContent =
+            approvedReviews.length;
+
+
+        /*
+         * Số bài chờ duyệt
+         */
+
+        document.getElementById(
+            "pendingCount"
+        ).textContent =
+            pendingReviews.length;
+
+
+        /*
+         * Tổng bài trong hệ thống
+         */
+
+        document.getElementById(
+            "reviewTotal"
+        ).textContent =
+            reviewData.length;
+
+
+        /*
+         * Biểu đồ 5 -> 1 sao
+         */
+
+        for (var star = 1; star <= 5; star++) {
+
+            var count =
+                approvedReviews.filter(function (item) {
+
+                    return Number(item.Rating) === star;
+
+                }).length;
+
+
+            var percentage =
+                approvedReviews.length === 0
+
+                    ? 0
+
+                    : (
+                        count /
+                        approvedReviews.length
+                    ) * 100;
+
+
+            document.getElementById(
+                "count" + star
+            ).textContent =
+                count;
+
+
+            document.getElementById(
+                "bar" + star
+            ).style.width =
+                percentage + "%";
+
+        }
+
+    }
+
+
+    // =========================================================
+    // XEM
+    // =========================================================
+
+    function viewReview(id) {
+
+        var item =
+            reviewData.find(function (x) {
+
+                return x.Id === id;
+
+            });
+
+
+        if (!item) {
+            return;
+        }
+
+
+        document.getElementById(
+            "viewReviewInitial"
+        ).textContent =
+            item.Initial;
+
+
+        document.getElementById(
+            "viewReviewCustomer"
+        ).textContent =
+            item.Customer;
+
+
+        document.getElementById(
+            "viewReviewDate"
+        ).textContent =
+            item.Date;
+
+
+        document.getElementById(
+            "viewReviewProduct"
+        ).value =
+            item.Product;
+
+
+        document.getElementById(
+            "viewReviewRating"
+        ).value =
+            item.Rating +
+            " / 5 sao";
+
+
+        document.getElementById(
+            "viewReviewStatus"
+        ).value =
+            item.Status;
+
+
+        document.getElementById(
+            "viewReviewContent"
+        ).value =
+            item.Content;
+
+
+        reviewViewModalInstance.show();
+
+    }
+
+
+    // =========================================================
+    // DUYỆT BÀI
+    // =========================================================
+
+    function approveReview(id) {
+
+        var item =
+            reviewData.find(function (x) {
+
+                return x.Id === id;
+
+            });
+
+
+        if (!item) {
+            return;
+        }
+
+
+        var confirmed =
+            confirm(
+                "Bạn có chắc chắn muốn duyệt bài đánh giá này không?\n\n" +
+
+                "Mã: " +
+                item.Id +
+
+                "\nKhách hàng: " +
+                item.Customer +
+
+                "\nSản phẩm: " +
+                item.Product +
+
+                "\nĐánh giá: " +
+                item.Rating +
+                " sao"
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        item.Status =
+            "Đã duyệt";
+
+
+        saveReviewData();
+
+        renderReviews();
+
+
+        alert(
+            "Đã duyệt bài đánh giá.\n\n" +
+            "Bài viết sẽ được tính vào thống kê đánh giá."
+        );
+
+    }
+
+
+    // =========================================================
+    // KHÔNG DUYỆT
+    // =========================================================
+
+    function rejectReview(id) {
+
+        var item =
+            reviewData.find(function (x) {
+
+                return x.Id === id;
+
+            });
+
+
+        if (!item) {
+            return;
+        }
+
+
+        var confirmed =
+            confirm(
+                "Bạn có chắc chắn không duyệt bài đánh giá này không?\n\n" +
+
+                "Mã: " +
+                item.Id +
+
+                "\nKhách hàng: " +
+                item.Customer +
+
+                "\nSản phẩm: " +
+                item.Product +
+
+                "\nĐánh giá: " +
+                item.Rating +
+                " sao" +
+
+                "\n\nBài viết sẽ được giữ lại nhưng không được tính vào đánh giá công khai."
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        item.Status =
+            "Không duyệt";
+
+
+        saveReviewData();
+
+        renderReviews();
+
+
+        alert(
+            "Đã chuyển bài đánh giá sang trạng thái Không duyệt."
+        );
+
+    }
+
+
+    // =========================================================
+    // XÓA HẲN
+    // =========================================================
+
+    function deleteReview(id) {
+
+        var item =
+            reviewData.find(function (x) {
+
+                return x.Id === id;
+
+            });
+
+
+        if (!item) {
+            return;
+        }
+
+
+        var confirmed =
+            confirm(
+                "Bạn có chắc chắn muốn XÓA HẲN bài đánh giá này không?\n\n" +
+
+                "Mã: " +
+                item.Id +
+
+                "\nKhách hàng: " +
+                item.Customer +
+
+                "\nSản phẩm: " +
+                item.Product +
+
+                "\n\nDữ liệu sẽ bị xóa khỏi danh sách demo."
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        reviewData =
+            reviewData.filter(function (x) {
+
+                return x.Id !== id;
+
+            });
+
+
+        saveReviewData();
+
+        renderReviews();
+
+
+        alert(
+            "Đã xóa bài đánh giá."
+        );
+
+    }
+
+
+    // =========================================================
+    // ĐÓNG MODAL
+    // =========================================================
+
+    function closeReviewViewModal() {
+
+        if (reviewViewModalInstance) {
+
+            reviewViewModalInstance.hide();
+
+        }
+
+    }
+
+
+    // =========================================================
+    // ESCAPE HTML
+    // =========================================================
+
+    function escapeHtml(value) {
+
+        return String(
+            value == null ? "" : value
+        )
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    }
+
+</script>
