@@ -1,0 +1,200 @@
+﻿@{
+    ViewBag.Title = "Theo Dõi Đơn Hàng - LumiTea";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --lumitea-primary: #1A4D3E;
+            --lumitea-accent: #F6C90E;
+            --lumitea-bg: #F8FAFC;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--lumitea-bg);
+        }
+
+        .tracking-card {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+       
+        .stepper-wrapper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .stepper-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            z-index: 2;
+        }
+
+            .stepper-item::before {
+                position: absolute;
+                content: "";
+                border-bottom: 3px solid #e2e8f0;
+                width: 100%;
+                top: 20px;
+                left: -50%;
+                z-index: -1;
+            }
+
+            .stepper-item:first-child::before {
+                content: none;
+            }
+
+            .stepper-item.completed::before,
+            .stepper-item.active::before {
+                border-bottom-color: var(--lumitea-primary);
+            }
+
+        .step-counter {
+            width: 40px;
+            height: 40px;
+            background-color: #fff;
+            border: 3px solid #e2e8f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #94a3b8;
+            transition: all 0.3s;
+        }
+
+        .stepper-item.completed .step-counter {
+            background-color: var(--lumitea-primary);
+            border-color: var(--lumitea-primary);
+            color: white;
+        }
+
+        .stepper-item.active .step-counter {
+            background-color: #fff;
+            border-color: var(--lumitea-primary);
+            color: var(--lumitea-primary);
+            box-shadow: 0 0 0 4px rgba(26, 77, 62, 0.15);
+        }
+
+        .step-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #64748B;
+            text-align: center;
+        }
+
+        .stepper-item.completed .step-name,
+        .stepper-item.active .step-name {
+            color: var(--lumitea-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container py-5">
+
+        <div class="row">
+            <div class="col-12 col-md-10 col-lg-8 mx-auto">
+
+                <div class="d-flex align-items-center mb-4 gap-3">
+                    <a href="~/Order/History" class="text-decoration-none text-muted">
+                        <i class="fa-solid fa-arrow-left fs-5"></i>
+                    </a>
+                    <h2 class="fw-extrabold m-0" style="color: var(--lumitea-primary); letter-spacing: -0.8px;">Mã đơn: #ORD-1082</h2>
+                </div>
+
+                <!-- TRẠNG THÁI TỔNG -->
+                <div class="tracking-card bg-primary-subtle border-0 text-center py-4" style="background-color: rgba(26, 77, 62, 0.05) !important;">
+                    <span class="badge bg-white text-dark border px-3 py-2 rounded-pill fs-6 shadow-sm mb-3">
+                        <span class="pulse-dot text-success me-1">●</span> Đơn hàng đang được giao
+                    </span>
+                    <h6 class="text-muted mb-1">Dự kiến nhận hàng lúc</h6>
+                    <h1 class="fw-extrabold m-0 display-5" style="color: var(--lumitea-primary);">12:15 PM</h1>
+                </div>
+
+                <!-- MAP VỚI HISTORY -->
+                <div class="tracking-card py-4 px-2 px-sm-4">
+                    <div class="stepper-wrapper my-3">
+                        <div class="stepper-item completed">
+                            <div class="step-counter"><i class="fa-solid fa-check"></i></div>
+                            <div class="step-name">Đã xác nhận</div>
+                            <div class="text-muted small" style="font-size: 0.75rem;">11:43</div>
+                        </div>
+                        <div class="stepper-item completed">
+                            <div class="step-counter"><i class="fa-solid fa-blender"></i></div>
+                            <div class="step-name">Đang pha chế</div>
+                            <div class="text-muted small" style="font-size: 0.75rem;">11:45</div>
+                        </div>
+                        <div class="stepper-item active">
+                            <div class="step-counter"><i class="fa-solid fa-motorcycle"></i></div>
+                            <div class="step-name">Đang giao</div>
+                            <div class="text-muted small fw-bold" style="font-size: 0.75rem;">11:55</div>
+                        </div>
+                        <div class="stepper-item">
+                            <div class="step-counter"><i class="fa-solid fa-house"></i></div>
+                            <div class="step-name">Hoàn thành</div>
+                            <div class="text-muted small" style="font-size: 0.75rem;">--:--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- THÔNG TIN GIA HÀNG -->
+                <div class="tracking-card">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h6 class="fw-bold mb-2" style="color: var(--lumitea-primary);">Địa chỉ nhận hàng</h6>
+                            <p class="mb-0 text-dark fw-medium">140 Lê Trọng Tấn, P. Tây Thạnh, Q. Tân Phú, TP.HCM</p>
+                            <p class="text-muted small mt-1 mb-0">Người nhận: Lê Quốc Việt - 0901234567</p>
+                        </div>
+                        <a href="~/Order/Details" class="btn btn-sm btn-outline-secondary fw-bold rounded-3">
+                            Xem biên lai
+                        </a>
+                    </div>
+
+                    <hr class="text-muted opacity-25 my-4">
+
+                    <!-- XÁC NHẬN NHẬN ĐƠN -->
+                    <form action="/Order/ConfirmReceived" method="POST">
+                        <input type="hidden" name="OrderId" value="ORD-1082" />
+
+                        <button type="submit" class="btn w-100 fw-bold d-flex justify-content-center align-items-center gap-2 shadow-sm"
+                                style="background-color: var(--lumitea-primary); color: white; border-radius: 12px; padding: 14px; font-size: 1.05rem;">
+                            <i class="fa-solid fa-box-open"></i> Đã nhận được hàng
+                        </button>
+                    </form>
+
+                    <p class="text-center text-muted small mt-3 mb-0">
+                        <i class="fa-solid fa-circle-info me-1"></i> Vui lòng chỉ bấm xác nhận khi bạn đã nhận đủ món.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,1207 @@
+﻿@model List<DoAnLapTrinhWeb.Controllers.ProductViewModel>
+
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+
+    var categories =
+        ViewBag.Categories as List<DoAnLapTrinhWeb.Controllers.ProductCategoryViewModel>
+        ?? new List<DoAnLapTrinhWeb.Controllers.ProductCategoryViewModel>();
+
+    int totalProducts = ViewBag.TotalProducts ?? 0;
+    int activeProducts = ViewBag.ActiveProducts ?? 0;
+    int inactiveProducts = ViewBag.InactiveProducts ?? 0;
+}
+
+<link rel="stylesheet" href="~/Css/styleProduct_index.css" />
+
+<div class="product-page">
+
+    <!-- =========================================================
+         HEADER
+         ========================================================= -->
+
+    <div class="product-heading">
+
+        <div class="heading-left">
+
+            <div class="heading-icon">
+                <i class="bi bi-cup-hot-fill"></i>
+            </div>
+
+            <div>
+
+                <h1 class="page-title">
+                    Quản lý sản phẩm
+                </h1>
+
+                <p class="page-subtitle">
+                    Quản lý danh sách sản phẩm, loại sản phẩm, giá bán và trạng thái kinh doanh.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- NÚT THÊM -->
+
+        <button type="button"
+                class="btn-tea"
+                data-bs-toggle="modal"
+                data-bs-target="#addProductModal">
+
+            <i class="bi bi-plus-lg me-1"></i>
+
+            Thêm sản phẩm
+
+        </button>
+
+    </div>
+
+
+    <!-- =========================================================
+         SUMMARY
+         ========================================================= -->
+
+    <div class="summary-grid">
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Tổng sản phẩm
+            </span>
+
+            <span class="summary-number">
+                @totalProducts
+            </span>
+
+            <div class="summary-icon">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Đang bán
+            </span>
+
+            <span class="summary-number">
+                @activeProducts
+            </span>
+
+            <div class="summary-icon">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Ngừng bán
+            </span>
+
+            <span class="summary-number">
+                @inactiveProducts
+            </span>
+
+            <div class="summary-icon">
+                <i class="bi bi-pause-circle-fill"></i>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Kết quả hiển thị
+            </span>
+
+            <span class="summary-number">
+                @Model.Count
+            </span>
+
+            <div class="summary-icon">
+                <i class="bi bi-search"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         FILTER
+         ========================================================= -->
+
+    <div class="filter-card">
+
+        <div class="filter-head">
+
+            <i class="bi bi-funnel-fill"></i>
+
+            <span>
+                Tìm kiếm & lọc sản phẩm
+            </span>
+
+        </div>
+
+
+        <div class="filter-body">
+
+            <form method="get"
+                  action="@Url.Action("Index", "Product")">
+
+                <div class="row g-3 align-items-end">
+
+
+                    <!-- TÌM KIẾM -->
+
+                    <div class="col-lg-5">
+
+                        <label class="form-label">
+                            Tìm kiếm
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+
+                            <input type="text"
+                                   name="keyword"
+                                   value="@ViewBag.Keyword"
+                                   class="form-control"
+                                   placeholder="Nhập mã hoặc tên sản phẩm..." />
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- LOẠI -->
+
+                    <div class="col-lg-3">
+
+                        <label class="form-label">
+                            Loại sản phẩm
+                        </label>
+
+                        <select name="category"
+                                class="form-select">
+
+                            <option value="">
+                                Tất cả loại
+                            </option>
+
+
+                            @foreach (var categoryItem in categories)
+                            {
+                                if ((string)ViewBag.Category ==
+                                    categoryItem.CategoryName)
+                                {
+                                    <option value="@categoryItem.CategoryName"
+                                            selected>
+                                        @categoryItem.CategoryName
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@categoryItem.CategoryName">
+                                        @categoryItem.CategoryName
+                                    </option>
+                                }
+                            }
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- TRẠNG THÁI -->
+
+                    <div class="col-lg-2">
+
+                        <label class="form-label">
+                            Trạng thái
+                        </label>
+
+                        <select name="status"
+                                class="form-select">
+
+                            @if (string.IsNullOrEmpty((string)ViewBag.Status))
+                            {
+                                <option value="" selected>
+                                    Tất cả
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="">
+                                    Tất cả
+                                </option>
+                            }
+
+
+                            @if ((string)ViewBag.Status == "Đang bán")
+                            {
+                                <option value="Đang bán" selected>
+                                    Đang bán
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="Đang bán">
+                                    Đang bán
+                                </option>
+                            }
+
+
+                            @if ((string)ViewBag.Status == "Ngừng bán")
+                            {
+                                <option value="Ngừng bán" selected>
+                                    Ngừng bán
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="Ngừng bán">
+                                    Ngừng bán
+                                </option>
+                            }
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- NÚT LỌC -->
+
+                    <div class="col-lg-2 d-flex gap-2">
+
+                        <button type="submit"
+                                class="btn-tea flex-grow-1">
+
+                            <i class="bi bi-search me-1"></i>
+
+                            Lọc
+
+                        </button>
+
+
+                        <a href="@Url.Action("Index", "Product")"
+                           class="btn-filter d-inline-flex align-items-center justify-content-center px-3"
+                           title="Đặt lại">
+
+                            <i class="bi bi-arrow-counterclockwise"></i>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         TABLE
+         ========================================================= -->
+
+    <div class="product-table-card">
+
+        <div class="table-top">
+
+            <div>
+
+                <h2 class="table-title">
+                    Danh sách sản phẩm
+                </h2>
+
+                <span class="table-note">
+                    Hiển thị @Model.Count sản phẩm
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-responsive">
+
+            <table class="table">
+
+                <thead>
+
+                    <tr>
+
+                        <th style="width:130px;">
+                            Mã sản phẩm
+                        </th>
+
+                        <th style="width:300px;">
+                            Sản phẩm
+                        </th>
+
+                        <th style="width:180px;">
+                            Loại
+                        </th>
+
+                        <th>
+                            Giá bán
+                        </th>
+
+                        <th>
+                            Topping
+                        </th>
+
+                        <th>
+                            Trạng thái
+                        </th>
+
+                        <th class="text-center"
+                            style="width:100px;">
+                            Thao tác
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @if (Model.Any())
+                    {
+                        foreach (var product in Model)
+                        {
+                            decimal minPrice =
+                                product.Sizes.Any()
+                                ? product.Sizes.Min(x => x.Price)
+                                : 0;
+
+                            decimal maxPrice =
+                                product.Sizes.Any()
+                                ? product.Sizes.Max(x => x.Price)
+                                : 0;
+
+
+                            <tr>
+
+
+                                <!-- MÃ SẢN PHẨM -->
+
+                                <td>
+
+                                    <span class="product-code">
+                                        @product.ProductId
+                                    </span>
+
+                                </td>
+
+
+                                <!-- SẢN PHẨM -->
+
+                                <td>
+
+                                    <div class="d-flex align-items-center gap-3">
+
+                                        <div class="product-image d-flex align-items-center justify-content-center">
+
+                                            <i class="bi bi-cup-straw"
+                                               style="font-size:22px; color:#20584f;">
+                                            </i>
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <div class="product-name">
+                                                @product.ProductName
+                                            </div>
+
+                                            <div class="description mt-1">
+                                                @product.Description
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- LOẠI -->
+
+                                <td>
+
+                                    <span class="category-badge">
+
+                                        <i class="bi bi-tag-fill me-1"></i>
+
+                                        @product.CategoryName
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- GIÁ -->
+
+                                <td>
+
+                                    @if (product.Sizes.Any())
+                                    {
+                                        if (minPrice == maxPrice)
+                                        {
+                                            <span class="product-price">
+                                                @minPrice.ToString("N0") đ
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="product-price">
+
+                                                @minPrice.ToString("N0")
+                                                -
+                                                @maxPrice.ToString("N0") đ
+
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Chưa có giá
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- TOPPING -->
+
+                                <td>
+
+                                    @if (product.Toppings.Any())
+                                    {
+                                        <span style="font-size:12px; color:#78837e;">
+                                            @product.Toppings.Count topping
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span style="font-size:12px; color:#a0aaa6;">
+                                            Không có
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- TRẠNG THÁI -->
+
+                                <td>
+
+                                    @if (product.Status == "Đang bán")
+                                    {
+                                        <span class="status-badge available">
+
+                                            <i class="bi bi-circle-fill"></i>
+
+                                            Đang bán
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge unavailable">
+
+                                            <i class="bi bi-circle-fill"></i>
+
+                                            Ngừng bán
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- THAO TÁC -->
+
+                                <td class="text-center">
+
+                                    <a href="@Url.Action("Details", "Product", new { id = product.ProductId })"
+                                       class="action-btn edit-btn"
+                                       title="Xem chi tiết">
+
+                                        <i class="bi bi-eye-fill"></i>
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+
+                            <td colspan="7">
+
+                                <div class="text-center py-5">
+
+                                    <div style="font-size:42px; color:#b7c5bf;">
+                                        <i class="bi bi-box-seam"></i>
+                                    </div>
+
+                                    <h5 class="mt-3"
+                                        style="color:#20584f; font-weight:800;">
+                                        Không tìm thấy sản phẩm
+                                    </h5>
+
+                                    <p style="color:#78837e; font-size:13px;">
+                                        Hãy thử thay đổi từ khóa hoặc bộ lọc.
+                                    </p>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <div class="table-footer">
+
+            <span class="table-note">
+                Tổng cộng @Model.Count sản phẩm
+            </span>
+
+            <div>
+
+                <span class="table-note">
+                    Quản lý sản phẩm
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     MODAL THÊM SẢN PHẨM
+     ============================================================= -->
+
+<div class="modal fade product-page-modal"
+     id="addProductModal"
+     tabindex="-1"
+     aria-labelledby="addProductModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content">
+
+
+            <!-- HEADER -->
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h5 class="modal-title"
+                        id="addProductModalLabel">
+
+                        <i class="bi bi-plus-circle-fill me-2"></i>
+
+                        Thêm sản phẩm
+
+                    </h5>
+
+                    <div class="description mt-1">
+                        Nhập thông tin sản phẩm mới
+                    </div>
+
+                </div>
+
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Đóng">
+                </button>
+
+            </div>
+
+
+            <!-- BODY -->
+
+            <div class="modal-body">
+
+                <form id="addProductForm">
+
+
+                    <!-- =================================================
+                         THÔNG TIN CƠ BẢN
+                         ================================================= -->
+
+                    <div class="row g-4">
+
+
+                        <!-- MÃ -->
+
+                        <div class="col-md-4">
+
+                            <label class="modal-label">
+                                Mã sản phẩm
+                            </label>
+
+                            <input type="text"
+                                   id="newProductId"
+                                   class="form-control"
+                                   value="SP0000012"
+                                   readonly />
+
+                            <div class="description mt-2">
+                                Mã được tạo tự động.
+                            </div>
+
+                        </div>
+
+
+                        <!-- TÊN -->
+
+                        <div class="col-md-8">
+
+                            <label class="modal-label">
+                                Tên sản phẩm
+                                <span class="text-danger">*</span>
+                            </label>
+
+                            <input type="text"
+                                   id="newProductName"
+                                   class="form-control"
+                                   placeholder="Ví dụ: Trà dâu kem cheese..." />
+
+                        </div>
+
+
+                        <!-- LOẠI -->
+
+                        <div class="col-md-6">
+
+                            <label class="modal-label">
+                                Loại sản phẩm
+                                <span class="text-danger">*</span>
+                            </label>
+
+                            <select id="newProductCategory"
+                                    class="form-select">
+
+                                <option value="">
+                                    -- Chọn loại sản phẩm --
+                                </option>
+
+                                <option value="Trà sữa">
+                                    Trà sữa
+                                </option>
+
+                                <option value="Trà trái cây">
+                                    Trà trái cây
+                                </option>
+
+                                <option value="Trà truyền thống">
+                                    Trà truyền thống
+                                </option>
+
+                                <option value="Macchiato">
+                                    Macchiato
+                                </option>
+
+                                <option value="Bánh">
+                                    Bánh
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- TRẠNG THÁI -->
+
+                        <div class="col-md-6">
+
+                            <label class="modal-label">
+                                Trạng thái
+                            </label>
+
+                            <select id="newProductStatus"
+                                    class="form-select">
+
+                                <option value="Đang bán">
+                                    Đang bán
+                                </option>
+
+                                <option value="Ngừng bán">
+                                    Ngừng bán
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- MÔ TẢ -->
+
+                        <div class="col-12">
+
+                            <label class="modal-label">
+                                Mô tả sản phẩm
+                            </label>
+
+                            <textarea id="newProductDescription"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Nhập mô tả sản phẩm..."></textarea>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         GIÁ THEO SIZE
+                         ================================================= -->
+
+                    <div class="mt-4">
+
+                        <h5 style="color:#20584f; font-weight:800;">
+
+                            <i class="bi bi-cash-stack me-2"></i>
+
+                            Giá bán theo size
+
+                        </h5>
+
+
+                        <div class="row g-3 mt-1">
+
+
+                            <!-- SIZE S -->
+
+                            <div class="col-md-4">
+
+                                <label class="modal-label">
+                                    Size S
+                                </label>
+
+                                <div class="input-group">
+
+                                    <input type="number"
+                                           id="newPriceS"
+                                           class="form-control"
+                                           min="0"
+                                           placeholder="25000" />
+
+                                    <span class="input-group-text">
+                                        đ
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- SIZE M -->
+
+                            <div class="col-md-4">
+
+                                <label class="modal-label">
+                                    Size M
+                                </label>
+
+                                <div class="input-group">
+
+                                    <input type="number"
+                                           id="newPriceM"
+                                           class="form-control"
+                                           min="0"
+                                           placeholder="30000" />
+
+                                    <span class="input-group-text">
+                                        đ
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- SIZE L -->
+
+                            <div class="col-md-4">
+
+                                <label class="modal-label">
+                                    Size L
+                                </label>
+
+                                <div class="input-group">
+
+                                    <input type="number"
+                                           id="newPriceL"
+                                           class="form-control"
+                                           min="0"
+                                           placeholder="35000" />
+
+                                    <span class="input-group-text">
+                                        đ
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         TOPPING
+                         ================================================= -->
+
+                    <div class="mt-4">
+
+                        <h5 style="color:#20584f; font-weight:800;">
+
+                            <i class="bi bi-stars me-2"></i>
+
+                            Topping đi kèm
+
+                        </h5>
+
+
+                        <div class="row g-3 mt-1">
+
+
+                            <!-- TOPPING 1 -->
+
+                            <div class="col-md-4">
+
+                                <div class="form-check">
+
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           value="Trân châu đen"
+                                           id="newTopping1" />
+
+                                    <label class="form-check-label"
+                                           for="newTopping1">
+
+                                        Trân châu đen
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- TOPPING 2 -->
+
+                            <div class="col-md-4">
+
+                                <div class="form-check">
+
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           value="Trân châu trắng"
+                                           id="newTopping2" />
+
+                                    <label class="form-check-label"
+                                           for="newTopping2">
+
+                                        Trân châu trắng
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- TOPPING 3 -->
+
+                            <div class="col-md-4">
+
+                                <div class="form-check">
+
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           value="Pudding trứng"
+                                           id="newTopping3" />
+
+                                    <label class="form-check-label"
+                                           for="newTopping3">
+
+                                        Pudding trứng
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- TOPPING 4 -->
+
+                            <div class="col-md-4">
+
+                                <div class="form-check">
+
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           value="Thạch nha đam"
+                                           id="newTopping4" />
+
+                                    <label class="form-check-label"
+                                           for="newTopping4">
+
+                                        Thạch nha đam
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- TOPPING 5 -->
+
+                            <div class="col-md-4">
+
+                                <div class="form-check">
+
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           value="Thạch trái cây"
+                                           id="newTopping5" />
+
+                                    <label class="form-check-label"
+                                           for="newTopping5">
+
+                                        Thạch trái cây
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- TOPPING 6 -->
+
+                            <div class="col-md-4">
+
+                                <div class="form-check">
+
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           value="Kem cheese"
+                                           id="newTopping6" />
+
+                                    <label class="form-check-label"
+                                           for="newTopping6">
+
+                                        Kem cheese
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </form>
+
+            </div>
+
+
+            <!-- =================================================
+                 FOOTER
+                 ================================================= -->
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn-filter"
+                        data-bs-dismiss="modal">
+
+                    Hủy
+
+                </button>
+
+
+                <button type="button"
+                        class="btn-save"
+                        onclick="saveProductDemo()">
+
+                    <i class="bi bi-check-lg me-1"></i>
+
+                    Lưu sản phẩm
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     JAVASCRIPT
+     ============================================================= -->
+
+<script>
+
+    function saveProductDemo() {
+
+        var productName =
+            document.getElementById("newProductName").value.trim();
+
+        var category =
+            document.getElementById("newProductCategory").value;
+
+
+        // ---------------------------------------------------------
+        // KIỂM TRA TÊN
+        // ---------------------------------------------------------
+
+        if (productName === "") {
+
+            alert("Vui lòng nhập tên sản phẩm.");
+
+            document.getElementById("newProductName").focus();
+
+            return;
+        }
+
+
+        // ---------------------------------------------------------
+        // KIỂM TRA LOẠI
+        // ---------------------------------------------------------
+
+        if (category === "") {
+
+            alert("Vui lòng chọn loại sản phẩm.");
+
+            document.getElementById("newProductCategory").focus();
+
+            return;
+        }
+
+
+        // ---------------------------------------------------------
+        // KIỂM TRA GIÁ
+        // ---------------------------------------------------------
+
+        var priceS =
+            document.getElementById("newPriceS").value;
+
+        var priceM =
+            document.getElementById("newPriceM").value;
+
+        var priceL =
+            document.getElementById("newPriceL").value;
+
+
+        if (
+            priceS === "" &&
+            priceM === "" &&
+            priceL === ""
+        ) {
+
+            alert("Vui lòng nhập ít nhất một mức giá.");
+
+            document.getElementById("newPriceS").focus();
+
+            return;
+        }
+
+
+        // ---------------------------------------------------------
+        // DEMO LƯU
+        // ---------------------------------------------------------
+
+        alert(
+            "Đã lưu sản phẩm thành công!\n\n" +
+            "Mã: " +
+            document.getElementById("newProductId").value +
+            "\n" +
+            "Tên: " +
+            productName +
+            "\n" +
+            "Loại: " +
+            category +
+            "\n\n" +
+            "Đây hiện là chức năng demo giao diện.\n" +
+            "Sau này sẽ kết nối Database."
+        );
+
+
+        // ---------------------------------------------------------
+        // ĐÓNG MODAL
+        // ---------------------------------------------------------
+
+        var modalElement =
+            document.getElementById("addProductModal");
+
+        var modal =
+            bootstrap.Modal.getInstance(modalElement);
+
+        if (modal) {
+            modal.hide();
+        }
+
+
+        // ---------------------------------------------------------
+        // RESET FORM
+        // ---------------------------------------------------------
+
+        document.getElementById("addProductForm").reset();
+
+    }
+
+</script>

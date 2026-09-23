@@ -1,0 +1,299 @@
+﻿@{
+    ViewBag.Title = "Thực Đơn - LumiTea";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --lumitea-primary: #1A4D3E; 
+            --lumitea-accent: #F6C90E; 
+            --lumitea-bg: #F8FAFC;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--lumitea-bg);
+        }
+
+        /* DANH MỤC */
+        .category-filter .nav-link {
+            color: #64748B;
+            font-weight: 600;
+            border-radius: 20px;
+            padding: 8px 20px;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+
+            .category-filter .nav-link.active {
+                background-color: var(--lumitea-primary);
+                color: white;
+                box-shadow: 0 4px 10px rgba(26, 77, 62, 0.2);
+            }
+
+        /* THẺ SẢN PHẨM */
+        .product-card {
+            border: none;
+            border-radius: 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+            background: #fff;
+        }
+
+            .product-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            }
+
+        .product-img-wrapper {
+            position: relative;
+            padding-top: 100%;
+            background-color: #f1f5f9;
+        }
+
+            .product-img-wrapper img {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        .btn-add-cart {
+            background-color: var(--lumitea-accent);
+            color: #000;
+            font-weight: 700;
+            border: none;
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+
+            .btn-add-cart:hover {
+                background-color: #e5b905;
+                transform: scale(1.05);
+            }
+
+        .price-text {
+            color: var(--lumitea-primary);
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        /* Modal Customization */
+        .modal-header {
+            background-color: var(--lumitea-primary);
+            color: white;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container py-4">
+        <!-- TIÊU ĐỀ VÀ TÌM KIẾM -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div>
+                <h2 class="fw-extrabold m-0" style="color: var(--lumitea-primary); letter-spacing: -0.8px;">Thực Đơn</h2>
+                <p class="text-muted m-0">Chọn món yêu thích của bạn từ LumiTea</p>
+            </div>
+            <div class="search-box position-relative" style="max-width: 300px; width: 100%;">
+                <input type="text" class="form-control rounded-pill ps-4" placeholder="Tìm kiếm món...">
+                <i class="fa-solid fa-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
+            </div>
+        </div>
+
+        <!-- DANH MỤC -->
+        <ul class="nav nav-pills category-filter mb-4 border-bottom pb-3">
+            <li class="nav-item">
+                <a class="nav-link active" href="#">Tất cả</a>
+            </li>
+            <li class="nav-item">
+              
+                <a class="nav-link" href="#">Trà Sữa</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Sữa Tươi</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Trà Trái Cây</a>
+            </li>
+        </ul>
+
+        <!-- SẢN PHẨM -->
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+
+            <!-- 1 -->
+            <div class="col">
+                <div class="card product-card h-100">
+                    <div class="product-img-wrapper">
+                        
+                        
+                        <img src="~/Assets/o_long_sua_nuong.jpg" />
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                      
+                        <h5 class="card-title fw-bold text-dark mb-1 fs-6">Trà Sữa Ô Long Nướng</h5>
+                       
+                        <p class="card-text text-muted small mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            Trà ô long nướng thơm lừng kết hợp cùng sữa béo ngậy.
+                        </p>
+                        <div class="mt-auto d-flex align-items-center justify-content-between">
+                           
+                            <span class="price-text">35.000 <span class="fs-6 text-decoration-underline">đ</span></span>
+                            <button class="btn btn-add-cart px-3" data-bs-toggle="modal" data-bs-target="#orderModal">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2 -->
+            <div class="col">
+                <div class="card product-card h-100">
+                    <div class="product-img-wrapper">
+                       
+                        <img src="~/Assets/tra_sua_chan_chau_duong_den.jpg" alt="Sữa Tươi Trân Châu"/>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold text-dark mb-1 fs-6">Sữa Tươi Trân Châu Đường Đen</h5>
+                        <p class="card-text text-muted small mb-3">Sữa tươi thanh trùng Đà Lạt Milk và trân châu đường đen nóng hổi.</p>
+                        <div class="mt-auto d-flex align-items-center justify-content-between">
+                            <span class="price-text">40.000 <span class="fs-6 text-decoration-underline">đ</span></span>
+                            <button class="btn btn-add-cart px-3" data-bs-toggle="modal" data-bs-target="#orderModal">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3 -->
+            <div class="col">
+                <div class="card product-card h-100" style="opacity: 0.6;">
+                    <div class="product-img-wrapper">
+                        <span class="badge bg-danger position-absolute top-0 start-0 m-2 z-1">Hết hàng</span>
+                       
+                        <img src="~/Assets/tra_xoai_kim_chese.jpg" alt="Trà Xoài Nhài"/>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold text-dark mb-1 fs-6">Trà Xoài Nhài Kem Cheese</h5>
+                        <p class="card-text text-muted small mb-3">Trà nhài thanh mát với mứt xoài tươi và lớp kem cheese mặn.</p>
+                        <div class="mt-auto d-flex align-items-center justify-content-between">
+                            <span class="price-text">45.000 <span class="fs-6 text-decoration-underline">đ</span></span>
+                           
+                            <button class="btn btn-secondary px-3" disabled>
+                                <i class="fa-solid fa-ban"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- DẤU + THÊM VÀO GIỎ -->
+    <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 overflow-hidden">
+                <div class="modal-header border-0 pb-3">
+                    <h5 class="modal-title" id="orderModalLabel">Trà Sữa Ô Long Nướng</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 bg-light">
+
+                    <!--SIZE -->
+                    <h6 class="fw-bold mb-3"><i class="fa-solid fa-mug-hot me-2 text-muted"></i>Chọn Size (Bắt buộc)</h6>
+                    <div class="d-flex flex-column gap-2 mb-4">
+                        <label class="d-flex justify-content-between align-items-center p-3 bg-white rounded-3 border shadow-sm cursor-pointer">
+                            <div class="form-check m-0">
+                                <input class="form-check-input" type="radio" name="sizeOption" id="sizeS" checked>
+                                <label class="form-check-label fw-semibold" for="sizeS">Size S (Mặc định)</label>
+                            </div>
+                            <span class="text-muted small">+ 0 đ</span> 
+                        </label>
+                        <label class="d-flex justify-content-between align-items-center p-3 bg-white rounded-3 border shadow-sm cursor-pointer">
+                            <div class="form-check m-0">
+                                <input class="form-check-input" type="radio" name="sizeOption" id="sizeM">
+                                <label class="form-check-label fw-semibold" for="sizeM">Size M</label>
+                            </div>
+                            <span class="text-muted small">+ 5.000 đ</span> 
+                        </label>
+                        <label class="d-flex justify-content-between align-items-center p-3 bg-white rounded-3 border shadow-sm cursor-pointer">
+                            <div class="form-check m-0">
+                                <input class="form-check-input" type="radio" name="sizeOption" id="sizeL">
+                                <label class="form-check-label fw-semibold" for="sizeL">Size L</label>
+                            </div>
+                            <span class="text-muted small">+ 10.000 đ</span> 
+                        </label>
+                    </div>
+
+                    <!-- TOPPING -->
+                    <h6 class="fw-bold mb-3"><i class="fa-solid fa-ice-cream me-2 text-muted"></i>Thêm Topping (Tùy chọn)</h6>
+                    <div class="d-flex flex-column gap-2 mb-3">
+                        <label class="d-flex justify-content-between align-items-center p-2 px-3 bg-white rounded-3 border">
+                            <div class="form-check m-0">
+                                <input class="form-check-input" type="checkbox" id="topping1">
+                                <label class="form-check-label" for="topping1">Trân châu đen</label>
+                            </div>
+                            <span class="text-muted small">+ 8.000 đ</span> 
+                        </label>
+                        <label class="d-flex justify-content-between align-items-center p-2 px-3 bg-white rounded-3 border">
+                            <div class="form-check m-0">
+                                <input class="form-check-input" type="checkbox" id="topping2">
+                                <label class="form-check-label" for="topping2">Thạch lô hội</label>
+                            </div>
+                            <span class="text-muted small">+ 8.000 đ</span>
+                        </label>
+                        <label class="d-flex justify-content-between align-items-center p-2 px-3 bg-white rounded-3 border">
+                            <div class="form-check m-0">
+                                <input class="form-check-input" type="checkbox" id="topping3">
+                                <label class="form-check-label" for="topping3">Kem Cheese</label>
+                            </div>
+                            <span class="text-muted small">+ 15.000 đ</span>
+                        </label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Ghi chú cho quán</label>
+                        <input type="text" class="form-control" placeholder="Ít đá, ít ngọt...">
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="input-group" style="width: 120px;">
+                            <button class="btn btn-outline-secondary" type="button">-</button>
+                            <input type="text" class="form-control text-center fw-bold" value="1" readonly>
+                            <button class="btn btn-outline-secondary" type="button">+</button>
+                        </div>
+                        <h4 class="fw-extrabold m-0 text-danger" style="color: var(--lumitea-primary) !important;">35.000 đ</h4>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-3 bg-white">
+                    <button type="button" class="btn w-100 py-2 fs-5 text-dark" style="background-color: var(--lumitea-accent); font-weight: 700; border-radius: 12px;">
+                        Thêm vào giỏ hàng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

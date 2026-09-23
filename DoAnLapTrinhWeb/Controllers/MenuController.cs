@@ -6,9 +6,9 @@ using System.Web.Mvc;
 
 namespace DoAnLapTrinhWeb.Controllers
 {
-    public class IngredientController : Controller
+    public class MenuController : Controller
     {
-        // GET: Ingredient
+        // GET: Menu
         public ActionResult Index()
         {
             return View();
