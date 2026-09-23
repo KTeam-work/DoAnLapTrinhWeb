@@ -1,0 +1,30 @@
+@page
+@model TV1.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Đăng nhập";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="tv1-card">
+    <h2>Đăng nhập</h2>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="tv1-alert">Tên đăng nhập hoặc mật khẩu không đúng.</div>
+    }
+
+    <form method="post" class="tv1-form">
+        <label asp-for="Username">Tên đăng nhập</label>
+        <input asp-for="Username" placeholder="username" />
+
+        <label asp-for="Password">Mật khẩu</label>
+        <input asp-for="Password" type="password" placeholder="••••••••" />
+
+        <button type="submit" class="tv1-btn">Đăng nhập</button>
+    </form>
+
+    <div class="tv1-links">
+        <a asp-page="/Account/ForgotPassword">Quên mật khẩu?</a> &nbsp;•&nbsp;
+        <a asp-page="/Account/Register">Đăng ký tài khoản</a>
+    </div>
+</div>
