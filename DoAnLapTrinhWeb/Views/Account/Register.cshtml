@@ -1,0 +1,33 @@
+@page
+@model TV1.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Đăng ký";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="tv1-card">
+    <h2>Tạo tài khoản</h2>
+
+    <form method="post" class="tv1-form">
+        <label asp-for="FullName">Họ tên</label>
+        <input asp-for="FullName" placeholder="Nguyễn Văn A" />
+
+        <label asp-for="Username">Tên đăng nhập</label>
+        <input asp-for="Username" placeholder="username" />
+
+        <label asp-for="Email">Email</label>
+        <input asp-for="Email" type="email" placeholder="ban@email.com" />
+
+        <label asp-for="Phone">Số điện thoại</label>
+        <input asp-for="Phone" placeholder="09xxxxxxxx" />
+
+        <label asp-for="Password">Mật khẩu</label>
+        <input asp-for="Password" type="password" placeholder="••••••••" />
+
+        <button type="submit" class="tv1-btn">Đăng ký</button>
+    </form>
+
+    <div class="tv1-links">
+        Đã có tài khoản? <a asp-page="/Account/Login">Đăng nhập</a>
+    </div>
+</div>
