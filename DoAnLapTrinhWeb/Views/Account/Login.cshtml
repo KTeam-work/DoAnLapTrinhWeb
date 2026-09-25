@@ -1,44 +1,183 @@
-﻿@model QuanLyTraSua.Models.LoginViewModel
+﻿@model DoAnLapTrinhWeb.Models.LoginViewModel
 @{
     ViewBag.Title = "Đăng nhập";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="tv1-card">
-    <h2>Đăng nhập</h2>
 
-    @if (!ViewData.ModelState.IsValid)
-    {
-        <div class="tv1-alert">
-            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-            {
-                <p>@error.ErrorMessage</p>
+<style>
+    .tv1-auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 75vh;
+        background: #f8f9fa;
+        padding: 20px;
+    }
+
+    .tv1-card {
+        background: #ffffff;
+        width: 100%;
+        max-width: 420px;
+        padding: 40px 30px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid #eaeaea;
+    }
+
+        .tv1-card h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+    .tv1-form label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+
+    .tv1-form input[type="text"],
+    .tv1-form input[type="password"],
+    .tv1-form input[type="email"] {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 15px;
+        border: 1.5px solid #ced4da;
+        border-radius: 10px;
+        outline: none;
+        transition: all 0.3s ease;
+        background: #fdfdfd;
+        margin-bottom: 6px;
+    }
+
+    .tv1-form input:focus {
+        border-color: #198754;
+        box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.1);
+        background: #fff;
+    }
+
+    .checkbox-row {
+        display: flex;
+        align-items: center;
+        margin: 12px 0 18px 0;
+    }
+
+        .checkbox-row input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #198754;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-row label {
+            margin-bottom: 0;
+            font-weight: normal;
+            color: #495057;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+    .tv1-btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+        background-color: #198754;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+        .tv1-btn:hover {
+            background-color: #157347;
+        }
+
+    .tv1-alert {
+        background-color: #f8d7da;
+        color: #842029;
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 14px;
+        margin-bottom: 20px;
+        border: 1px solid #f5c2c7;
+    }
+
+        .tv1-alert p {
+            margin: 0;
+        }
+
+    .field-error {
+        color: #dc3545;
+        font-size: 13px;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .tv1-links {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+    }
+
+        .tv1-links a {
+            color: #198754;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+            .tv1-links a:hover {
+                text-decoration: underline;
+                color: #157347;
             }
+</style>
+
+
+<div class="tv1-auth-container">
+    <div class="tv1-card">
+        <h2>Đăng nhập</h2>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="tv1-alert">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
+        }
+
+        @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "tv1-form" }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.LabelFor(m => m.UsernameOrEmail, "Tên đăng nhập hoặc Email")
+            @Html.TextBoxFor(m => m.UsernameOrEmail, new { placeholder = "username hoặc email" })
+            @Html.ValidationMessageFor(m => m.UsernameOrEmail, "", new { @class = "field-error" })
+
+            @Html.LabelFor(m => m.Password, "Mật khẩu")
+            @Html.PasswordFor(m => m.Password, new { placeholder = "••••••••" })
+            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "field-error" })
+
+            <div class="checkbox-row">
+                @Html.CheckBoxFor(m => m.RememberMe, new { id = "RememberMe" })
+                @Html.Label("RememberMe", "Ghi nhớ đăng nhập")
+            </div>
+
+            <button type="submit" class="tv1-btn">Đăng nhập</button>
+        }
+
+        <div class="tv1-links">
+            <a href="@Url.Action("ForgotPassword", "Account")">Quên mật khẩu?</a> &nbsp;•&nbsp;
+            <a href="@Url.Action("Register", "Account")">Đăng ký tài khoản</a>
         </div>
-    }
-
-    @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "tv1-form" }))
-    {
-        @Html.AntiForgeryToken()
-
-        @Html.LabelFor(m => m.UsernameOrEmail)
-        @Html.TextBoxFor(m => m.UsernameOrEmail, new { placeholder = "username hoặc email" })
-        @Html.ValidationMessageFor(m => m.UsernameOrEmail, "", new { @class = "field-error" })
-
-        @Html.LabelFor(m => m.Password)
-        @Html.PasswordFor(m => m.Password, new { placeholder = "••••••••" })
-        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "field-error" })
-
-        <div class="checkbox-row">
-            @Html.CheckBoxFor(m => m.RememberMe, new { id = "RememberMe" })
-            @Html.Label("RememberMe", "Ghi nhớ đăng nhập")
-        </div>
-
-        <button type="submit" class="tv1-btn">Đăng nhập</button>
-    }
-
-    <div class="tv1-links">
-        <a href="@Url.Action("ForgotPassword", "Account")">Quên mật khẩu?</a> &nbsp;•&nbsp;
-        <a href="@Url.Action("Register", "Account")">Đăng ký tài khoản</a>
     </div>
 </div>

@@ -1,0 +1,89 @@
+﻿
+:root {
+    --lumitea-primary: #1A4D3E;
+    --lumitea-accent: #F6C90E;
+    --lumitea-bg: #F8FAFC;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--lumitea-bg);
+}
+
+/* DANH MỤC */
+.category-filter .nav-link {
+    color: #64748B;
+    font-weight: 600;
+    border-radius: 20px;
+    padding: 8px 20px;
+    margin-right: 10px;
+    transition: all 0.3s ease;
+}
+
+    .category-filter .nav-link.active {
+        background-color: var(--lumitea-primary);
+        color: white;
+        box-shadow: 0 4px 10px rgba(26, 77, 62, 0.2);
+    }
+
+/* THẺ SẢN PHẨM */
+.product-card {
+    border: none;
+    border-radius: 16px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    background: #fff;
+}
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+.product-img-wrapper {
+    position: relative;
+    padding-top: 100%;
+    background-color: #f1f5f9;
+}
+
+    .product-img-wrapper img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.btn-add-cart {
+    background-color: var(--lumitea-accent);
+    color: #000;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    transition: all 0.2s;
+}
+
+    .btn-add-cart:hover {
+        background-color: #e5b905;
+        transform: scale(1.05);
+    }
+
+.price-text {
+    color: var(--lumitea-primary);
+    font-weight: 800;
+    font-size: 1.2rem;
+}
+
+/* Modal Customization */
+.modal-header {
+    background-color: var(--lumitea-primary);
+    color: white;
+}
+
+.modal-title {
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+

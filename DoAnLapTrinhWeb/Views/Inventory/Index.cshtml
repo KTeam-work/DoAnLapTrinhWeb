@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -15,7 +16,7 @@
 </head>
 <body>
 
-  
+
     <!-- MAIN CONTENT CONTAINER -->
     <main class="container-fluid px-3 px-md-4 mt-4">
 
@@ -419,277 +420,277 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-    // PREDEFINED INGREDIENT CATALOG
-    const ingredientCatalog = [
-        { code: 'ING001', name: 'Trà Đen Ceylon Phúc Long', unit: 'g', price: 280 },
-        { code: 'ING002', name: 'Bột Sữa B-One Indo', unit: 'g', price: 95 },
-        { code: 'ING003', name: 'Trân Châu Đen Ô Long Dẻo', unit: 'g', price: 42 },
-        { code: 'ING004', name: 'Đường Nước Daesang Hàn Quốc', unit: 'ml', price: 35 },
-        { code: 'ING005', name: 'Sữa Tươi Thanh Trùng Dalat Milk', unit: 'ml', price: 48 },
-        { code: 'ING006', name: 'Kem Béo Thực Vật Rich\'s Creamer', unit: 'ml', price: 72 },
-        { code: 'ING007', name: 'Bột Matcha Uji Nhật Bản', unit: 'g', price: 650 },
-        { code: 'ING008', name: 'Siro Đào Teisseire Pháp', unit: 'ml', price: 210 },
-        { code: 'ING009', name: 'Ly Nhựa PP 500ml LumiTea', unit: 'cái', price: 850 },
-        { code: 'ING010', name: 'Ống Hút Trân Châu Màng Bọc', unit: 'cái', price: 120 }
-    ];
+        // PREDEFINED INGREDIENT CATALOG
+        const ingredientCatalog = [
+            { code: 'ING001', name: 'Trà Đen Ceylon Phúc Long', unit: 'g', price: 280 },
+            { code: 'ING002', name: 'Bột Sữa B-One Indo', unit: 'g', price: 95 },
+            { code: 'ING003', name: 'Trân Châu Đen Ô Long Dẻo', unit: 'g', price: 42 },
+            { code: 'ING004', name: 'Đường Nước Daesang Hàn Quốc', unit: 'ml', price: 35 },
+            { code: 'ING005', name: 'Sữa Tươi Thanh Trùng Dalat Milk', unit: 'ml', price: 48 },
+            { code: 'ING006', name: 'Kem Béo Thực Vật Rich\'s Creamer', unit: 'ml', price: 72 },
+            { code: 'ING007', name: 'Bột Matcha Uji Nhật Bản', unit: 'g', price: 650 },
+            { code: 'ING008', name: 'Siro Đào Teisseire Pháp', unit: 'ml', price: 210 },
+            { code: 'ING009', name: 'Ly Nhựa PP 500ml LumiTea', unit: 'cái', price: 850 },
+            { code: 'ING010', name: 'Ống Hút Trân Châu Màng Bọc', unit: 'cái', price: 120 }
+        ];
 
-    // INITIAL SAMPLE DATA FOR ROWS
-    let rowCounter = 0;
+        // INITIAL SAMPLE DATA FOR ROWS
+        let rowCounter = 0;
 
-    // ON DOM LOAD INITIALIZATION
-    document.addEventListener('DOMContentLoaded', function() {
-        // Set Default Date Time to Now
-        const now = new Date();
-        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-        document.getElementById('importDateTime').value = now.toISOString().slice(0,16);
+        // ON DOM LOAD INITIALIZATION
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set Default Date Time to Now
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('importDateTime').value = now.toISOString().slice(0, 16);
 
-        // Render Initial Sample Rows
-        addPresetRow('ING001', 5000, 280, 'PL-202609-01', '2025-11-18');
-        addPresetRow('ING002', 10000, 95, 'BO-202609-12', '2026-03-30');
-        addPresetRow('ING005', 24000, 48, 'DL-202609-88', '2026-10-15');
+            // Render Initial Sample Rows
+            addPresetRow('ING001', 5000, 280, 'PL-202609-01', '2025-11-18');
+            addPresetRow('ING002', 10000, 95, 'BO-202609-12', '2026-03-30');
+            addPresetRow('ING005', 24000, 48, 'DL-202609-88', '2026-10-15');
 
-        calculateTotals();
-    });
+            calculateTotals();
+        });
 
-    // FUNCTION TO ADD PRESET ROW
-    function addPresetRow(code, qty, price, batch, expiry) {
-        rowCounter++;
-        const tbody = document.getElementById('itemsTableBody');
-        const tr = document.createElement('tr');
-        tr.id = `row-${rowCounter}`;
+        // FUNCTION TO ADD PRESET ROW
+        function addPresetRow(code, qty, price, batch, expiry) {
+            rowCounter++;
+            const tbody = document.getElementById('itemsTableBody');
+            const tr = document.createElement('tr');
+            tr.id = `row-${rowCounter}`;
 
-        const item = ingredientCatalog.find(i => i.code === code) || ingredientCatalog[0];
+            const item = ingredientCatalog.find(i => i.code === code) || ingredientCatalog[0];
 
-        tr.innerHTML = `
-            <td class="text-center fw-semibold text-muted row-number">${tbody.children.length + 1}</td>
-            <td>
-                <select class="form-select form-select-sm item-select" onchange="onIngredientChange(${rowCounter})">
-                    ${ingredientCatalog.map(ing => `<option value="${ing.code}" ${ing.code === item.code ? 'selected' : ''}>${ing.name} (${ing.code})</option>`).join('')}
-                </select>
-            </td>
-            <td class="text-center">
-                <span class="badge bg-light text-dark border font-mono item-unit">${item.unit}</span>
-            </td>
-            <td>
-                <input type="number" step="0.01" class="form-control form-control-sm text-end fw-semibold item-qty" value="${qty}" min="1" oninput="calculateRow(${rowCounter})">
-            </td>
-            <td>
-                <input type="number" class="form-control form-control-sm text-end item-price" value="${price}" min="0" oninput="calculateRow(${rowCounter})">
-            </td>
-            <td>
-                <input type="text" class="form-control form-control-sm font-mono item-batch" value="${batch}">
-            </td>
-            <td>
-                <input type="date" class="form-control form-control-sm item-expiry" value="${expiry}">
-            </td>
-            <td class="text-end fw-bold text-success item-total">
-                ${(qty * price).toLocaleString('vi-VN')} đ
-            </td>
-            <td class="text-center">
-                <button type="button" onclick="removeRow(${rowCounter})" class="btn btn-sm btn-link text-danger p-0 hover-scale">
-                    <i class="bi bi-trash fs-6"></i>
-                </button>
-            </td>
-        `;
+            tr.innerHTML = `
+                <td class="text-center fw-semibold text-muted row-number">${tbody.children.length + 1}</td>
+                <td>
+                    <select class="form-select form-select-sm item-select" onchange="onIngredientChange(${rowCounter})">
+                        ${ingredientCatalog.map(ing => `<option value="${ing.code}" ${ing.code === item.code ? 'selected' : ''}>${ing.name} (${ing.code})</option>`).join('')}
+                    </select>
+                </td>
+                <td class="text-center">
+                    <span class="badge bg-light text-dark border font-mono item-unit">${item.unit}</span>
+                </td>
+                <td>
+                    <input type="number" step="0.01" class="form-control form-control-sm text-end fw-semibold item-qty" value="${qty}" min="1" oninput="calculateRow(${rowCounter})">
+                </td>
+                <td>
+                    <input type="number" class="form-control form-control-sm text-end item-price" value="${price}" min="0" oninput="calculateRow(${rowCounter})">
+                </td>
+                <td>
+                    <input type="text" class="form-control form-control-sm font-mono item-batch" value="${batch}">
+                </td>
+                <td>
+                    <input type="date" class="form-control form-control-sm item-expiry" value="${expiry}">
+                </td>
+                <td class="text-end fw-bold text-success item-total">
+                    ${(qty * price).toLocaleString('vi-VN')} đ
+                </td>
+                <td class="text-center">
+                    <button type="button" onclick="removeRow(${rowCounter})" class="btn btn-sm btn-link text-danger p-0 hover-scale">
+                        <i class="bi bi-trash fs-6"></i>
+                    </button>
+                </td>
+            `;
 
-        tbody.appendChild(tr);
-        updateRowNumbers();
-    }
+            tbody.appendChild(tr);
+            updateRowNumbers();
+        }
 
-    // ADD NEW DYNAMIC BLANK ROW
-    function addNewRow() {
-        rowCounter++;
-        const tbody = document.getElementById('itemsTableBody');
-        const tr = document.createElement('tr');
-        tr.id = `row-${rowCounter}`;
+        // ADD NEW DYNAMIC BLANK ROW
+        function addNewRow() {
+            rowCounter++;
+            const tbody = document.getElementById('itemsTableBody');
+            const tr = document.createElement('tr');
+            tr.id = `row-${rowCounter}`;
 
-        const defaultItem = ingredientCatalog[0];
+            const defaultItem = ingredientCatalog[0];
 
-        tr.innerHTML = `
-            <td class="text-center fw-semibold text-muted row-number">${tbody.children.length + 1}</td>
-            <td>
-                <select class="form-select form-select-sm item-select" onchange="onIngredientChange(${rowCounter})">
-                    ${ingredientCatalog.map(ing => `<option value="${ing.code}">${ing.name} (${ing.code})</option>`).join('')}
-                </select>
-            </td>
-            <td class="text-center">
-                <span class="badge bg-light text-dark border font-mono item-unit">${defaultItem.unit}</span>
-            </td>
-            <td>
-                <input type="number" step="0.01" class="form-control form-control-sm text-end fw-semibold item-qty" value="1000" min="1" oninput="calculateRow(${rowCounter})">
-            </td>
-            <td>
-                <input type="number" class="form-control form-control-sm text-end item-price" value="${defaultItem.price}" min="0" oninput="calculateRow(${rowCounter})">
-            </td>
-            <td>
-                <input type="text" class="form-control form-control-sm font-mono item-batch" placeholder="Mã lô...">
-            </td>
-            <td>
-                <input type="date" class="form-control form-control-sm item-expiry">
-            </td>
-            <td class="text-end fw-bold text-success item-total">
-                ${(1000 * defaultItem.price).toLocaleString('vi-VN')} đ
-            </td>
-            <td class="text-center">
-                <button type="button" onclick="removeRow(${rowCounter})" class="btn btn-sm btn-link text-danger p-0 hover-scale">
-                    <i class="bi bi-trash fs-6"></i>
-                </button>
-            </td>
-        `;
+            tr.innerHTML = `
+                <td class="text-center fw-semibold text-muted row-number">${tbody.children.length + 1}</td>
+                <td>
+                    <select class="form-select form-select-sm item-select" onchange="onIngredientChange(${rowCounter})">
+                        ${ingredientCatalog.map(ing => `<option value="${ing.code}">${ing.name} (${ing.code})</option>`).join('')}
+                    </select>
+                </td>
+                <td class="text-center">
+                    <span class="badge bg-light text-dark border font-mono item-unit">${defaultItem.unit}</span>
+                </td>
+                <td>
+                    <input type="number" step="0.01" class="form-control form-control-sm text-end fw-semibold item-qty" value="1000" min="1" oninput="calculateRow(${rowCounter})">
+                </td>
+                <td>
+                    <input type="number" class="form-control form-control-sm text-end item-price" value="${defaultItem.price}" min="0" oninput="calculateRow(${rowCounter})">
+                </td>
+                <td>
+                    <input type="text" class="form-control form-control-sm font-mono item-batch" placeholder="Mã lô...">
+                </td>
+                <td>
+                    <input type="date" class="form-control form-control-sm item-expiry">
+                </td>
+                <td class="text-end fw-bold text-success item-total">
+                    ${(1000 * defaultItem.price).toLocaleString('vi-VN')} đ
+                </td>
+                <td class="text-center">
+                    <button type="button" onclick="removeRow(${rowCounter})" class="btn btn-sm btn-link text-danger p-0 hover-scale">
+                        <i class="bi bi-trash fs-6"></i>
+                    </button>
+                </td>
+            `;
 
-        tbody.appendChild(tr);
-        updateRowNumbers();
-        calculateTotals();
-        showToast("Đã thêm 1 dòng nguyên liệu mới.");
-    }
-
-    // REMOVE ROW
-    function removeRow(id) {
-        const row = document.getElementById(`row-${id}`);
-        if (row) {
-            row.remove();
+            tbody.appendChild(tr);
             updateRowNumbers();
             calculateTotals();
-            showToast("Đã xóa nguyên liệu khỏi danh sách.");
-        }
-    }
-
-    // UPDATE ROW NUMBERS
-    function updateRowNumbers() {
-        const rows = document.querySelectorAll('#itemsTableBody tr');
-        rows.forEach((row, index) => {
-            const numCell = row.querySelector('.row-number');
-            if (numCell) numCell.textContent = index + 1;
-        });
-    }
-
-    // ON INGREDIENT SELECT CHANGE
-    function onIngredientChange(id) {
-        const row = document.getElementById(`row-${id}`);
-        const select = row.querySelector('.item-select');
-        const code = select.value;
-        const item = ingredientCatalog.find(i => i.code === code);
-
-        if (item) {
-            row.querySelector('.item-unit').textContent = item.unit;
-            row.querySelector('.item-price').value = item.price;
-            calculateRow(id);
-        }
-    }
-
-    // CALCULATE SINGLE ROW TOTAL
-    function calculateRow(id) {
-        const row = document.getElementById(`row-${id}`);
-        const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-        const price = parseFloat(row.querySelector('.item-price').value) || 0;
-        const total = qty * price;
-
-        row.querySelector('.item-total').textContent = total.toLocaleString('vi-VN') + ' đ';
-        calculateTotals();
-    }
-
-    // CALCULATE GRAND TOTALS
-    function calculateTotals() {
-        const rows = document.querySelectorAll('#itemsTableBody tr');
-        let subtotal = 0;
-        let itemCount = rows.length;
-
-        rows.forEach(row => {
-            const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-            const price = parseFloat(row.querySelector('.item-price').value) || 0;
-            subtotal += (qty * price);
-        });
-
-        const discount = parseFloat(document.getElementById('discountInput').value) || 0;
-        const shipping = parseFloat(document.getElementById('shippingFeeInput').value) || 0;
-        const finalTotal = Math.max(0, subtotal - discount + shipping);
-
-        // Update Summary Cards
-        document.getElementById('summaryTotalItemsCount').textContent = `${itemCount} loại`;
-        document.getElementById('summarySubtotal').textContent = subtotal.toLocaleString('vi-VN') + ' đ';
-        document.getElementById('summaryFinalTotal').textContent = finalTotal.toLocaleString('vi-VN') + ' đ';
-
-        // Update Sticky Footer
-        document.getElementById('footerFinalTotal').textContent = finalTotal.toLocaleString('vi-VN') + ' đ';
-        document.getElementById('footerItemsCount').textContent = `${itemCount} mặt hàng`;
-    }
-
-    // HANDLE SUPPLIER SELECTION CHANGE
-    function handleSupplierChange(select) {
-        showToast(`Đã chọn nhà cung cấp: ${select.value}`);
-    }
-
-    // SAVE DRAFT ACTION
-    function saveDraft() {
-        showToast("Đã lưu nháp phiếu nhập kho PNK-20260923-001.");
-    }
-
-    // CONFIRM SUBMIT & SHOW PRINT MODAL
-    function confirmSubmit() {
-        const rows = document.querySelectorAll('#itemsTableBody tr');
-        if (rows.length === 0) {
-            alert("Vui lòng thêm ít nhất 01 nguyên liệu vào phiếu nhập kho!");
-            return;
+            showToast("Đã thêm 1 dòng nguyên liệu mới.");
         }
 
-        // Populate Print Preview
-        document.getElementById('printCode').textContent = document.getElementById('importCode').value;
-        document.getElementById('printDate').textContent = 'Ngày: ' + new Date().toLocaleDateString('vi-VN');
-        document.getElementById('printSupplier').textContent = document.getElementById('supplierSelect').value;
-        document.getElementById('printWarehouse').textContent = document.getElementById('warehouseSelect').value;
-        document.getElementById('printReason').textContent = document.getElementById('reasonSelect').value;
-        document.getElementById('printInvoice').textContent = document.getElementById('invoiceDocNo').value || 'Không có';
+        // REMOVE ROW
+        function removeRow(id) {
+            const row = document.getElementById(`row-${id}`);
+            if (row) {
+                row.remove();
+                updateRowNumbers();
+                calculateTotals();
+                showToast("Đã xóa nguyên liệu khỏi danh sách.");
+            }
+        }
 
-        // Build Print Table
-        const printTbody = document.getElementById('printTableBody');
-        printTbody.innerHTML = '';
+        // UPDATE ROW NUMBERS
+        function updateRowNumbers() {
+            const rows = document.querySelectorAll('#itemsTableBody tr');
+            rows.forEach((row, index) => {
+                const numCell = row.querySelector('.row-number');
+                if (numCell) numCell.textContent = index + 1;
+            });
+        }
 
-        let subtotal = 0;
-        rows.forEach((row, idx) => {
-            const code = row.querySelector('.item-select').value;
+        // ON INGREDIENT SELECT CHANGE
+        function onIngredientChange(id) {
+            const row = document.getElementById(`row-${id}`);
+            const select = row.querySelector('.item-select');
+            const code = select.value;
             const item = ingredientCatalog.find(i => i.code === code);
+
+            if (item) {
+                row.querySelector('.item-unit').textContent = item.unit;
+                row.querySelector('.item-price').value = item.price;
+                calculateRow(id);
+            }
+        }
+
+        // CALCULATE SINGLE ROW TOTAL
+        function calculateRow(id) {
+            const row = document.getElementById(`row-${id}`);
             const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
             const price = parseFloat(row.querySelector('.item-price').value) || 0;
-            const batch = row.querySelector('.item-batch').value || '---';
-            const expiry = row.querySelector('.item-expiry').value || '---';
-            const lineTotal = qty * price;
-            subtotal += lineTotal;
+            const total = qty * price;
 
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="text-center">${idx + 1}</td>
-                <td><strong>${item ? item.name : code}</strong></td>
-                <td class="text-center">${item ? item.unit : ''}</td>
-                <td class="text-end fw-bold">${qty.toLocaleString('vi-VN')}</td>
-                <td class="text-end">${price.toLocaleString('vi-VN')}</td>
-                <td>${batch}</td>
-                <td>${expiry}</td>
-                <td class="text-end fw-bold">${lineTotal.toLocaleString('vi-VN')}</td>
-            `;
-            printTbody.appendChild(tr);
-        });
+            row.querySelector('.item-total').textContent = total.toLocaleString('vi-VN') + ' đ';
+            calculateTotals();
+        }
 
-        const discount = parseFloat(document.getElementById('discountInput').value) || 0;
-        const shipping = parseFloat(document.getElementById('shippingFeeInput').value) || 0;
-        const finalTotal = Math.max(0, subtotal - discount + shipping);
+        // CALCULATE GRAND TOTALS
+        function calculateTotals() {
+            const rows = document.querySelectorAll('#itemsTableBody tr');
+            let subtotal = 0;
+            let itemCount = rows.length;
 
-        document.getElementById('printSubtotal').textContent = subtotal.toLocaleString('vi-VN') + ' đ';
-        document.getElementById('printDiscount').textContent = discount.toLocaleString('vi-VN') + ' đ';
-        document.getElementById('printShipping').textContent = shipping.toLocaleString('vi-VN') + ' đ';
-        document.getElementById('printFinalTotal').textContent = finalTotal.toLocaleString('vi-VN') + ' đ';
+            rows.forEach(row => {
+                const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                subtotal += (qty * price);
+            });
 
-        // Show Modal
-        const printModal = new bootstrap.Modal(document.getElementById('printableReceiptModal'));
-        printModal.show();
-    }
+            const discount = parseFloat(document.getElementById('discountInput').value) || 0;
+            const shipping = parseFloat(document.getElementById('shippingFeeInput').value) || 0;
+            const finalTotal = Math.max(0, subtotal - discount + shipping);
 
-    // TOAST HELPER
-    function showToast(message) {
-        const toastEl = document.getElementById('liveToast');
-        document.getElementById('toastMessage').innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i> ${message}`;
-        const toast = new bootstrap.Toast(toastEl, { delay: 2500 });
-        toast.show();
-    }
+            // Update Summary Cards
+            document.getElementById('summaryTotalItemsCount').textContent = `${itemCount} loại`;
+            document.getElementById('summarySubtotal').textContent = subtotal.toLocaleString('vi-VN') + ' đ';
+            document.getElementById('summaryFinalTotal').textContent = finalTotal.toLocaleString('vi-VN') + ' đ';
+
+            // Update Sticky Footer
+            document.getElementById('footerFinalTotal').textContent = finalTotal.toLocaleString('vi-VN') + ' đ';
+            document.getElementById('footerItemsCount').textContent = `${itemCount} mặt hàng`;
+        }
+
+        // HANDLE SUPPLIER SELECTION CHANGE
+        function handleSupplierChange(select) {
+            showToast(`Đã chọn nhà cung cấp: ${select.value}`);
+        }
+
+        // SAVE DRAFT ACTION
+        function saveDraft() {
+            showToast("Đã lưu nháp phiếu nhập kho PNK-20260923-001.");
+        }
+
+        // CONFIRM SUBMIT & SHOW PRINT MODAL
+        function confirmSubmit() {
+            const rows = document.querySelectorAll('#itemsTableBody tr');
+            if (rows.length === 0) {
+                alert("Vui lòng thêm ít nhất 01 nguyên liệu vào phiếu nhập kho!");
+                return;
+            }
+
+            // Populate Print Preview
+            document.getElementById('printCode').textContent = document.getElementById('importCode').value;
+            document.getElementById('printDate').textContent = 'Ngày: ' + new Date().toLocaleDateString('vi-VN');
+            document.getElementById('printSupplier').textContent = document.getElementById('supplierSelect').value;
+            document.getElementById('printWarehouse').textContent = document.getElementById('warehouseSelect').value;
+            document.getElementById('printReason').textContent = document.getElementById('reasonSelect').value;
+            document.getElementById('printInvoice').textContent = document.getElementById('invoiceDocNo').value || 'Không có';
+
+            // Build Print Table
+            const printTbody = document.getElementById('printTableBody');
+            printTbody.innerHTML = '';
+
+            let subtotal = 0;
+            rows.forEach((row, idx) => {
+                const code = row.querySelector('.item-select').value;
+                const item = ingredientCatalog.find(i => i.code === code);
+                const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                const batch = row.querySelector('.item-batch').value || '---';
+                const expiry = row.querySelector('.item-expiry').value || '---';
+                const lineTotal = qty * price;
+                subtotal += lineTotal;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-center">${idx + 1}</td>
+                    <td><strong>${item ? item.name : code}</strong></td>
+                    <td class="text-center">${item ? item.unit : ''}</td>
+                    <td class="text-end fw-bold">${qty.toLocaleString('vi-VN')}</td>
+                    <td class="text-end">${price.toLocaleString('vi-VN')}</td>
+                    <td>${batch}</td>
+                    <td>${expiry}</td>
+                    <td class="text-end fw-bold">${lineTotal.toLocaleString('vi-VN')}</td>
+                `;
+                printTbody.appendChild(tr);
+            });
+
+            const discount = parseFloat(document.getElementById('discountInput').value) || 0;
+            const shipping = parseFloat(document.getElementById('shippingFeeInput').value) || 0;
+            const finalTotal = Math.max(0, subtotal - discount + shipping);
+
+            document.getElementById('printSubtotal').textContent = subtotal.toLocaleString('vi-VN') + ' đ';
+            document.getElementById('printDiscount').textContent = discount.toLocaleString('vi-VN') + ' đ';
+            document.getElementById('printShipping').textContent = shipping.toLocaleString('vi-VN') + ' đ';
+            document.getElementById('printFinalTotal').textContent = finalTotal.toLocaleString('vi-VN') + ' đ';
+
+            // Show Modal
+            const printModal = new bootstrap.Modal(document.getElementById('printableReceiptModal'));
+            printModal.show();
+        }
+
+        // TOAST HELPER
+        function showToast(message) {
+            const toastEl = document.getElementById('liveToast');
+            document.getElementById('toastMessage').innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i> ${message}`;
+            const toast = new bootstrap.Toast(toastEl, { delay: 2500 });
+            toast.show();
+        }
     </script>
 </body>
 </html>

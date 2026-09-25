@@ -1,8 +1,9 @@
 using System.Web.Mvc;
 using System.Web.Security;
-using QuanLyTraSua.Models;
+using DoAnLapTrinhWeb.Controllers;
+using DoAnLapTrinhWeb.Models;
 
-namespace QuanLyTraSua.Controllers
+namespace DoAnLapTrinhWeb.Controllers
 {
     public class AccountController : Controller
     {
