@@ -138,6 +138,7 @@
     <Compile Include="Controllers\ReviewController.cs" />
     <Compile Include="Controllers\ShiftController.cs" />
     <Compile Include="Controllers\SizeController.cs" />
+    <Compile Include="Controllers\ToppingController.cs" />
     <Compile Include="Controllers\VoucherController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -185,6 +186,7 @@
     <Content Include="Css\styleCustomer_index.css" />
     <Content Include="Css\styleDashboard.css" />
     <Content Include="Css\StyleEmployee.css" />
+    <Content Include="Css\StyleHomeIndex.css" />
     <Content Include="Css\StyleIngredient.css" />
     <Content Include="Css\StyleInventory_Index.css" />
     <Content Include="Css\StyleInventory_LichSuNhap.css" />
@@ -219,6 +221,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\ScriptHomeIndex.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -265,6 +268,7 @@
     <Content Include="Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Topping\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
