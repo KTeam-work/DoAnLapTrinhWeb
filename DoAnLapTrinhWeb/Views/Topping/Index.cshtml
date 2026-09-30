@@ -1,0 +1,1170 @@
+﻿@using System.Web.Helpers
+
+@{
+    ViewData["Title"] = "Quản lý topping";
+
+    var toppings = new[]
+    {
+        new
+        {
+            Id = "TP0000001",
+            Name = "Trân châu đen",
+            Short = "TC",
+            Price = 5000,
+            ProductCount = 7,
+            Status = "Đang bán"
+        },
+        new
+        {
+            Id = "TP0000002",
+            Name = "Trân châu trắng",
+            Short = "TT",
+            Price = 5000,
+            ProductCount = 5,
+            Status = "Đang bán"
+        },
+        new
+        {
+            Id = "TP0000003",
+            Name = "Pudding trứng",
+            Short = "PD",
+            Price = 7000,
+            ProductCount = 6,
+            Status = "Đang bán"
+        },
+        new
+        {
+            Id = "TP0000004",
+            Name = "Thạch nha đam",
+            Short = "NA",
+            Price = 5000,
+            ProductCount = 4,
+            Status = "Đang bán"
+        },
+        new
+        {
+            Id = "TP0000005",
+            Name = "Kem cheese",
+            Short = "KC",
+            Price = 10000,
+            ProductCount = 3,
+            Status = "Đang bán"
+        },
+        new
+        {
+            Id = "TP0000006",
+            Name = "Thạch trái cây",
+            Short = "TC",
+            Price = 6000,
+            ProductCount = 5,
+            Status = "Ngừng bán"
+        }
+    };
+}
+
+<link rel="stylesheet" href="~/Css/styleProduct_index.css" />
+
+<div class="product-page">
+
+    <!-- HEADER -->
+
+    <div class="product-heading">
+
+        <div class="heading-left">
+
+            <div class="heading-icon">
+                <i class="bi bi-stars"></i>
+            </div>
+
+            <div>
+
+                <h1 class="page-title">
+                    Kho topping
+                </h1>
+
+                <p class="page-subtitle">
+                    Quản lý các lựa chọn thêm và giá topping của cửa hàng.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <button type="button"
+                class="btn-tea"
+                onclick="openAddTopping()">
+
+            <i class="bi bi-plus-lg me-1"></i>
+
+            Thêm topping
+
+        </button>
+
+    </div>
+
+
+    <!-- OVERVIEW -->
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-lg-8">
+
+            <div class="border rounded-4 h-100 p-4"
+                 style="background:#20584f;">
+
+                <div class="row align-items-center">
+
+                    <div class="col-md-7">
+
+                        <div class="text-white-50 small text-uppercase fw-bold"
+                             style="letter-spacing:1px;">
+
+                            Topping đang bán
+
+                        </div>
+
+
+                        <div id="activeToppingCount"
+                             class="text-white mt-1"
+                             style="font-size:40px;font-weight:800;">
+
+                            0
+
+                        </div>
+
+
+                        <div class="text-white-50">
+                            trên tổng số topping
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-5 mt-4 mt-md-0">
+
+                        <div class="d-flex justify-content-md-end gap-3">
+
+                            <div class="text-center">
+
+                                <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                     style="width:58px;height:58px;background:#eaf3ef;color:#20584f;font-size:20px;font-weight:800;">
+
+                                    5K
+
+                                </div>
+
+                                <div class="text-white-50 small mt-2">
+                                    Giá phổ biến
+                                </div>
+
+                            </div>
+
+
+                            <div class="text-center">
+
+                                <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                     style="width:58px;height:58px;background:#fff7d7;color:#8a6a00;font-size:20px;font-weight:800;">
+
+                                    10K
+
+                                </div>
+
+                                <div class="text-white-50 small mt-2">
+                                    Giá cao nhất
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-4">
+
+            <div class="border rounded-4 h-100 p-4"
+                 style="background:#fff7d7;">
+
+                <div class="small"
+                     style="color:#78837e;">
+                    Topping nổi bật
+                </div>
+
+                <div class="mt-1"
+                     style="font-size:20px;font-weight:800;color:#213430;">
+                    Trân châu đen
+                </div>
+
+                <div class="mt-3"
+                     style="font-size:13px;color:#78837e;">
+
+                    Đang được sử dụng ở nhiều sản phẩm trong menu.
+
+                </div>
+
+                <div class="mt-3">
+
+                    <i class="bi bi-fire"
+                       style="font-size:26px;color:#c65b4a;">
+                    </i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SEARCH -->
+
+    <div class="border rounded-4 p-3 mb-4">
+
+        <div class="row align-items-center g-3">
+
+            <div class="col-lg-6">
+
+                <div class="input-group">
+
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+
+                    <input type="text"
+                           id="toppingKeyword"
+                           class="form-control"
+                           placeholder="Tìm topping..."
+                           oninput="renderToppings()" />
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-3">
+
+                <select id="toppingFilterStatus"
+                        class="form-select"
+                        onchange="renderToppings()">
+
+                    <option value="">
+                        Tất cả trạng thái
+                    </option>
+
+                    <option value="Đang bán">
+                        Đang bán
+                    </option>
+
+                    <option value="Ngừng bán">
+                        Ngừng bán
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="col-lg-3 text-lg-end">
+
+                <span class="table-note">
+
+                    Tổng:
+                    <strong id="toppingTotal">
+                        0
+                    </strong>
+
+                </span>
+
+                <span class="mx-2">•</span>
+
+                <span class="table-note">
+
+                    Ngừng bán:
+                    <strong id="toppingInactive">
+                        0
+                    </strong>
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CARD LIST -->
+
+    <div class="row g-4"
+         id="toppingContainer">
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     ADD / EDIT MODAL
+     ============================================================= -->
+
+<div class="modal fade product-page-modal"
+     id="toppingModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h5 class="modal-title"
+                        id="toppingModalTitle">
+
+                        <i class="bi bi-stars me-2"></i>
+
+                        Thêm topping
+
+                    </h5>
+
+                    <div class="description mt-1">
+                        Nhập thông tin topping.
+                    </div>
+
+                </div>
+
+                <button type="button"
+                        class="btn-close"
+                        onclick="closeToppingModal()">
+                </button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <input type="hidden"
+                       id="toppingEditId" />
+
+
+                <div class="mb-3">
+
+                    <label class="modal-label">
+                        Mã topping
+                    </label>
+
+                    <input type="text"
+                           id="toppingId"
+                           class="form-control"
+                           readonly />
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="modal-label">
+                        Tên topping
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <input type="text"
+                           id="toppingName"
+                           class="form-control"
+                           placeholder="Ví dụ: Trân châu hoàng kim..." />
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="modal-label">
+                        Giá thêm
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <div class="input-group">
+
+                        <input type="number"
+                               id="toppingPrice"
+                               class="form-control"
+                               min="0"
+                               placeholder="5000" />
+
+                        <span class="input-group-text">
+                            đ
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="modal-label">
+                        Ký hiệu
+                    </label>
+
+                    <input type="text"
+                           id="toppingShort"
+                           class="form-control"
+                           maxlength="3"
+                           placeholder="TC" />
+
+                </div>
+
+
+                <div>
+
+                    <label class="modal-label">
+                        Trạng thái
+                    </label>
+
+                    <select id="toppingStatus"
+                            class="form-select">
+
+                        <option value="Đang bán">
+                            Đang bán
+                        </option>
+
+                        <option value="Ngừng bán">
+                            Ngừng bán
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn-filter"
+                        onclick="closeToppingModal()">
+
+                    Hủy
+
+                </button>
+
+
+                <button type="button"
+                        class="btn-save"
+                        onclick="saveTopping()">
+
+                    <i class="bi bi-check-lg me-1"></i>
+
+                    Lưu topping
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     VIEW MODAL
+     ============================================================= -->
+
+<div class="modal fade product-page-modal"
+     id="toppingViewModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h5 class="modal-title">
+                        <i class="bi bi-eye-fill me-2"></i>
+                        Chi tiết topping
+                    </h5>
+
+                </div>
+
+                <button type="button"
+                        class="btn-close"
+                        onclick="closeToppingViewModal()">
+                </button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <div class="text-center mb-4">
+
+                    <div id="viewToppingShort"
+                         class="rounded-circle d-inline-flex align-items-center justify-content-center"
+                         style="width:82px;height:82px;background:#eaf3ef;color:#20584f;font-size:27px;font-weight:800;">
+                    </div>
+
+                    <div id="viewToppingName"
+                         style="font-size:23px;font-weight:800;color:#213430;margin-top:12px;">
+                    </div>
+
+                    <div id="viewToppingStatus"
+                         class="mt-2">
+                    </div>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="modal-label">
+                        Mã topping
+                    </label>
+
+                    <input type="text"
+                           id="viewToppingId"
+                           class="form-control"
+                           readonly />
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="modal-label">
+                        Giá thêm
+                    </label>
+
+                    <input type="text"
+                           id="viewToppingPrice"
+                           class="form-control"
+                           readonly />
+
+                </div>
+
+
+                <div>
+
+                    <label class="modal-label">
+                        Số sản phẩm đang sử dụng
+                    </label>
+
+                    <input type="text"
+                           id="viewToppingProductCount"
+                           class="form-control"
+                           readonly />
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn-filter"
+                        onclick="closeToppingViewModal()">
+
+                    Đóng
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    var initialToppings =
+        @Html.Raw(Json.Encode(toppings));
+
+    var toppingStorageKey =
+        "demo_milktea_toppings";
+
+    var toppingData =
+        JSON.parse(
+            localStorage.getItem(toppingStorageKey)
+            || JSON.stringify(initialToppings)
+        );
+
+
+    var toppingModalInstance = null;
+    var toppingViewModalInstance = null;
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        toppingModalInstance =
+            new bootstrap.Modal(
+                document.getElementById("toppingModal")
+            );
+
+
+        toppingViewModalInstance =
+            new bootstrap.Modal(
+                document.getElementById("toppingViewModal")
+            );
+
+
+        renderToppings();
+
+    });
+
+
+    function saveToppingData() {
+
+        localStorage.setItem(
+            toppingStorageKey,
+            JSON.stringify(toppingData)
+        );
+
+    }
+
+
+    function generateToppingId() {
+
+        var maxNumber = 0;
+
+
+        toppingData.forEach(function (item) {
+
+            var number =
+                parseInt(
+                    item.Id.replace("TP", ""),
+                    10
+                );
+
+
+            if (!isNaN(number) && number > maxNumber) {
+                maxNumber = number;
+            }
+
+        });
+
+
+        return "TP" +
+            String(maxNumber + 1)
+                .padStart(7, "0");
+
+    }
+
+
+    function openAddTopping() {
+
+        document.getElementById("toppingModalTitle")
+            .innerHTML =
+            '<i class="bi bi-plus-circle-fill me-2"></i>Thêm topping';
+
+
+        document.getElementById("toppingEditId").value = "";
+
+        document.getElementById("toppingId").value =
+            generateToppingId();
+
+        document.getElementById("toppingName").value = "";
+
+        document.getElementById("toppingPrice").value = "";
+
+        document.getElementById("toppingShort").value = "";
+
+        document.getElementById("toppingStatus").value =
+            "Đang bán";
+
+
+        toppingModalInstance.show();
+
+    }
+
+
+    function editTopping(id) {
+
+        var item =
+            toppingData.find(function (x) {
+                return x.Id === id;
+            });
+
+
+        if (!item) {
+            return;
+        }
+
+
+        document.getElementById("toppingModalTitle")
+            .innerHTML =
+            '<i class="bi bi-pencil-fill me-2"></i>Chỉnh sửa topping';
+
+
+        document.getElementById("toppingEditId").value =
+            item.Id;
+
+        document.getElementById("toppingId").value =
+            item.Id;
+
+        document.getElementById("toppingName").value =
+            item.Name;
+
+        document.getElementById("toppingPrice").value =
+            item.Price;
+
+        document.getElementById("toppingShort").value =
+            item.Short;
+
+        document.getElementById("toppingStatus").value =
+            item.Status;
+
+
+        toppingModalInstance.show();
+
+    }
+
+
+    function saveTopping() {
+
+        var editId =
+            document.getElementById("toppingEditId").value;
+
+
+        var id =
+            document.getElementById("toppingId")
+                .value
+                .trim();
+
+        var name =
+            document.getElementById("toppingName")
+                .value
+                .trim();
+
+        var price =
+            Number(
+                document.getElementById("toppingPrice")
+                    .value
+            );
+
+        var short =
+            document.getElementById("toppingShort")
+                .value
+                .trim()
+                .toUpperCase();
+
+        var status =
+            document.getElementById("toppingStatus").value;
+
+
+        if (name === "") {
+
+            alert("Vui lòng nhập tên topping.");
+
+            return;
+        }
+
+
+        if (
+            isNaN(price) ||
+            price < 0
+        ) {
+
+            alert("Vui lòng nhập giá hợp lệ.");
+
+            return;
+        }
+
+
+        if (short === "") {
+
+            short =
+                name
+                    .split(" ")
+                    .map(function (x) {
+                        return x.charAt(0);
+                    })
+                    .join("")
+                    .substring(0, 3)
+                    .toUpperCase();
+
+        }
+
+
+        if (editId === "") {
+
+            toppingData.push({
+
+                Id: id,
+                Name: name,
+                Short: short,
+                Price: price,
+                ProductCount: 0,
+                Status: status
+
+            });
+
+
+            alert("Đã thêm topping thành công.");
+
+        }
+        else {
+
+            var item =
+                toppingData.find(function (x) {
+                    return x.Id === editId;
+                });
+
+
+            if (item) {
+
+                item.Name = name;
+                item.Short = short;
+                item.Price = price;
+                item.Status = status;
+
+            }
+
+
+            alert("Đã cập nhật topping thành công.");
+
+        }
+
+
+        saveToppingData();
+
+        renderToppings();
+
+        toppingModalInstance.hide();
+
+    }
+
+
+    function viewTopping(id) {
+
+        var item =
+            toppingData.find(function (x) {
+                return x.Id === id;
+            });
+
+
+        if (!item) {
+            return;
+        }
+
+
+        document.getElementById("viewToppingShort")
+            .textContent =
+            item.Short;
+
+
+        document.getElementById("viewToppingName")
+            .textContent =
+            item.Name;
+
+
+        document.getElementById("viewToppingId")
+            .value =
+            item.Id;
+
+
+        document.getElementById("viewToppingPrice")
+            .value =
+            "+" +
+            Number(item.Price)
+                .toLocaleString("vi-VN") +
+            " đ";
+
+
+        document.getElementById("viewToppingProductCount")
+            .value =
+            item.ProductCount +
+            " sản phẩm";
+
+
+        document.getElementById("viewToppingStatus")
+            .innerHTML =
+            item.Status === "Đang bán"
+                ? '<span class="status-badge available"><i class="bi bi-circle-fill"></i> Đang bán</span>'
+                : '<span class="status-badge unavailable"><i class="bi bi-circle-fill"></i> Ngừng bán</span>';
+
+
+        toppingViewModalInstance.show();
+
+    }
+
+
+    function deleteTopping(id) {
+
+        var item =
+            toppingData.find(function (x) {
+                return x.Id === id;
+            });
+
+
+        if (!item) {
+            return;
+        }
+
+
+        var confirmed =
+            confirm(
+                "Bạn có chắc chắn muốn xóa topping này không?\n\n" +
+                "Mã: " + item.Id +
+                "\nTên: " + item.Name
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        toppingData =
+            toppingData.filter(function (x) {
+                return x.Id !== id;
+            });
+
+
+        saveToppingData();
+
+        renderToppings();
+
+
+        alert(
+            "Đã xóa " +
+            item.Name +
+            " khỏi danh sách demo."
+        );
+
+    }
+
+
+    function renderToppings() {
+
+        var keyword =
+            document.getElementById("toppingKeyword")
+                ? document.getElementById("toppingKeyword")
+                    .value
+                    .toLowerCase()
+                    .trim()
+                : "";
+
+
+        var status =
+            document.getElementById("toppingFilterStatus")
+                ? document.getElementById("toppingFilterStatus")
+                    .value
+                : "";
+
+
+        var filtered =
+            toppingData.filter(function (item) {
+
+                var text =
+                    (
+                        item.Id +
+                        " " +
+                        item.Name +
+                        " " +
+                        item.Short
+                    ).toLowerCase();
+
+
+                var matchKeyword =
+                    text.includes(keyword);
+
+                var matchStatus =
+                    status === "" ||
+                    item.Status === status;
+
+
+                return matchKeyword && matchStatus;
+
+            });
+
+
+        var container =
+            document.getElementById("toppingContainer");
+
+
+        container.innerHTML = "";
+
+
+        filtered.forEach(function (item) {
+
+            var col =
+                document.createElement("div");
+
+            col.className =
+                "col-xl-4 col-md-6";
+
+
+            col.innerHTML =
+
+                '<div class="topping-card border rounded-4 h-100 p-4" style="background:#ffffff;box-shadow:0 8px 24px rgba(33,52,48,.06);">' +
+
+                    '<div class="d-flex align-items-start justify-content-between">' +
+
+            '<div class="topping-icon rounded-4 d-flex align-items-center justify-content-center" style="width:64px;height:64px;background:#eaf3ef;color:#20584f;font-weight:800;font-size:18px;">' +
+
+                            escapeHtml(item.Short) +
+
+                        '</div>' +
+
+                        (
+                            item.Status === "Đang bán"
+                                ? '<span class="status-badge available"><i class="bi bi-circle-fill"></i> Đang bán</span>'
+                                : '<span class="status-badge unavailable"><i class="bi bi-circle-fill"></i> Ngừng bán</span>'
+                        ) +
+
+                    '</div>' +
+
+
+                    '<div class="mt-4">' +
+
+                        '<div class="small" style="color:#78837e;">' +
+                            escapeHtml(item.Id) +
+                        '</div>' +
+
+                        '<div class="product-name mt-1" style="font-size:20px;">' +
+                            escapeHtml(item.Name) +
+                        '</div>' +
+
+                    '</div>' +
+
+
+                    '<div class="d-flex align-items-end justify-content-between mt-4">' +
+
+                        '<div>' +
+
+                            '<div class="small" style="color:#78837e;">Giá thêm</div>' +
+
+                            '<div class="product-price" style="font-size:23px;">+' +
+                                Number(item.Price).toLocaleString("vi-VN") +
+                                ' đ</div>' +
+
+                        '</div>' +
+
+
+                        '<div class="text-end">' +
+
+                            '<div class="small" style="color:#78837e;">Đang dùng</div>' +
+
+                            '<div style="font-size:18px;font-weight:800;color:#213430;">' +
+                                item.ProductCount +
+                            '</div>' +
+
+                        '</div>' +
+
+                    '</div>' +
+
+
+                    '<div class="d-flex gap-2 mt-4 pt-3 border-top">' +
+
+                        '<button type="button" class="btn-filter flex-grow-1" onclick="viewTopping(\'' +
+                            item.Id +
+                        '\')">' +
+
+                            '<i class="bi bi-eye-fill me-1"></i>Xem' +
+
+                        '</button>' +
+
+                        '<button type="button" class="btn-filter" onclick="editTopping(\'' +
+                            item.Id +
+                        '\')">' +
+
+                            '<i class="bi bi-pencil-fill"></i>' +
+
+                        '</button>' +
+
+                        '<button type="button" class="action-btn delete-btn" onclick="deleteTopping(\'' +
+                            item.Id +
+                        '\')">' +
+
+                            '<i class="bi bi-trash-fill"></i>' +
+
+                        '</button>' +
+
+                    '</div>' +
+
+                '</div>';
+
+
+            container.appendChild(col);
+
+        });
+
+
+        var active =
+            toppingData.filter(function (x) {
+                return x.Status === "Đang bán";
+            }).length;
+
+
+        var inactive =
+            toppingData.filter(function (x) {
+                return x.Status === "Ngừng bán";
+            }).length;
+
+
+        document.getElementById("activeToppingCount")
+            .textContent =
+            active;
+
+
+        document.getElementById("toppingTotal")
+            .textContent =
+            toppingData.length;
+
+
+        document.getElementById("toppingInactive")
+            .textContent =
+            inactive;
+
+    }
+
+
+    function closeToppingModal() {
+
+        if (toppingModalInstance) {
+            toppingModalInstance.hide();
+        }
+
+    }
+
+
+    function closeToppingViewModal() {
+
+        if (toppingViewModalInstance) {
+            toppingViewModalInstance.hide();
+        }
+
+    }
+
+
+    function escapeHtml(value) {
+
+        return String(value == null ? "" : value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+</script>

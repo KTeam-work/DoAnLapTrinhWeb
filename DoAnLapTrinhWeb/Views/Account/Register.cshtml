@@ -1,4 +1,4 @@
-﻿@model DoAnLapTrinhWeb.Models.RegisterViewModel
+﻿@*@model DoAnLapTrinhWeb.Models.RegisterViewModel*@
 @{
     ViewBag.Title = "Đăng ký";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -135,7 +135,7 @@
             </div>
         }
 
-        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "tv1-form" }))
+        @*@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "tv1-form" }))
         {
             @Html.AntiForgeryToken()
 
@@ -164,7 +164,7 @@
             @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "field-error" })
 
             <button type="submit" class="tv1-btn">Đăng ký</button>
-        }
+        }*@
 
         <div class="tv1-links">
             Đã có tài khoản? <a href="@Url.Action("Login", "Account")">Đăng nhập ngay</a>
