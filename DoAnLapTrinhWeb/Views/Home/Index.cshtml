@@ -1,308 +1,322 @@
 ﻿@{
-    ViewBag.Title = "Trang chủ";
-    ViewBag.Active = "home";
+    ViewBag.Title = "Trang Chủ - LumiTea";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<style>
-    .hero {
-        background: linear-gradient(160deg,var(--tea) 0%,var(--tea-dark) 100%);
-        color: var(--cream);
-        padding: 70px 32px;
-        display: grid;
-        grid-template-columns: 1.1fr 0.9fr;
-        align-items: center;
-        gap: 32px;
-        position: relative;
-        overflow: hidden;
-    }
 
-        .hero::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background-image: radial-gradient(rgba(255,255,255,.06) 2px, transparent 2px);
-            background-size: 22px 22px;
-        }
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    .hero-copy {
-        position: relative;
-        z-index: 1;
-        max-width: 480px;
-    }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+   
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-        .hero-copy h1 {
-            font-family: 'Fraunces',serif;
-            font-size: 40px;
-            line-height: 1.25;
-            margin: 0 0 16px;
-            font-weight: 600;
-        }
+    <script src="~/Scripts/ScriptHomeIndex.js"></script>
+    <link href="~/Css/StyleHomeIndex.css" rel="stylesheet" />
+</head>
+<body>
 
-            .hero-copy h1 span {
-                color: var(--blush);
-            }
+    <!-- KHỐI 1: CAROUSEL ĐỘNG -->
+    <div class="carousel-container" id="mainCarousel">
+        <div class="list">
 
-        .hero-copy p {
-            font-size: 15px;
-            opacity: .85;
-            margin: 0 0 26px;
-            line-height: 1.6;
-        }
+            <!-- Slide 1 (Dành cho banner5.jpg - Trà trái cây) -->
+            <div class="item">
+                <img src="~/Assets/banner5.jpg" alt="Trà Trái Cây Giải Nhiệt">
+                <div class="content">
+                    <div class="author">LUMI TEA VN</div>
+                    <div class="title">GIẢI NHIỆT MÙA HÈ</div>
+                    <div class="topic">MUA 2 TẶNG 1</div>
+                    <div class="des">Đánh thức vị giác cùng loạt trà trái cây thanh mát: Xoài chanh dây, Vải hoa hồng và Trà cam sả. Tận hưởng ngay ưu đãi Mua 2 Tặng 1 hoặc nhận kèm bánh ngọt cực hấp dẫn.</div>
+                    <div class="buttons">
+                        <button onclick="window.location.href='/Account/Login'">Đăng Nhập</button>
+                        <button onclick="window.location.href='/Account/Register'">Đăng ký</button>
+                    </div>
+                </div>
+            </div>
 
-    .hero-actions {
-        display: flex;
-        gap: 14px;
-    }
+            <!-- Slide 2 (Dành cho banner4.jpg - Hello Summer) -->
+            <div class="item">
+                <img src="~/Assets/banner4.jpg" alt="Bộ sưu tập Hello Summer">
+                <div class="content">
+                    <div class="author">LUMI TEA VN</div>
+                    <div class="title">HELLO SUMMER!</div>
+                    <div class="topic">TRÀ SỮA ĐẬM VỊ</div>
+                    <div class="des">Chào đón mùa hè rực rỡ với bộ tứ thức uống giải nhiệt đỉnh cao: Trà sữa truyền thống, Matcha thơm mát và Trà sữa dâu ngọt ngào. Sự lựa chọn hoàn hảo cho những ngày oi ả.</div>
+                    <div class="buttons">
+                        <button onclick="window.location.href='/Account/Login'">Đăng Nhập</button>
+                        <button onclick="window.location.href='/Account/Register'">Đăng ký</button>
+                    </div>
+                </div>
+            </div>
 
-    .btn-cta {
-        padding: 13px 24px;
-        border-radius: 14px;
-        background: var(--blush);
-        color: var(--pearl);
-        font-weight: 700;
-        font-size: 14.5px;
-        text-decoration: none;
-    }
+            <!-- Slide 3 (Dành cho banner2.jpg - Sinh tố bơ) -->
+            <div class="item">
+                <img src="~/Assets/banner2.jpg" alt="Sinh tố bơ Delicious Avocado">
+                <div class="content">
+                    <div class="author">LUMI TEA VN</div>
+                    <div class="title">DELICIOUS AVOCADO</div>
+                    <div class="topic">ƯU ĐÃI ĐẾN 30%</div>
+                    <div class="des">Thưởng thức ngay ly thức uống từ bơ tươi thơm béo, đậm đà hương vị tự nhiên kết hợp cùng lớp kem mịn màng phía trên. Đặt hàng ngay hôm nay để nhận ưu đãi giảm giá 30%.</div>
+                    <div class="buttons">
+                        <button onclick="window.location.href='/Account/Login'">Đăng Nhập</button>
+                        <button onclick="window.location.href='/Account/Register'">Đăng ký</button>
+                    </div>
+                </div>
+            </div>
 
-        .btn-cta.outline {
-            background: transparent;
-            border: 1.5px solid rgba(251,243,231,.5);
-            color: var(--cream);
-        }
+            <!-- Slide 4 (Dành cho banner1.jpg - Healthy Menu) -->
+            <div class="item">
+                <img src="~/Assets/banner1.jpg" alt="Healthy Menu">
+                <div class="content">
+                    <div class="author">LUMI TEA VN</div>
+                    <div class="title">HEALTHY MENU</div>
+                    <div class="topic">THANH LỌC CƠ THỂ</div>
+                    <div class="des">Khám phá ngay bộ sưu tập thức uống dinh dưỡng với các hương vị trái cây tự nhiên như xoài, bơ và kiwi. Nạp đầy năng lượng cho ngày dài sảng khoái với mức giá siêu mềm chỉ từ 15k.</div>
+                    <div class="buttons">
+                        <button onclick="window.location.href='/Account/Login'">Đăng Nhập</button>
+                        <button onclick="window.location.href='/Account/Register'">Đăng ký</button>
+                    </div>
+                </div>
+            </div>
 
-    .hero-cup {
-        position: relative;
-        z-index: 1;
-        display: flex;
-        justify-content: center;
-    }
-
-        .hero-cup svg {
-            width: 210px;
-            filter: drop-shadow(0 20px 24px rgba(0,0,0,.3));
-        }
-
-    .section {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 64px 32px;
-    }
-
-        .section h2 {
-            font-family: 'Fraunces',serif;
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--tea-dark);
-            margin: 0 0 8px;
-        }
-
-        .section p.lead {
-            color: #8a7263;
-            margin: 0 0 34px;
-            font-size: 14.5px;
-            max-width: 520px;
-        }
-
-    .menu-grid {
-        display: grid;
-        grid-template-columns: repeat(4,1fr);
-        gap: 20px;
-    }
-
-    .menu-card {
-        background: #fff;
-        border: 2px solid var(--milk);
-        border-radius: 18px;
-        padding: 22px 18px;
-        text-align: center;
-        transition: border-color .15s ease, transform .15s ease;
-    }
-
-        .menu-card:hover {
-            border-color: var(--caramel);
-            transform: translateY(-3px);
-        }
-
-        .menu-card .dot {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            margin: 0 auto 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-
-        .menu-card h3 {
-            font-size: 15.5px;
-            margin: 0 0 6px;
-            color: var(--tea-dark);
-        }
-
-        .menu-card p {
-            font-size: 12.5px;
-            color: #8a7263;
-            margin: 0 0 10px;
-        }
-
-        .menu-card .price {
-            font-weight: 700;
-            color: var(--tea);
-            font-size: 14px;
-        }
-
-    .band {
-        background: var(--milk);
-    }
-
-        .band .section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            align-items: center;
-        }
-
-        .band .cup-side {
-            display: flex;
-            justify-content: center;
-        }
-
-            .band .cup-side svg {
-                width: 170px;
-            }
-
-        .band .stat-row {
-            display: flex;
-            gap: 30px;
-            margin-top: 24px;
-        }
-
-        .band .stat b {
-            display: block;
-            font-family: 'Fraunces',serif;
-            font-size: 26px;
-            color: var(--tea-dark);
-        }
-
-        .band .stat span {
-            font-size: 12.5px;
-            color: #8a7263;
-        }
-
-    @@media (max-width:820px) {
-        .hero {
-            grid-template-columns: 1fr;
-            text-align: center;
-            padding: 48px 22px;
-        }
-
-        .hero-copy {
-            margin: 0 auto;
-        }
-
-        .hero-actions {
-            justify-content: center;
-        }
-
-        .menu-grid {
-            grid-template-columns: repeat(2,1fr);
-        }
-
-        .band .section {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
-
-<section class="hero">
-    <div class="hero-copy">
-        <h1>Mỗi ngụm là một <span>khoảnh khắc ngọt ngào</span></h1>
-        <p>Trà sữa pha thủ công mỗi ngày từ lá trà tuyển chọn, trân châu dẻo dai nấu mới liên tục trong ngày.</p>
-        <div class="hero-actions">
-            <a class="btn-cta" href="#menu">Xem thực đơn</a>
-            <a class="btn-cta outline" href="@Url.Action("Register", "Account")">Tạo tài khoản</a>
         </div>
-    </div>
-    <div class="hero-cup">
-        <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <linearGradient id="teaGradientHero" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#E98B6E" />
-                    <stop offset="100%" stop-color="#4A2C20" />
-                </linearGradient>
-            </defs>
-            <rect x="115" y="0" width="14" height="66" rx="4" fill="#2B1B12" transform="rotate(10 122 33)" />
-            <ellipse cx="100" cy="55" rx="58" ry="13" fill="#FBF3E7" stroke="#2B1B12" stroke-width="3" />
-            <rect x="46" y="49" width="108" height="12" rx="6" fill="#FBF3E7" stroke="#2B1B12" stroke-width="3" />
-            <path d="M50 61 L58 228 Q100 242 142 228 L150 61 Z" fill="url(#teaGradientHero)" stroke="#2B1B12" stroke-width="3" />
-            <circle cx="80" cy="203" r="7" fill="#2B1B12" />
-            <circle cx="100" cy="213" r="7" fill="#2B1B12" />
-            <circle cx="120" cy="201" r="7" fill="#2B1B12" />
-            <circle cx="92" cy="192" r="7" fill="#2B1B12" />
-            <circle cx="110" cy="189" r="7" fill="#2B1B12" />
-        </svg>
-    </div>
-</section>
 
-<section class="section" id="menu">
-    <h2>Thực đơn nổi bật</h2>
-    <p class="lead">Bốn hương vị được gọi nhiều nhất tuần này.</p>
-    <div class="menu-grid">
-        <div class="menu-card">
-            <div class="dot" style="background:#F1E1CB;">🧋</div>
-            <h3>Trà Sữa Truyền Thống</h3>
-            <p>Trân châu đen, sữa tươi</p>
-            <div class="price">29.000đ</div>
-        </div>
-        <div class="menu-card">
-            <div class="dot" style="background:#F6D6C8;">🍑</div>
-            <h3>Trà Đào Cam Sả</h3>
-            <p>Đào miếng, cam tươi</p>
-            <div class="price">35.000đ</div>
-        </div>
-        <div class="menu-card">
-            <div class="dot" style="background:#E9D2B0;">🍮</div>
-            <h3>Trà Sữa Caramel</h3>
-            <p>Kem caramel béo nhẹ</p>
-            <div class="price">32.000đ</div>
-        </div>
-        <div class="menu-card">
-            <div class="dot" style="background:#F0C8C0;">🍓</div>
-            <h3>Hồng Trà Dâu Tây</h3>
-            <p>Dâu tươi nghiền tay</p>
-            <div class="price">36.000đ</div>
-        </div>
-    </div>
-</section>
-
-<section class="band">
-    <div class="section">
-        <div>
-            <h2>Pha mỗi ly bằng cả sự chăm chút</h2>
-            <p class="lead">Trân châu được nấu theo mẻ nhỏ mỗi 2 giờ, trà được ủ đúng nhiệt độ để giữ trọn hương.</p>
-            <div class="stat-row">
-                <div class="stat"><b>12+</b><span>hương vị mỗi ngày</span></div>
-                <div class="stat"><b>2h</b><span>nấu trân châu mới</span></div>
-                <div class="stat"><b>4.9★</b><span>đánh giá khách hàng</span></div>
+        <!-- Hình thu nhỏ bên dưới -->
+        <div class="thumbnail">
+            <div class="item">
+                <img src="~/Assets/banner5.jpg" alt="Trái Cây">
+                <div class="content"><div class="title">Trà Trái Cây</div></div>
+            </div>
+            <div class="item">
+                <img src="~/Assets/banner4.jpg" alt="Hello Summer">
+                <div class="content"><div class="title">Mùa Hè</div></div>
+            </div>
+            <div class="item">
+                <img src="~/Assets/banner2.jpg" alt="Bơ">
+                <div class="content"><div class="title">Bơ 30% OFF</div></div>
+            </div>
+            <div class="item">
+                <img src="~/Assets/banner1.jpg" alt="Healthy">
+                <div class="content"><div class="title">Healthy Drink</div></div>
             </div>
         </div>
-        <div class="cup-side">
-            <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="teaGradientBand" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#C98F5E" />
-                        <stop offset="100%" stop-color="#4A2C20" />
-                    </linearGradient>
-                </defs>
-                <rect x="115" y="0" width="14" height="66" rx="4" fill="#2B1B12" transform="rotate(10 122 33)" />
-                <ellipse cx="100" cy="55" rx="58" ry="13" fill="#FBF3E7" stroke="#2B1B12" stroke-width="3" />
-                <rect x="46" y="49" width="108" height="12" rx="6" fill="#FBF3E7" stroke="#2B1B12" stroke-width="3" />
-                <path d="M50 61 L58 228 Q100 242 142 228 L150 61 Z" fill="url(#teaGradientBand)" stroke="#2B1B12" stroke-width="3" />
-                <circle cx="80" cy="203" r="7" fill="#2B1B12" />
-                <circle cx="100" cy="213" r="7" fill="#2B1B12" />
-                <circle cx="120" cy="201" r="7" fill="#2B1B12" />
-            </svg>
+
+        <!-- Nút điều hướng -->
+        <div class="arrows">
+            <button id="prev"><i class="fa-solid fa-chevron-left"></i></button>
+            <button id="next"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
     </div>
-</section>
+
+    <!-- KHỐI 2: GIỚI THIỆU -->
+    <section class="py-5" style="background-color: var(--lumitea-bg-warm);">
+        <div class="container-xl py-4">
+            <div class="row align-items-center g-5">
+                <div class="col-12 col-lg-6">
+                    <h2 class="display-6 section-title mb-4">GIỚI THIỆU</h2>
+                    <p class="text-dark fs-6" style="line-height: 1.8;">
+                        Với hình ảnh đại diện là một ly trà sữa được pha chế tận tâm, mang lại nụ cười rạng rỡ. Giống như hình ảnh của con người Việt Nam dù vất vả lo toan nhưng vẫn luôn yêu đời và biết cách thưởng thụ cuộc sống.
+                    </p>
+                    <p class="text-dark fs-6 mb-4" style="line-height: 1.8;">
+                        Trà Sữa LumiTea mong muốn đại diện cho chính sự vui tươi, niềm hạnh phúc, tinh thần lạc quan vào tương lai và ngày càng phát triển. LumiTea hi vọng hương vị trong mỗi cốc trà sữa sẽ giúp mọi người xua tan đi mọi mệt mỏi khó khăn trong cuộc sống, giúp mọi người vui vẻ và hạnh phúc hơn.
+                    </p>
+                    <a href="#" class="btn btn-lumi rounded-pill px-4 py-2 mt-2">
+                        Tìm hiểu thêm <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+                <div class="col-12 col-lg-6 d-none d-lg-block">
+                    <img src="~/Assets/gioithieu.jpg" class="img-fluid rounded-4 shadow-sm" alt="Giới thiệu LumiTea">
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- KHỐI 3: SẢN PHẨM NỔI BẬT -->
+    <section class="py-5" style="background-color: var(--lumitea-bg-warm);">
+        <div class="container-xl pb-4">
+            <div class="text-center mb-5">
+                <h2 class="display-6 section-title">Sản phẩm</h2>
+            </div>
+
+            <div class="row row-cols-2 row-cols-lg-4 g-4 text-center">
+
+                <!-- SP 1 -->
+                <div class="col">
+                    <div class="product-card h-100">
+                        <div class="product-img-box">
+                            <img src="~/Assets/o_long_sua_nuong.jpg" alt="Trà Ô Long">
+                        </div>
+                        <h6 class="fw-bold text-dark">Trà Sữa Ô Long Nướng</h6>
+                        <div class="d-flex justify-content-center gap-3 mt-2 fw-bold" style="color: var(--lumitea-primary);">
+                            <span>M: 35.000đ</span>
+                            <span>L: 45.000đ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SP 2 -->
+                <div class="col">
+                    <div class="product-card h-100">
+                        <div class="product-img-box">
+                            <img src="~/Assets/tra_sua_chan_chau_duong_den.jpg" alt="Sữa Tươi">
+                        </div>
+                        <h6 class="fw-bold text-dark">Sữa Tươi Trân Châu ĐĐ</h6>
+                        <div class="d-flex justify-content-center gap-3 mt-2 fw-bold" style="color: var(--lumitea-primary);">
+                            <span>M: 40.000đ</span>
+                            <span>L: 50.000đ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SP 3 -->
+                <div class="col">
+                    <div class="product-card h-100">
+                        <div class="product-img-box">
+                            <img src="~/Assets/tra_xoai_kim_chese.jpg" alt="Trà Xoài">
+                        </div>
+                        <h6 class="fw-bold text-dark">Trà Xoài Nhài Kem Cheese</h6>
+                        <div class="d-flex justify-content-center gap-3 mt-2 fw-bold" style="color: var(--lumitea-primary);">
+                            <span>M: 45.000đ</span>
+                            <span>L: 55.000đ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SP 4 -->
+                <div class="col">
+                    <div class="product-card h-100">
+                        <div class="product-img-box">
+                            <img src="~/Assets/banner3.jpg" alt="Matcha">
+                           
+                        </div>
+                        <h6 class="fw-bold text-dark">Matcha Đậu Đỏ</h6>
+                        <div class="d-flex justify-content-center gap-3 mt-2 fw-bold" style="color: var(--lumitea-primary);">
+                            <span>M: 38.000đ</span>
+                            <span>L: 48.000đ</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="text-center mt-5">
+                <a href="~/Menu/Index" class="btn btn-lumi rounded-pill px-5 py-2">
+                    Xem tất cả <i class="fa-solid fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- KHỐI 4: DẢI BĂNG THỐNG KÊ -->
+    <section class="stats-banner">
+        <div class="container-xl position-relative z-1">
+            <div class="row align-items-center text-center g-4">
+                <div class="col-6 col-md-3">
+                    <h2 class="stats-number">5+</h2>
+                    <p class="fw-bold fs-5 mb-1">Năm hoạt động</p>
+                    <small class="opacity-75">Trên hành trình phục vụ</small>
+                </div>
+                <div class="col-6 col-md-3">
+                    <h2 class="stats-number">16</h2>
+                    <p class="fw-bold fs-5 mb-1">Tỉnh thành</p>
+                    <small class="opacity-75">Có hệ thống cửa hàng</small>
+                </div>
+
+                <img src="~/Assets/tra_sua_chan_chau_duong_den.jpg" class="stats-center-cup d-none d-lg-block rounded-4" style="object-fit: cover; width: 150px;" alt="Cup">
+
+                <div class="col-6 col-md-3">
+                    <h2 class="stats-number">60+</h2>
+                    <p class="fw-bold fs-5 mb-1">Cửa hàng</p>
+                    <small class="opacity-75">Trên toàn quốc</small>
+                </div>
+                <div class="col-6 col-md-3">
+                    <h2 class="stats-number">1M+</h2>
+                    <p class="fw-bold fs-5 mb-1">Ly trà sữa</p>
+                    <small class="opacity-75">Đã trao đến tay khách hàng</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5" style="background-color: var(--lumitea-bg-warm);">
+        <div class="container-xl py-4">
+            <div class="text-center mb-5">
+                <h2 class="display-6 section-title" style="color: #c92127;">TIN TỨC & KHUYẾN MẠI</h2>
+            </div>
+
+            <div class="row g-4">
+                <!-- Bài 1: Mua 1 Tặng 1 -->
+                <div class="col-12 col-md-4">
+                    <div class="news-card h-100">
+                        <!-- Bạn nhớ lưu ảnh tương ứng vào thư mục Assets với tên promo_mua1tang1.jpg nhé -->
+                        <img src="~/Assets/banner6.jpg" alt="Mua 1 Tặng 1" class="news-img">
+                        <h5 class="news-title">🎉 Siêu ưu đãi: MUA 1 TẶNG 1 từ 15.07 - 17.07!</h5>
+                        <p class="news-desc">Đánh bay cái nóng mùa hè cùng LumiTea! Duy nhất từ ngày 15.07 đến 17.07, tận hưởng ngay chương trình MUA 1 TẶNG 1[cite: 31]. Rủ ngay hội bạn thân đến cửa hàng để giải nhiệt với các món trà trái cây thanh mát[cite: 31].</p>
+                        <a href="#" class="news-link">Xem tin <i class="fa-solid fa-circle-arrow-right ms-1"></i></a>
+                    </div>
+                </div>
+
+                <!-- Bài 2: Bơ 30% OFF -->
+                <div class="col-12 col-md-4">
+                    <div class="news-card h-100">
+                        <img src="~/Assets/banner2.jpg" alt="Delicious Avocado" class="news-img">
+                        <h5 class="news-title">🥑 Thưởng thức Delicious Avocado - Giảm ngay 30%</h5>
+                        <p class="news-desc">Bạn đã thử siêu phẩm bơ nguyên chất béo ngậy nhà LumiTea chưa? Đặt hàng ngay hôm nay để nhận ưu đãi giảm 30% OFF cho bộ sưu tập Delicious AVOCADO cực hấp dẫn[cite: 32].</p>
+                        <a href="#" class="news-link">Xem tin <i class="fa-solid fa-circle-arrow-right ms-1"></i></a>
+                    </div>
+                </div>
+
+                <!-- Bài 3: Berries 10% OFF -->
+                <div class="col-12 col-md-4">
+                    <div class="news-card h-100">
+                        <img src="~/Assets/banner7.jpg" alt="Berries Special" class="news-img">
+                        <h5 class="news-title">🍓 Berries Special - Ưu đãi giảm 10% sảng khoái</h5>
+                        <p class="news-desc">Bùng nổ vị giác với bộ sưu tập thức uống dâu tây đá xay phủ kem tươi ngọt ngào rực rỡ[cite: 33]. LumiTea dành tặng bạn ưu đãi Discount 10% OFF khi trải nghiệm dòng sản phẩm BERRIES Special trong tháng này[cite: 33].</p>
+                        <a href="#" class="news-link">Xem tin <i class="fa-solid fa-circle-arrow-right ms-1"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- KHỐI 6: ĐỊA CHỈ & MAP -->
+    <section class="events py-5" style="background-color: var(--lumitea-bg-warm);">
+        <div class="container-xl pb-4 border-top pt-5" style="border-color: #e2e8f0 !important;">
+            <div class="row justify-content-between align-items-start g-5">
+
+                <!-- Bản đồ -->
+                <div class="col-12 col-md-6 d-flex flex-column align-items-center">
+                    <h4 class="mb-4 fw-bold text-dark text-uppercase">Hệ Thống Cửa Hàng</h4>
+                    <div class="location w-100 shadow-sm rounded-4 overflow-hidden border border-light">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.062476696633!2d106.62628141097706!3d10.806526989299586!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752be2853ce7cd%3A0x4111b3b3c2aca14a!2zMTQwIMSQLiBMw6ogVHLhu41uZyBU4bqlbiwgVMOieSBUaOG6oW5oLCBUw6JuIFBow7osIFRow6BuaCBwaOG7kSBI4buTIENow60gTWluaCwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1712755905274!5m2!1svi!2s"
+                                class="w-100" height="350" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+
+                <!-- Banner nhỏ -->
+                <div class="col-12 col-md-6 d-flex flex-column align-items-center">
+                    <h4 class="mb-4 fw-bold text-dark text-uppercase">Khám Phá Menu</h4>
+                    <div class="w-100 shadow-sm rounded-4 overflow-hidden position-relative">
+                        <img src="~/Assets/banner5.jpg" alt="Menu Preview" class="w-100" style="height: 350px; object-fit: cover;">
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center" style="background: rgba(26, 77, 62, 0.5);">
+                            <h2 class="text-white fw-bold text-uppercase mb-3" style="letter-spacing: 2px;">LumiTea Menu</h2>
+                            <a href="~/Menu/Index" class="btn btn-lumi px-4 py-2 rounded-pill shadow-sm">Khám Phá Ngay</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    
+</body>
+</html>

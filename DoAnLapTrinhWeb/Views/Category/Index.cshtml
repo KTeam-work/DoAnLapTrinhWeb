@@ -5,30 +5,271 @@
 
 <link rel="stylesheet" href="~/Css/styleProduct_index.css" />
 
+<style>
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(24px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes floaty {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-6px);
+        }
+    }
+
+    @@keyframes rowIn {
+        from {
+            opacity: 0;
+            transform: translateX(-18px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @@keyframes pulseDot {
+        0% {
+            box-shadow: 0 0 0 0 rgba(25,135,84,.5);
+        }
+
+        100% {
+            box-shadow: 0 0 0 10px rgba(25,135,84,0);
+        }
+    }
+
+    @@keyframes shimmer {
+        0% {
+            background-position: -200% 0;
+        }
+
+        100% {
+            background-position: 200% 0;
+        }
+    }
+
+    @@keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+
+    /* ===== Vào trang ===== */
+    .product-heading {
+        animation: fadeUp .6s ease both;
+    }
+
+    .summary-grid .summary-card {
+        animation: fadeUp .6s ease both;
+    }
+
+        .summary-grid .summary-card:nth-child(1) {
+            animation-delay: .08s;
+        }
+
+        .summary-grid .summary-card:nth-child(2) {
+            animation-delay: .16s;
+        }
+
+        .summary-grid .summary-card:nth-child(3) {
+            animation-delay: .24s;
+        }
+
+        .summary-grid .summary-card:nth-child(4) {
+            animation-delay: .32s;
+        }
+
+    .filter-card {
+        animation: fadeUp .6s ease .38s both;
+    }
+
+    .product-table-card {
+        animation: fadeUp .6s ease .46s both;
+    }
+
+    .heading-icon {
+        animation: floaty 3s ease-in-out infinite;
+    }
+
+    /* ===== Thẻ thống kê ===== */
+    .summary-card {
+        transition: transform .3s, box-shadow .3s;
+        cursor: default;
+    }
+
+        .summary-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 32px rgba(0,0,0,.12);
+        }
+
+        .summary-card .summary-icon {
+            transition: transform .4s;
+        }
+
+        .summary-card:hover .summary-icon {
+            transform: rotate(-12deg) scale(1.2);
+        }
+
+    /* ===== Nút ===== */
+    .btn-tea, .btn-filter {
+        position: relative;
+        overflow: hidden;
+        transition: transform .2s, box-shadow .2s;
+    }
+
+        .btn-tea:hover, .btn-filter:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 22px rgba(0,0,0,.15);
+        }
+
+        .btn-tea:active, .btn-filter:active {
+            transform: scale(.96);
+        }
+
+    .btn .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255,255,255,.5);
+        transform: scale(0);
+        animation: ripple .6s linear;
+        pointer-events: none;
+    }
+
+    #btnReset:hover i {
+        transform: rotate(-180deg);
+    }
+
+    #btnReset i {
+        display: inline-block;
+        transition: transform .5s;
+    }
+
+    /* ===== Ô tìm kiếm ===== */
+    .form-control, .form-select {
+        transition: box-shadow .25s, transform .25s, border-color .25s;
+    }
+
+        .form-control:focus, .form-select:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,.08);
+        }
+
+    /* ===== Bảng ===== */
+    #categoryTableBody tr {
+        animation: rowIn .45s ease both;
+        transition: background .25s, transform .25s, box-shadow .25s;
+    }
+
+        #categoryTableBody tr:hover {
+            background: #f6fbf8;
+            transform: scale(1.012);
+            box-shadow: 0 6px 18px rgba(0,0,0,.07);
+            position: relative;
+            z-index: 1;
+        }
+
+    .cat-icon {
+        display: inline-grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        margin-right: 10px;
+        border-radius: 12px;
+        background: #fff1f4;
+        font-size: 20px;
+        vertical-align: middle;
+        transition: transform .3s;
+    }
+
+    tr:hover .cat-icon {
+        transform: rotate(-10deg) scale(1.2);
+    }
+
+    .cat-icon.off {
+        background: #eef0f2;
+        filter: grayscale(1);
+        opacity: .75;
+    }
+
+    mark.hl {
+        background: #ffe8a3;
+        padding: 0 2px;
+        border-radius: 4px;
+    }
+
+    .status-badge.available i {
+        animation: pulseDot 1.6s infinite;
+        border-radius: 50%;
+    }
+
+    .action-btn {
+        transition: transform .25s, box-shadow .25s;
+    }
+
+        .action-btn:hover {
+            transform: translateY(-3px) rotate(-8deg) scale(1.12);
+            box-shadow: 0 8px 16px rgba(0,0,0,.18);
+        }
+
+    /* ===== Skeleton khi tải ===== */
+    .skeleton-row td {
+        padding: 18px 12px;
+    }
+
+    .skeleton-bar {
+        height: 14px;
+        border-radius: 8px;
+        background: linear-gradient(90deg, #eee 25%, #f8f8f8 50%, #eee 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.2s infinite;
+    }
+
+    #emptyState {
+        animation: fadeUp .4s ease both;
+    }
+
+        #emptyState i {
+            display: inline-block;
+            animation: floaty 2.4s ease-in-out infinite;
+        }
+
+    @@media (prefers-reduced-motion: reduce) {
+        * {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+</style>
+
 <div class="product-page">
 
-    <!-- =========================
-         HEADER
-         ========================= -->
+    <!-- HEADER -->
     <div class="product-heading">
 
         <div class="heading-left">
-
             <div class="heading-icon">
                 <i class="bi bi-grid-3x3-gap-fill"></i>
             </div>
-
             <div>
                 <h1 class="page-title">Quản lý danh mục</h1>
-                <p class="page-subtitle">
-                    Quản lý các danh mục sản phẩm của cửa hàng
-                </p>
+                <p class="page-subtitle">Quản lý các danh mục sản phẩm của cửa hàng</p>
             </div>
-
         </div>
 
-        <a href="@Url.Action("Create", "Category")"
-           class="btn btn-tea">
+        <a href="@Url.Action("Create", "Category")" class="btn btn-tea">
             <i class="bi bi-plus-lg me-2"></i>
             Thêm danh mục
         </a>
@@ -36,295 +277,127 @@
     </div>
 
 
-    <!-- =========================
-         SUMMARY
-         ========================= -->
+    <!-- SUMMARY -->
     <div class="summary-grid">
 
         <div class="summary-card">
-
-            <span class="summary-label">
-                Tổng danh mục
-            </span>
-
-            <strong class="summary-number" id="totalCategories">
-                0
-            </strong>
-
-            <div class="summary-icon">
-                <i class="bi bi-grid"></i>
-            </div>
-
+            <span class="summary-label">Tổng danh mục</span>
+            <strong class="summary-number" id="totalCategories">0</strong>
+            <div class="summary-icon"><i class="bi bi-grid"></i></div>
         </div>
 
-
         <div class="summary-card">
-
-            <span class="summary-label">
-                Đang hoạt động
-            </span>
-
-            <strong class="summary-number" id="activeCategories">
-                0
-            </strong>
-
-            <div class="summary-icon">
-                <i class="bi bi-check-circle"></i>
-            </div>
-
+            <span class="summary-label">Đang hoạt động</span>
+            <strong class="summary-number" id="activeCategories">0</strong>
+            <div class="summary-icon"><i class="bi bi-check-circle"></i></div>
         </div>
 
-
         <div class="summary-card">
-
-            <span class="summary-label">
-                Ngừng hoạt động
-            </span>
-
-            <strong class="summary-number" id="inactiveCategories">
-                0
-            </strong>
-
-            <div class="summary-icon">
-                <i class="bi bi-pause-circle"></i>
-            </div>
-
+            <span class="summary-label">Ngừng hoạt động</span>
+            <strong class="summary-number" id="inactiveCategories">0</strong>
+            <div class="summary-icon"><i class="bi bi-pause-circle"></i></div>
         </div>
 
-
         <div class="summary-card">
-
-            <span class="summary-label">
-                Kết quả hiển thị
-            </span>
-
-            <strong class="summary-number" id="displayCategories">
-                0
-            </strong>
-
-            <div class="summary-icon">
-                <i class="bi bi-list-check"></i>
-            </div>
-
+            <span class="summary-label">Kết quả hiển thị</span>
+            <strong class="summary-number" id="displayCategories">0</strong>
+            <div class="summary-icon"><i class="bi bi-list-check"></i></div>
         </div>
 
     </div>
 
 
-    <!-- =========================
-         FILTER
-         ========================= -->
+    <!-- FILTER -->
     <div class="filter-card">
 
         <div class="filter-head">
-
             <i class="bi bi-funnel-fill"></i>
-
-            <span>
-                Tìm kiếm & lọc danh mục
-            </span>
-
+            <span>Tìm kiếm & lọc danh mục</span>
         </div>
 
-
         <div class="filter-body">
-
             <div class="row g-4 align-items-end">
 
                 <div class="col-lg-7">
-
-                    <label class="form-label">
-                        Từ khóa
-                    </label>
-
+                    <label class="form-label">Từ khóa</label>
                     <div class="input-group">
-
-                        <span class="input-group-text">
-                            <i class="bi bi-search"></i>
-                        </span>
-
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
                         <input type="text"
                                id="searchCategory"
                                class="form-control"
                                placeholder="Nhập mã hoặc tên danh mục..." />
-
                     </div>
-
                 </div>
-
 
                 <div class="col-lg-3">
-
-                    <label class="form-label">
-                        Trạng thái
-                    </label>
-
-                    <select id="statusFilter"
-                            class="form-select">
-
-                        <option value="all">
-                            Tất cả trạng thái
-                        </option>
-
-                        <option value="active">
-                            Đang hoạt động
-                        </option>
-
-                        <option value="inactive">
-                            Ngừng hoạt động
-                        </option>
-
+                    <label class="form-label">Trạng thái</label>
+                    <select id="statusFilter" class="form-select">
+                        <option value="all">Tất cả trạng thái</option>
+                        <option value="active">Đang hoạt động</option>
+                        <option value="inactive">Ngừng hoạt động</option>
                     </select>
-
                 </div>
 
-
                 <div class="col-lg-2">
-
-                    <button type="button"
-                            id="btnReset"
-                            class="btn btn-filter w-100">
-
+                    <button type="button" id="btnReset" class="btn btn-filter w-100">
                         <i class="bi bi-arrow-counterclockwise me-1"></i>
                         Đặt lại
-
                     </button>
-
                 </div>
 
             </div>
-
         </div>
 
     </div>
 
 
-    <!-- =========================
-         TABLE
-         ========================= -->
+    <!-- TABLE -->
     <div class="product-table-card">
 
         <div class="table-top">
-
             <div>
-
-                <h2 class="table-title">
-                    Danh sách danh mục
-                </h2>
-
-                <span class="table-note">
-                    Các danh mục sản phẩm đang được quản lý
-                </span>
-
+                <h2 class="table-title">Danh sách danh mục</h2>
+                <span class="table-note">Các danh mục sản phẩm đang được quản lý</span>
             </div>
-
-            <span class="table-note" id="resultText">
-                0 danh mục
-            </span>
-
+            <span class="table-note" id="resultText">0 danh mục</span>
         </div>
-
 
         <div class="table-responsive">
-
             <table class="table align-middle">
-
                 <thead>
-
                     <tr>
-
-                        <th style="width: 160px;">
-                            Mã danh mục
-                        </th>
-
-                        <th style="width: 240px;">
-                            Tên danh mục
-                        </th>
-
-                        <th>
-                            Mô tả
-                        </th>
-
-                        <th style="width: 170px;">
-                            Trạng thái
-                        </th>
-
-                        <th style="width: 150px;"
-                            class="text-center">
-                            Thao tác
-                        </th>
-
+                        <th style="width: 160px;">Mã danh mục</th>
+                        <th style="width: 260px;">Tên danh mục</th>
+                        <th>Mô tả</th>
+                        <th style="width: 170px;">Trạng thái</th>
+                        <th style="width: 150px;" class="text-center">Thao tác</th>
                     </tr>
-
                 </thead>
-
-                <tbody id="categoryTableBody">
-                </tbody>
-
+                <tbody id="categoryTableBody"></tbody>
             </table>
-
         </div>
 
-
-        <!-- =========================
-             EMPTY
-             ========================= -->
-        <div id="emptyState"
-             class="text-center py-5 d-none">
-
+        <!-- EMPTY -->
+        <div id="emptyState" class="text-center py-5 d-none">
             <div class="mb-3">
-
-                <i class="bi bi-inbox"
-                   style="font-size: 42px; color: #78837e;"></i>
-
+                <i class="bi bi-inbox" style="font-size: 42px; color: #78837e;"></i>
             </div>
-
-            <h6 class="fw-bold mb-2"
-                style="color:#17463e;">
-                Không tìm thấy danh mục
-            </h6>
-
-            <p class="mb-0"
-               style="color:#78837e; font-size:13px;">
+            <h6 class="fw-bold mb-2" style="color:#17463e;">Không tìm thấy danh mục</h6>
+            <p class="mb-0" style="color:#78837e; font-size:13px;">
                 Hãy thử thay đổi từ khóa hoặc bộ lọc.
             </p>
-
         </div>
 
-
-        <!-- =========================
-             FOOTER
-             ========================= -->
+        <!-- FOOTER -->
         <div class="table-footer">
-
-            <span class="table-note">
-                Hiển thị danh mục sản phẩm
-            </span>
-
+            <span class="table-note">Hiển thị danh mục sản phẩm</span>
             <nav>
                 <ul class="pagination pagination-sm mb-0">
-
-                    <li class="page-item disabled">
-                        <span class="page-link">
-                            Trước
-                        </span>
-                    </li>
-
-                    <li class="page-item active">
-                        <span class="page-link">
-                            1
-                        </span>
-                    </li>
-
-                    <li class="page-item disabled">
-                        <span class="page-link">
-                            Sau
-                        </span>
-                    </li>
-
+                    <li class="page-item disabled"><span class="page-link">Trước</span></li>
+                    <li class="page-item active"><span class="page-link">1</span></li>
+                    <li class="page-item disabled"><span class="page-link">Sau</span></li>
                 </ul>
             </nav>
-
         </div>
 
     </div>
@@ -334,105 +407,92 @@
 
 <script>
 
-    /* =====================================================
-       DỮ LIỆU DEMO
-       Sau này thay bằng dữ liệu từ Database
-       ===================================================== */
-
+    /* DỮ LIỆU DEMO - sau này thay bằng dữ liệu từ Database */
     const defaultCategories = [
-        {
-            id: "CAT0000001",
-            name: "Trà sữa",
-            description: "Các sản phẩm trà sữa truyền thống và hiện đại.",
-            status: "Active"
-        },
-        {
-            id: "CAT0000002",
-            name: "Trà trái cây",
-            description: "Các loại trà kết hợp cùng trái cây tươi.",
-            status: "Active"
-        },
-        {
-            id: "CAT0000003",
-            name: "Trà truyền thống",
-            description: "Các sản phẩm trà nguyên bản.",
-            status: "Active"
-        },
-        {
-            id: "CAT0000004",
-            name: "Macchiato",
-            description: "Các sản phẩm trà kết hợp lớp kem Macchiato.",
-            status: "Active"
-        },
-        {
-            id: "CAT0000005",
-            name: "Topping",
-            description: "Các loại topping dùng kèm đồ uống.",
-            status: "Active"
-        },
-        {
-            id: "CAT0000006",
-            name: "Bánh",
-            description: "Các loại bánh dùng kèm trà và trà sữa.",
-            status: "Inactive"
-        }
+        { id: "CAT0000001", name: "Trà sữa", description: "Các sản phẩm trà sữa truyền thống và hiện đại.", status: "Active" },
+        { id: "CAT0000002", name: "Trà trái cây", description: "Các loại trà kết hợp cùng trái cây tươi.", status: "Active" },
+        { id: "CAT0000003", name: "Trà truyền thống", description: "Các sản phẩm trà nguyên bản.", status: "Active" },
+        { id: "CAT0000004", name: "Macchiato", description: "Các sản phẩm trà kết hợp lớp kem Macchiato.", status: "Active" },
+        { id: "CAT0000005", name: "Topping", description: "Các loại topping dùng kèm đồ uống.", status: "Active" },
+        { id: "CAT0000006", name: "Bánh", description: "Các loại bánh dùng kèm trà và trà sữa.", status: "Inactive" }
     ];
 
+    /* Biểu tượng mặc định cho dữ liệu cũ chưa có trường icon */
+    const defaultIcons = {
+        "CAT0000001": "🧋",
+        "CAT0000002": "🍓",
+        "CAT0000003": "🍵",
+        "CAT0000004": "☕",
+        "CAT0000005": "🧊",
+        "CAT0000006": "🍰"
+    };
 
     function getCategories() {
-
         const data = localStorage.getItem("milkTeaCategories");
 
         if (!data) {
-
-            localStorage.setItem(
-                "milkTeaCategories",
-                JSON.stringify(defaultCategories)
-            );
-
+            localStorage.setItem("milkTeaCategories", JSON.stringify(defaultCategories));
             return [...defaultCategories];
         }
 
         try {
-
             return JSON.parse(data);
-
         } catch {
-
-            localStorage.setItem(
-                "milkTeaCategories",
-                JSON.stringify(defaultCategories)
-            );
-
+            localStorage.setItem("milkTeaCategories", JSON.stringify(defaultCategories));
             return [...defaultCategories];
         }
     }
 
-
     function saveCategories(categories) {
-
-        localStorage.setItem(
-            "milkTeaCategories",
-            JSON.stringify(categories)
-        );
-
+        localStorage.setItem("milkTeaCategories", JSON.stringify(categories));
     }
 
+    function escapeHtml(value) {
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+    /* Escape rồi mới tô sáng từ khóa */
+    function highlight(text, keyword) {
+        const safe = escapeHtml(text);
+        if (!keyword) return safe;
+
+        const safeKeyword = escapeHtml(keyword)
+            .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+        return safe.replace(
+            new RegExp("(" + safeKeyword + ")", "gi"),
+            '<mark class="hl">$1</mark>'
+        );
+    }
+
+    /* Số đếm chạy từ giá trị cũ lên giá trị mới */
+    function animateNumber(el, to) {
+        const from = parseInt(el.textContent, 10) || 0;
+        if (from === to) { el.textContent = to; return; }
+
+        const duration = 600;
+        const start = performance.now();
+
+        function step(now) {
+            const t = Math.min((now - start) / duration, 1);
+            const eased = 1 - Math.pow(1 - t, 3);
+            el.textContent = Math.round(from + (to - from) * eased);
+            if (t < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
 
     function renderCategories() {
 
         const categories = getCategories();
-
-        const keyword =
-            document
-                .getElementById("searchCategory")
-                .value
-                .trim()
-                .toLowerCase();
-
-        const status =
-            document.getElementById("statusFilter").value;
-
+        const rawKeyword = document.getElementById("searchCategory").value.trim();
+        const keyword = rawKeyword.toLowerCase();
+        const status = document.getElementById("statusFilter").value;
 
         const filtered = categories.filter(category => {
 
@@ -440,33 +500,20 @@
                 !keyword ||
                 category.id.toLowerCase().includes(keyword) ||
                 category.name.toLowerCase().includes(keyword) ||
-                (category.description || "")
-                    .toLowerCase()
-                    .includes(keyword);
-
+                (category.description || "").toLowerCase().includes(keyword);
 
             const matchStatus =
                 status === "all" ||
-                (status === "active" &&
-                    category.status === "Active") ||
-                (status === "inactive" &&
-                    category.status === "Inactive");
-
+                (status === "active" && category.status === "Active") ||
+                (status === "inactive" && category.status === "Inactive");
 
             return matchKeyword && matchStatus;
-
         });
 
-
-        const tbody =
-            document.getElementById("categoryTableBody");
-
-        const emptyState =
-            document.getElementById("emptyState");
-
+        const tbody = document.getElementById("categoryTableBody");
+        const emptyState = document.getElementById("emptyState");
 
         tbody.innerHTML = "";
-
 
         if (filtered.length === 0) {
 
@@ -476,173 +523,112 @@
 
             emptyState.classList.add("d-none");
 
-            filtered.forEach(category => {
+            filtered.forEach((category, index) => {
 
-                const row =
-                    document.createElement("tr");
+                const row = document.createElement("tr");
+                row.style.animationDelay = (index * 0.06) + "s";
 
+                const isActive = category.status === "Active";
+                const icon = category.icon || defaultIcons[category.id] || "📁";
 
-                const statusHtml =
-                    category.status === "Active"
-
-                        ? `
-                            <span class="status-badge available">
-                                <i class="bi bi-check-circle-fill"></i>
-                                Đang hoạt động
-                            </span>
-                          `
-
-                        : `
-                            <span class="status-badge unavailable">
-                                <i class="bi bi-pause-circle-fill"></i>
-                                Ngừng hoạt động
-                            </span>
-                          `;
-
+                const statusHtml = isActive
+                    ? `<span class="status-badge available">
+                           <i class="bi bi-check-circle-fill"></i>
+                           Đang hoạt động
+                       </span>`
+                    : `<span class="status-badge unavailable">
+                           <i class="bi bi-pause-circle-fill"></i>
+                           Ngừng hoạt động
+                       </span>`;
 
                 row.innerHTML = `
-
                     <td>
-                        <span class="product-code">
-                            ${escapeHtml(category.id)}
-                        </span>
+                        <span class="product-code">${highlight(category.id, rawKeyword)}</span>
                     </td>
 
-
                     <td>
-                        <span class="product-name">
-                            ${escapeHtml(category.name)}
-                        </span>
+                        <span class="cat-icon ${isActive ? "" : "off"}">${escapeHtml(icon)}</span>
+                        <span class="product-name">${highlight(category.name, rawKeyword)}</span>
                     </td>
 
-
                     <td>
-
                         <div class="description">
-                            ${escapeHtml(
-                                category.description || "Chưa có mô tả"
-                            )}
+                            ${highlight(category.description || "Chưa có mô tả", rawKeyword)}
                         </div>
-
                     </td>
 
-
-                    <td>
-                        ${statusHtml}
-                    </td>
-
+                    <td>${statusHtml}</td>
 
                     <td class="text-center">
-
-    <a href="@Url.Action("Edit", "Category")?id=${encodeURIComponent(category.id)}"
-       class="action-btn edit-btn"
-       title="Chỉnh sửa">
-
-        <i class="bi bi-pencil-square"></i>
-
-    </a>
-
-</td>
-
+                        <a href="@Url.Action("Edit", "Category")?id=${encodeURIComponent(category.id)}"
+                           class="action-btn edit-btn"
+                           title="Chỉnh sửa">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </td>
                 `;
 
-
                 tbody.appendChild(row);
-
             });
-
         }
 
-
         updateSummary(categories, filtered);
-
     }
-
 
     function updateSummary(categories, filtered) {
 
-        const active =
-            categories.filter(
-                item => item.status === "Active"
-            ).length;
+        const active = categories.filter(item => item.status === "Active").length;
+        const inactive = categories.filter(item => item.status === "Inactive").length;
 
+        animateNumber(document.getElementById("totalCategories"), categories.length);
+        animateNumber(document.getElementById("activeCategories"), active);
+        animateNumber(document.getElementById("inactiveCategories"), inactive);
+        animateNumber(document.getElementById("displayCategories"), filtered.length);
 
-        const inactive =
-            categories.filter(
-                item => item.status === "Inactive"
-            ).length;
-
-
-        document.getElementById("totalCategories")
-            .textContent = categories.length;
-
-        document.getElementById("activeCategories")
-            .textContent = active;
-
-        document.getElementById("inactiveCategories")
-            .textContent = inactive;
-
-        document.getElementById("displayCategories")
-            .textContent = filtered.length;
-
-
-        document.getElementById("resultText")
-            .textContent =
-            `${filtered.length} danh mục`;
+        document.getElementById("resultText").textContent = `${filtered.length} danh mục`;
     }
 
-
-    
-
-
-    function escapeHtml(value) {
-
-        return String(value)
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;")
-            .replaceAll("'", "&#039;");
-
+    /* Skeleton ngắn khi mới vào trang cho cảm giác "đang tải" */
+    function showSkeleton() {
+        const tbody = document.getElementById("categoryTableBody");
+        let html = "";
+        for (let i = 0; i < 4; i++) {
+            html += `<tr class="skeleton-row">
+                <td><div class="skeleton-bar" style="width:80px"></div></td>
+                <td><div class="skeleton-bar" style="width:140px"></div></td>
+                <td><div class="skeleton-bar" style="width:75%"></div></td>
+                <td><div class="skeleton-bar" style="width:110px"></div></td>
+                <td><div class="skeleton-bar mx-auto" style="width:34px"></div></td>
+            </tr>`;
+        }
+        tbody.innerHTML = html;
     }
 
+    /* Ripple cho các nút */
+    document.querySelectorAll(".btn-tea, .btn-filter").forEach(btn => {
+        btn.addEventListener("click", function (e) {
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const r = document.createElement("span");
+            r.className = "ripple";
+            r.style.width = r.style.height = size + "px";
+            r.style.left = (e.clientX - rect.left - size / 2) + "px";
+            r.style.top = (e.clientY - rect.top - size / 2) + "px";
+            this.appendChild(r);
+            setTimeout(() => r.remove(), 600);
+        });
+    });
 
-    document
-        .getElementById("searchCategory")
-        .addEventListener(
-            "input",
-            renderCategories
-        );
+    document.getElementById("searchCategory").addEventListener("input", renderCategories);
+    document.getElementById("statusFilter").addEventListener("change", renderCategories);
 
+    document.getElementById("btnReset").addEventListener("click", function () {
+        document.getElementById("searchCategory").value = "";
+        document.getElementById("statusFilter").value = "all";
+        renderCategories();
+    });
 
-    document
-        .getElementById("statusFilter")
-        .addEventListener(
-            "change",
-            renderCategories
-        );
-
-
-    document
-        .getElementById("btnReset")
-        .addEventListener(
-            "click",
-            function () {
-
-                document
-                    .getElementById("searchCategory")
-                    .value = "";
-
-                document
-                    .getElementById("statusFilter")
-                    .value = "all";
-
-                renderCategories();
-
-            }
-        );
-
-
-    renderCategories();
+    showSkeleton();
+    setTimeout(renderCategories, 500);
 
 </script>
