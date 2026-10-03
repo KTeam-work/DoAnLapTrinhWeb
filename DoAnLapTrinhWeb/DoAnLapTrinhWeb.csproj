@@ -138,6 +138,7 @@
     <Compile Include="Controllers\ReviewController.cs" />
     <Compile Include="Controllers\ShiftController.cs" />
     <Compile Include="Controllers\SizeController.cs" />
+    <Compile Include="Controllers\ToppingController.cs" />
     <Compile Include="Controllers\VoucherController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -267,6 +268,7 @@
     <Content Include="Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Topping\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

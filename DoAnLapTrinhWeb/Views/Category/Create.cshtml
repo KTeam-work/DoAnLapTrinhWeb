@@ -5,440 +5,713 @@
 
 <link rel="stylesheet" href="~/Css/styleProduct_index.css" />
 
+<style>
+    /* ===== Animation chung ===== */
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(24px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes floaty {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-6px);
+        }
+    }
+
+    @@keyframes shake {
+        0%, 100% {
+            transform: translateX(0);
+        }
+
+        20%, 60% {
+            transform: translateX(-8px);
+        }
+
+        40%, 80% {
+            transform: translateX(8px);
+        }
+    }
+
+    @@keyframes popIn {
+        0% {
+            transform: scale(.6);
+            opacity: 0;
+        }
+
+        70% {
+            transform: scale(1.08);
+            opacity: 1;
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    @@keyframes pulseRing {
+        0% {
+            box-shadow: 0 0 0 0 rgba(25,135,84,.45);
+        }
+
+        100% {
+            box-shadow: 0 0 0 14px rgba(25,135,84,0);
+        }
+    }
+
+    @@keyframes confettiFall {
+        to {
+            transform: translateY(105vh) rotate(720deg);
+            opacity: .9;
+        }
+    }
+
+    .product-heading {
+        animation: fadeUp .6s ease both;
+    }
+
+    .form-col {
+        animation: fadeUp .6s ease .12s both;
+    }
+
+    .preview-col {
+        animation: fadeUp .6s ease .24s both;
+    }
+
+    .heading-icon {
+        animation: floaty 3s ease-in-out infinite;
+    }
+
+    /* ===== Input ===== */
+    .form-control, .form-select, .input-group-text {
+        transition: border-color .25s, box-shadow .25s, transform .25s;
+    }
+
+        .form-control:focus, .form-select:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,.08);
+        }
+
+    .input-group:focus-within .input-group-text {
+        color: #0d6efd;
+    }
+
+    .shake {
+        animation: shake .45s ease;
+        border-color: #dc3545 !important;
+    }
+
+    .char-count {
+        font-size: 12px;
+        color: #8a8a8a;
+        text-align: right;
+        margin-top: 6px;
+        transition: color .2s;
+    }
+
+        .char-count.warn {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+    /* ===== Chọn biểu tượng ===== */
+    .icon-picker {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .icon-option {
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        font-size: 24px;
+        border: 2px solid #e6e6e6;
+        border-radius: 14px;
+        background: #fff;
+        cursor: pointer;
+        transition: transform .2s, border-color .2s, background .2s;
+    }
+
+        .icon-option:hover {
+            transform: translateY(-4px) scale(1.1);
+            border-color: #b9c7ff;
+        }
+
+        .icon-option.active {
+            border-color: #0d6efd;
+            background: #eef3ff;
+            animation: popIn .35s ease;
+        }
+
+    /* ===== Chọn trạng thái dạng thẻ ===== */
+    .status-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .status-card {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px;
+        border: 2px solid #e6e6e6;
+        border-radius: 14px;
+        cursor: pointer;
+        background: #fff;
+        transition: all .25s;
+        user-select: none;
+    }
+
+        .status-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(0,0,0,.07);
+        }
+
+        .status-card .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #bbb;
+            transition: background .25s;
+        }
+
+        .status-card.active-on {
+            border-color: #198754;
+            background: #ecf8f1;
+        }
+
+            .status-card.active-on .dot {
+                background: #198754;
+                animation: pulseRing 1.4s infinite;
+            }
+
+        .status-card.active-off {
+            border-color: #6c757d;
+            background: #f3f4f5;
+        }
+
+            .status-card.active-off .dot {
+                background: #6c757d;
+            }
+
+    /* ===== Preview ===== */
+    .preview-sticky {
+        position: sticky;
+        top: 90px;
+    }
+
+    .preview-card {
+        border-radius: 20px;
+        padding: 26px;
+        color: #fff;
+        background: linear-gradient(135deg, #ff9a8b, #ff6a88 55%, #ff99ac);
+        box-shadow: 0 18px 40px rgba(255,106,136,.35);
+        transition: transform .3s, background .5s, box-shadow .5s;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .preview-card:hover {
+            transform: translateY(-6px) rotate(-.6deg);
+        }
+
+        .preview-card::after {
+            content: "";
+            position: absolute;
+            right: -40px;
+            top: -40px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.18);
+        }
+
+        .preview-card.inactive {
+            background: linear-gradient(135deg, #9aa5b1, #6c7a89);
+            box-shadow: 0 18px 40px rgba(108,122,137,.3);
+        }
+
+    .preview-emoji {
+        font-size: 46px;
+        line-height: 1;
+        display: inline-block;
+        animation: floaty 2.6s ease-in-out infinite;
+    }
+
+        .preview-emoji.bump {
+            animation: popIn .4s ease;
+        }
+
+    .preview-name {
+        font-size: 22px;
+        font-weight: 700;
+        margin: 14px 0 6px;
+        word-break: break-word;
+    }
+
+    .preview-desc {
+        font-size: 14px;
+        opacity: .92;
+        min-height: 42px;
+        word-break: break-word;
+    }
+
+    .preview-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 18px;
+    }
+
+    .preview-badge {
+        background: rgba(255,255,255,.25);
+        backdrop-filter: blur(4px);
+        padding: 5px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .preview-id {
+        font-size: 12px;
+        opacity: .85;
+        letter-spacing: 1px;
+    }
+
+    /* ===== Nút ===== */
+    .btn-save {
+        position: relative;
+        overflow: hidden;
+        transition: transform .2s, box-shadow .2s;
+    }
+
+        .btn-save:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 22px rgba(0,0,0,.18);
+        }
+
+        .btn-save:active {
+            transform: scale(.96);
+        }
+
+        .btn-save .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,.55);
+            transform: scale(0);
+            animation: ripple .6s linear;
+            pointer-events: none;
+        }
+
+    @@keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+
+    .btn-save.loading {
+        pointer-events: none;
+        opacity: .85;
+    }
+
+    /* ===== Toast ===== */
+    .toast-box {
+        position: fixed;
+        right: 24px;
+        top: 24px;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 20px;
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 14px 34px rgba(0,0,0,.18);
+        border-left: 5px solid #198754;
+        transform: translateX(130%);
+        transition: transform .5s cubic-bezier(.2,1.3,.4,1);
+        font-weight: 600;
+    }
+
+        .toast-box.show {
+            transform: translateX(0);
+        }
+
+        .toast-box i {
+            font-size: 22px;
+            color: #198754;
+        }
+
+    .confetti {
+        position: fixed;
+        top: -20px;
+        width: 10px;
+        height: 14px;
+        z-index: 9998;
+        pointer-events: none;
+        animation: confettiFall linear forwards;
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        * {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+</style>
+
 <div class="product-page">
 
-    <!-- =========================
-         HEADER
-         ========================= -->
+    <!-- HEADER -->
     <div class="product-heading">
-
         <div class="heading-left">
-
             <div class="heading-icon">
                 <i class="bi bi-folder-plus"></i>
             </div>
-
             <div>
-                <h1 class="page-title">
-                    Thêm danh mục
-                </h1>
-
-                <p class="page-subtitle">
-                    Tạo danh mục sản phẩm mới cho cửa hàng
-                </p>
+                <h1 class="page-title">Thêm danh mục</h1>
+                <p class="page-subtitle">Tạo danh mục sản phẩm mới cho cửa hàng</p>
             </div>
-
         </div>
 
-
-        <a href="@Url.Action("Index", "Category")"
-           class="btn btn-filter">
-
+        <a href="@Url.Action("Index", "Category")" class="btn btn-filter">
             <i class="bi bi-arrow-left me-2"></i>
             Quay lại danh sách
-
         </a>
-
     </div>
 
+    <div class="row g-4 mt-1">
 
-    <!-- =========================
-         FORM
-         ========================= -->
-    <div class="product-table-card">
+        <!-- FORM -->
+        <div class="col-xl-8 form-col">
+            <div class="product-table-card">
 
-        <div class="table-top">
+                <div class="table-top">
+                    <div>
+                        <h2 class="table-title">Thông tin danh mục</h2>
+                        <span class="table-note">Nhập đầy đủ thông tin bên dưới để tạo danh mục.</span>
+                    </div>
+                </div>
 
-            <div>
+                <div class="p-4 p-lg-5">
+                    <form id="createCategoryForm" novalidate>
+                        <div class="row g-4">
 
-                <h2 class="table-title">
-                    Thông tin danh mục
-                </h2>
+                            <!-- MÃ -->
+                            <div class="col-lg-6">
+                                <label class="form-label">Mã danh mục</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
+                                    <input type="text" id="categoryId" class="form-control" readonly />
+                                </div>
+                                <div class="mt-2">
+                                    <span class="table-note">
+                                        <i class="bi bi-lock-fill me-1"></i>
+                                        Mã được hệ thống tự động tạo.
+                                    </span>
+                                </div>
+                            </div>
 
-                <span class="table-note">
-                    Nhập đầy đủ thông tin bên dưới để tạo danh mục.
-                </span>
+                            <!-- TÊN -->
+                            <div class="col-lg-6">
+                                <label class="form-label">
+                                    Tên danh mục <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="categoryName" class="form-control"
+                                       maxlength="100" placeholder="Ví dụ: Trà sữa" autocomplete="off" />
+                                <div class="char-count" id="nameCount">0 / 100</div>
+                                <div id="nameError" class="text-danger mt-1 d-none" style="font-size:12px;">
+                                    Vui lòng nhập tên danh mục.
+                                </div>
+                            </div>
 
+                            <!-- BIỂU TƯỢNG -->
+                            <div class="col-12">
+                                <label class="form-label">Biểu tượng</label>
+                                <div class="icon-picker" id="iconPicker"></div>
+                            </div>
+
+                            <!-- MÔ TẢ -->
+                            <div class="col-12">
+                                <label class="form-label">Mô tả</label>
+                                <textarea id="categoryDescription" class="form-control" rows="4"
+                                          maxlength="500" placeholder="Nhập mô tả cho danh mục..."></textarea>
+                                <div class="char-count" id="descCount">0 / 500</div>
+                            </div>
+
+                            <!-- TRẠNG THÁI -->
+                            <div class="col-12">
+                                <label class="form-label">Trạng thái</label>
+                                <input type="hidden" id="categoryStatus" value="Active" />
+                                <div class="status-cards">
+                                    <div class="status-card active-on" data-status="Active">
+                                        <span class="dot"></span>
+                                        <div>
+                                            <div class="fw-semibold">Đang hoạt động</div>
+                                            <small class="text-muted">Hiển thị cho khách</small>
+                                        </div>
+                                    </div>
+                                    <div class="status-card" data-status="Inactive">
+                                        <span class="dot"></span>
+                                        <div>
+                                            <div class="fw-semibold">Ngừng hoạt động</div>
+                                            <small class="text-muted">Tạm ẩn danh mục</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- ACTION -->
+                        <div class="d-flex justify-content-end gap-2 mt-5 pt-4 border-top">
+                            <a href="@Url.Action("Index", "Category")" class="btn btn-filter px-4">Hủy</a>
+                            <button type="submit" id="btnSave" class="btn btn-save px-4">
+                                <i class="bi bi-check-lg me-1"></i>
+                                Lưu danh mục
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-
         </div>
 
-
-        <div class="p-4 p-lg-5">
-
-            <form id="createCategoryForm"
-                  novalidate>
-
-                <div class="row g-4">
-
-
-                    <!-- MÃ -->
-                    <div class="col-lg-6">
-
-                        <label class="form-label">
-                            Mã danh mục
-                        </label>
-
-                        <div class="input-group">
-
-                            <span class="input-group-text">
-                                <i class="bi bi-upc-scan"></i>
-                            </span>
-
-                            <input type="text"
-                                   id="categoryId"
-                                   class="form-control"
-                                   readonly />
-
-                        </div>
-
-                        <div class="mt-2">
-                            <span class="table-note">
-                                <i class="bi bi-lock-fill me-1"></i>
-                                Mã được hệ thống tự động tạo.
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <!-- TÊN -->
-                    <div class="col-lg-6">
-
-                        <label class="form-label">
-                            Tên danh mục
-                            <span class="text-danger">*</span>
-                        </label>
-
-                        <input type="text"
-                               id="categoryName"
-                               class="form-control"
-                               maxlength="100"
-                               placeholder="Ví dụ: Trà sữa" />
-
-                        <div id="nameError"
-                             class="text-danger mt-2 d-none"
-                             style="font-size:12px;">
-                            Vui lòng nhập tên danh mục.
-                        </div>
-
-                    </div>
-
-
-                    <!-- MÔ TẢ -->
-                    <div class="col-12">
-
-                        <label class="form-label">
-                            Mô tả
-                        </label>
-
-                        <textarea id="categoryDescription"
-                                  class="form-control"
-                                  rows="5"
-                                  maxlength="500"
-                                  placeholder="Nhập mô tả cho danh mục..."></textarea>
-
-                    </div>
-
-
-                    <!-- TRẠNG THÁI -->
-                    <div class="col-lg-6">
-
-                        <label class="form-label">
-                            Trạng thái
-                        </label>
-
-                        <select id="categoryStatus"
-                                class="form-select">
-
-                            <option value="Active">
-                                Đang hoạt động
-                            </option>
-
-                            <option value="Inactive">
-                                Ngừng hoạt động
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
+        <!-- PREVIEW -->
+        <div class="col-xl-4 preview-col">
+            <div class="preview-sticky">
+                <div class="table-note mb-2">
+                    <i class="bi bi-eye me-1"></i> Xem trước trực tiếp
                 </div>
-
-
-                <!-- =========================
-                     ACTION
-                     ========================= -->
-                <div class="d-flex justify-content-end gap-2 mt-5 pt-4 border-top">
-
-                    <a href="@Url.Action("Index", "Category")"
-                       class="btn btn-filter px-4">
-
-                        Hủy
-
-                    </a>
-
-
-                    <button type="submit"
-                            class="btn btn-save px-4">
-
-                        <i class="bi bi-check-lg me-1"></i>
-                        Lưu danh mục
-
-                    </button>
-
+                <div class="preview-card" id="previewCard">
+                    <span class="preview-emoji" id="previewEmoji">🧋</span>
+                    <div class="preview-name" id="previewName">Tên danh mục</div>
+                    <div class="preview-desc" id="previewDesc">Mô tả sẽ hiển thị ở đây...</div>
+                    <div class="preview-meta">
+                        <span class="preview-badge" id="previewBadge">Đang hoạt động</span>
+                        <span class="preview-id" id="previewId"></span>
+                    </div>
                 </div>
-
-            </form>
-
+            </div>
         </div>
 
     </div>
-
 </div>
 
+<div class="toast-box" id="toast">
+    <i class="bi bi-check-circle-fill"></i>
+    <span id="toastText"></span>
+</div>
 
 <script>
 
     function getCategories() {
-
-        const data =
-            localStorage.getItem("milkTeaCategories");
-
+        const data = localStorage.getItem("milkTeaCategories");
 
         if (!data) {
-
             const defaults = [
-
-                {
-                    id: "CAT0000001",
-                    name: "Trà sữa",
-                    description:
-                        "Các sản phẩm trà sữa truyền thống và hiện đại.",
-                    status: "Active"
-                },
-
-                {
-                    id: "CAT0000002",
-                    name: "Trà trái cây",
-                    description:
-                        "Các loại trà kết hợp cùng trái cây tươi.",
-                    status: "Active"
-                },
-
-                {
-                    id: "CAT0000003",
-                    name: "Trà truyền thống",
-                    description:
-                        "Các sản phẩm trà nguyên bản.",
-                    status: "Active"
-                },
-
-                {
-                    id: "CAT0000004",
-                    name: "Macchiato",
-                    description:
-                        "Các sản phẩm trà kết hợp lớp kem Macchiato.",
-                    status: "Active"
-                },
-
-                {
-                    id: "CAT0000005",
-                    name: "Topping",
-                    description:
-                        "Các loại topping dùng kèm đồ uống.",
-                    status: "Active"
-                },
-
-                {
-                    id: "CAT0000006",
-                    name: "Bánh",
-                    description:
-                        "Các loại bánh dùng kèm trà và trà sữa.",
-                    status: "Inactive"
-                }
-
+                { id: "CAT0000001", name: "Trà sữa", description: "Các sản phẩm trà sữa truyền thống và hiện đại.", status: "Active" },
+                { id: "CAT0000002", name: "Trà trái cây", description: "Các loại trà kết hợp cùng trái cây tươi.", status: "Active" },
+                { id: "CAT0000003", name: "Trà truyền thống", description: "Các sản phẩm trà nguyên bản.", status: "Active" },
+                { id: "CAT0000004", name: "Macchiato", description: "Các sản phẩm trà kết hợp lớp kem Macchiato.", status: "Active" },
+                { id: "CAT0000005", name: "Topping", description: "Các loại topping dùng kèm đồ uống.", status: "Active" },
+                { id: "CAT0000006", name: "Bánh", description: "Các loại bánh dùng kèm trà và trà sữa.", status: "Inactive" }
             ];
-
-
-            localStorage.setItem(
-                "milkTeaCategories",
-                JSON.stringify(defaults)
-            );
-
-
+            localStorage.setItem("milkTeaCategories", JSON.stringify(defaults));
             return defaults;
         }
 
-
-        try {
-
-            return JSON.parse(data);
-
-        } catch {
-
-            return [];
-
-        }
-
+        try { return JSON.parse(data); } catch { return []; }
     }
-
 
     function saveCategories(categories) {
-
-        localStorage.setItem(
-            "milkTeaCategories",
-            JSON.stringify(categories)
-        );
-
+        localStorage.setItem("milkTeaCategories", JSON.stringify(categories));
     }
-
 
     function generateNextCategoryId(categories) {
-
         let maxNumber = 0;
-
-
         categories.forEach(category => {
-
-            const match =
-                /^CAT(\d{7})$/
-                    .exec(category.id);
-
-
+            const match = /^CAT(\d{7})$/.exec(category.id);
             if (match) {
-
-                const number =
-                    parseInt(match[1], 10);
-
-
-                if (number > maxNumber) {
-                    maxNumber = number;
-                }
-
+                const number = parseInt(match[1], 10);
+                if (number > maxNumber) maxNumber = number;
             }
-
         });
-
-
-        const nextNumber =
-            maxNumber + 1;
-
-
-        return "CAT" +
-            String(nextNumber)
-                .padStart(7, "0");
-
+        return "CAT" + String(maxNumber + 1).padStart(7, "0");
     }
 
+    /* ===== Khởi tạo ===== */
+    const categories = getCategories();
+    const newCategoryId = generateNextCategoryId(categories);
 
-    const categories =
-        getCategories();
+    const $ = id => document.getElementById(id);
+    const nameInput = $("categoryName");
+    const descInput = $("categoryDescription");
+    const statusInput = $("categoryStatus");
+    const errorBox = $("nameError");
 
+    $("categoryId").value = newCategoryId;
+    $("previewId").textContent = newCategoryId;
 
-    const newCategoryId =
-        generateNextCategoryId(categories);
+    let selectedIcon = "🧋";
 
+    /* ===== Chọn biểu tượng ===== */
+    const icons = ["🧋", "🍓", "🍵", "☕", "🥭", "🍰", "🍮", "🧊", "🥤", "🍑", "🍋", "✨"];
+    const picker = $("iconPicker");
 
-    document
-        .getElementById("categoryId")
-        .value = newCategoryId;
+    icons.forEach(icon => {
+        const el = document.createElement("div");
+        el.className = "icon-option" + (icon === selectedIcon ? " active" : "");
+        el.textContent = icon;
+        el.addEventListener("click", () => {
+            selectedIcon = icon;
+            picker.querySelectorAll(".icon-option").forEach(x => x.classList.remove("active"));
+            el.classList.add("active");
 
+            const emoji = $("previewEmoji");
+            emoji.textContent = icon;
+            emoji.classList.remove("bump");
+            void emoji.offsetWidth;
+            emoji.classList.add("bump");
+            setTimeout(() => emoji.classList.remove("bump"), 450);
+        });
+        picker.appendChild(el);
+    });
 
-    document
-        .getElementById("createCategoryForm")
-        .addEventListener(
-            "submit",
-            function (event) {
+    /* ===== Đếm ký tự + preview ===== */
+    function updateCount(input, counter, max) {
+        const len = input.value.length;
+        counter.textContent = len + " / " + max;
+        counter.classList.toggle("warn", len >= max * 0.9);
+    }
 
-                event.preventDefault();
+    nameInput.addEventListener("input", () => {
+        updateCount(nameInput, $("nameCount"), 100);
+        $("previewName").textContent = nameInput.value.trim() || "Tên danh mục";
+        errorBox.classList.add("d-none");
+        nameInput.classList.remove("shake");
+    });
 
+    descInput.addEventListener("input", () => {
+        updateCount(descInput, $("descCount"), 500);
+        $("previewDesc").textContent = descInput.value.trim() || "Mô tả sẽ hiển thị ở đây...";
+    });
 
-                const name =
-                    document
-                        .getElementById("categoryName")
-                        .value
-                        .trim();
+    /* ===== Chọn trạng thái ===== */
+    document.querySelectorAll(".status-card").forEach(card => {
+        card.addEventListener("click", () => {
+            const status = card.dataset.status;
+            statusInput.value = status;
 
+            document.querySelectorAll(".status-card").forEach(c =>
+                c.classList.remove("active-on", "active-off"));
+            card.classList.add(status === "Active" ? "active-on" : "active-off");
 
-                const description =
-                    document
-                        .getElementById("categoryDescription")
-                        .value
-                        .trim();
+            const isActive = status === "Active";
+            $("previewCard").classList.toggle("inactive", !isActive);
+            $("previewBadge").textContent = isActive ? "Đang hoạt động" : "Ngừng hoạt động";
+        });
+    });
 
+    /* ===== Ripple cho nút lưu ===== */
+    $("btnSave").addEventListener("click", function (e) {
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const r = document.createElement("span");
+        r.className = "ripple";
+        r.style.width = r.style.height = size + "px";
+        r.style.left = (e.clientX - rect.left - size / 2) + "px";
+        r.style.top = (e.clientY - rect.top - size / 2) + "px";
+        this.appendChild(r);
+        setTimeout(() => r.remove(), 600);
+    });
 
-                const status =
-                    document
-                        .getElementById("categoryStatus")
-                        .value;
+    /* ===== Toast + confetti ===== */
+    function showToast(text) {
+        $("toastText").textContent = text;
+        $("toast").classList.add("show");
+    }
 
+    function launchConfetti() {
+        const colors = ["#ff6a88", "#ffb347", "#4cc9f0", "#80ed99", "#b388eb", "#ffd166"];
+        for (let i = 0; i < 60; i++) {
+            const c = document.createElement("div");
+            c.className = "confetti";
+            c.style.left = Math.random() * 100 + "vw";
+            c.style.background = colors[i % colors.length];
+            c.style.animationDuration = (1.4 + Math.random() * 1.4) + "s";
+            c.style.animationDelay = (Math.random() * .3) + "s";
+            c.style.borderRadius = Math.random() > .5 ? "50%" : "2px";
+            document.body.appendChild(c);
+            setTimeout(() => c.remove(), 3200);
+        }
+    }
 
-                const error =
-                    document.getElementById("nameError");
+    function showError(message) {
+        errorBox.textContent = message;
+        errorBox.classList.remove("d-none");
+        nameInput.classList.remove("shake");
+        void nameInput.offsetWidth;
+        nameInput.classList.add("shake");
+        nameInput.focus();
+    }
 
+    /* ===== Submit ===== */
+    $("createCategoryForm").addEventListener("submit", function (event) {
+        event.preventDefault();
 
-                error.classList.add("d-none");
+        const name = nameInput.value.trim();
+        const description = descInput.value.trim();
+        const status = statusInput.value;
 
+        errorBox.classList.add("d-none");
 
-                if (!name) {
+        if (!name) {
+            showError("Vui lòng nhập tên danh mục.");
+            return;
+        }
 
-                    error.textContent =
-                        "Vui lòng nhập tên danh mục.";
+        const duplicate = categories.some(item =>
+            item.name.trim().toLowerCase() === name.toLowerCase());
 
-                    error.classList.remove("d-none");
+        if (duplicate) {
+            showError("Tên danh mục này đã tồn tại.");
+            return;
+        }
 
-                    return;
-                }
+        categories.push({
+            id: newCategoryId,
+            name: name,
+            description: description,
+            status: status,
+            icon: selectedIcon
+        });
 
+        saveCategories(categories);
 
-                const duplicate =
-                    categories.some(
-                        item =>
-                            item.name
-                                .trim()
-                                .toLowerCase() ===
-                            name.toLowerCase()
-                    );
+        const btn = $("btnSave");
+        btn.classList.add("loading");
+        btn.innerHTML = '<i class="bi bi-check2-circle me-1"></i> Đã lưu!';
 
+        showToast("Thêm danh mục thành công!");
+        launchConfetti();
 
-                if (duplicate) {
-
-                    error.textContent =
-                        "Tên danh mục này đã tồn tại.";
-
-                    error.classList.remove("d-none");
-
-                    return;
-                }
-
-
-                categories.push({
-
-                    id: newCategoryId,
-
-                    name: name,
-
-                    description: description,
-
-                    status: status
-
-                });
-
-
-                saveCategories(categories);
-
-
-                alert(
-                    "Thêm danh mục thành công!"
-                );
-
-
-                window.location.href =
-                    "@Url.Action("Index", "Category")";
-
-            }
-        );
+        setTimeout(() => {
+            window.location.href = "@Url.Action("Index", "Category")";
+        }, 1700);
+    });
 
 </script>
