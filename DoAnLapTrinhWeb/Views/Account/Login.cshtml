@@ -1,4 +1,4 @@
-﻿@model DoAnLapTrinhWeb.Models.LoginViewModel
+﻿@*@model DoAnLapTrinhWeb.Models.LoginViewModel*@
 @{
     ViewBag.Title = "Đăng nhập";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -155,7 +155,7 @@
             </div>
         }
 
-        @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "tv1-form" }))
+        @*@using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "tv1-form" }))
         {
             @Html.AntiForgeryToken()
 
@@ -173,7 +173,7 @@
             </div>
 
             <button type="submit" class="tv1-btn">Đăng nhập</button>
-        }
+        }*@
 
         <div class="tv1-links">
             <a href="@Url.Action("ForgotPassword", "Account")">Quên mật khẩu?</a> &nbsp;•&nbsp;
