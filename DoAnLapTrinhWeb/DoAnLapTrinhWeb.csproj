@@ -380,6 +380,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Assets\" />
     <Folder Include="bin\roslyn\" />
+    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
