@@ -1,6 +1,10 @@
 ﻿@{
     ViewBag.Title = "Cổng Thanh Toán - LumiTea";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Lấy dữ liệu từ Controller truyền sang
+    string orderId = ViewBag.OrderId as string;
+    decimal amount = ViewBag.Amount != null ? (decimal)ViewBag.Amount : 0;
 }
 
 <!DOCTYPE html>
@@ -29,32 +33,29 @@
 
             <div class="payment-card">
 
-                
                 <div class="d-flex justify-content-center align-items-center gap-2 mb-3">
                     <i class="fa-solid fa-building-columns fs-3 text-primary"></i>
                     <h5 class="fw-bold m-0 text-dark">Chuyển khoản VietQR</h5>
                 </div>
 
-                <!-- ĐÔNG HỒ -->
+                <!-- ĐỒNG HỒ -->
                 <div class="timer-box">
                     <i class="fa-regular fa-clock"></i> <span id="countdownTimer">10:00</span>
                 </div>
 
-                <!-- QR CODE -->
+                <!-- QR CODE (Trong thực tế sẽ dùng mã động sinh từ API ngân hàng, ở đây dùng ảnh cứng) -->
                 <div class="qr-box shadow-sm">
-                    <div ></div>
-                   
+                    <div class="scan-line"></div>
                     <img src="~/Assets/momo.jpg" alt="Mã QR Thanh Toán">
                 </div>
-                
 
                 <p class="text-muted small mb-4">Mở ứng dụng ngân hàng và quét mã QR phía trên.</p>
 
                 <div class="bg-light p-3 rounded-3 text-start mb-2">
-                    <!-- THÔNG TIN  -->
+                    <!-- THÔNG TIN ĐỘNG -->
                     <div class="info-row">
                         <span class="text-muted">Mã đơn hàng</span>
-                        <span class="fw-bold text-dark">#ORD-1082</span> 
+                        <span class="fw-bold text-dark">@orderId</span>
                     </div>
                     <div class="info-row">
                         <span class="text-muted">Chủ tài khoản</span>
@@ -62,18 +63,17 @@
                     </div>
                     <div class="info-row">
                         <span class="text-muted">Nội dung CK</span>
-                        <span class="fw-bold text-dark text-primary">LUMITEA 1082</span>
+                        <span class="fw-bold text-dark text-primary">LUMITEA @orderId</span>
                     </div>
                     <div class="info-row align-items-center border-0 pb-0 pt-3 mt-1" style="border-top: 2px solid #e2e8f0 !important;">
                         <span class="fw-bold text-dark">Số tiền cần thanh toán</span>
-                     
-                        <span class="fw-extrabold fs-4 text-danger" style="color: var(--lumitea-primary) !important;">153.000 đ</span>
+                        <span class="fw-extrabold fs-4 text-danger" style="color: var(--lumitea-primary) !important;">@amount.ToString("N0") đ</span>
                     </div>
                 </div>
 
-                <!-- FORM GIẢ THANH TOÁN THÀNH CÔNG, CHUYỂN SANG RESULT -->
+                <!-- FORM GIẢ LẬP THANH TOÁN THÀNH CÔNG, CHUYỂN SANG RESULT -->
                 <form action="/Payment/Result" method="GET">
-                    <input type="hidden" name="orderId" value="ORD-1082" />
+                    <input type="hidden" name="orderId" value="@orderId" />
                     <input type="hidden" name="status" value="success" />
 
                     <button type="submit" class="btn-confirm d-flex justify-content-center align-items-center gap-2">
@@ -93,28 +93,28 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    // SCRIPT ĐỒNG HỒ
-    document.addEventListener("DOMContentLoaded", function () {
-        let time = 600; 
-        const timerElement = document.getElementById("countdownTimer");
+        // SCRIPT ĐỒNG HỒ
+        document.addEventListener("DOMContentLoaded", function () {
+            let time = 600;
+            const timerElement = document.getElementById("countdownTimer");
 
-        const countdown = setInterval(function () {
-            let minutes = Math.floor(time / 60);
-            let seconds = time % 60;
+            const countdown = setInterval(function () {
+                let minutes = Math.floor(time / 60);
+                let seconds = time % 60;
 
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
 
-            timerElement.textContent = minutes + ":" + seconds;
+                timerElement.textContent = minutes + ":" + seconds;
 
-            if (time <= 0) {
-                clearInterval(countdown);
-                timerElement.textContent = "00:00";
-                alert("Đã hết thời gian thanh toán. Vui lòng đặt lại đơn hàng.");
-            }
-            time--;
-        }, 1000);
-    });
+                if (time <= 0) {
+                    clearInterval(countdown);
+                    timerElement.textContent = "00:00";
+                    alert("Đã hết thời gian thanh toán. Vui lòng đặt lại đơn hàng.");
+                }
+                time--;
+            }, 1000);
+        });
     </script>
 </body>
 </html>

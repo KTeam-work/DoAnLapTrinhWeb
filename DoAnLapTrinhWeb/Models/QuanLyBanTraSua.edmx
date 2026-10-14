@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="QUANLYBANTRASUAModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="QUANLYBANTRASUAModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Categories">
           <Key>
             <PropertyRef Name="category_id" />
@@ -175,6 +175,7 @@
           <Property Name="ingredient_id" Type="nchar" MaxLength="10" Nullable="false" />
           <Property Name="quantity" Type="decimal" Precision="12" Scale="3" Nullable="false" />
           <Property Name="unit_price" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="expiry_date" Type="date" />
         </EntityType>
         <EntityType Name="PurchaseOrders">
           <Key>
@@ -819,8 +820,7 @@ warning 6035: The relationship 'FK_Recipe_ProductSize' has columns that are not 
             <End Role="Users" EntitySet="Users" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="QUANLYBANTRASUAModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -1037,6 +1037,7 @@ warning 6035: The relationship 'FK_Recipe_ProductSize' has columns that are not 
           <NavigationProperty Name="InventoryTransactions" Relationship="Self.FK__Inventory__po_de__5224328E" FromRole="PurchaseOrderDetails" ToRole="InventoryTransactions" />
           <NavigationProperty Name="Ingredient" Relationship="Self.FK__PurchaseO__ingre__2DE6D218" FromRole="PurchaseOrderDetails" ToRole="Ingredients" />
           <NavigationProperty Name="PurchaseOrder" Relationship="Self.FK__PurchaseO__po_id__2CF2ADDF" FromRole="PurchaseOrderDetails" ToRole="PurchaseOrders" />
+          <Property Name="expiry_date" Type="DateTime" Precision="0" />
         </EntityType>
         <EntityType Name="PurchaseOrder">
           <Key>
@@ -1880,6 +1881,7 @@ warning 6035: The relationship 'FK_Recipe_ProductSize' has columns that are not 
           <EntitySetMapping Name="PurchaseOrderDetails">
             <EntityTypeMapping TypeName="QUANLYBANTRASUAModel.PurchaseOrderDetail">
               <MappingFragment StoreEntitySet="PurchaseOrderDetails">
+                <ScalarProperty Name="expiry_date" ColumnName="expiry_date" />
                 <ScalarProperty Name="po_detail_id" ColumnName="po_detail_id" />
                 <ScalarProperty Name="po_id" ColumnName="po_id" />
                 <ScalarProperty Name="ingredient_id" ColumnName="ingredient_id" />

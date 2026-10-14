@@ -2,9 +2,10 @@
     ViewBag.Title = "Kết Quả Thanh Toán - LumiTea";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    // Biến giả lập trạng thái từ Controller truyền sang (Success hoặc Failed)
-    // Trong thực tế, bạn sẽ lấy từ ViewBag.Status hoặc Model.PaymentStatus
-    string paymentStatus = "Success";
+    string paymentStatus = ViewBag.PaymentStatus as string ?? "Failed";
+    string orderId = ViewBag.OrderId as string;
+    string transactionCode = ViewBag.TransactionCode as string;
+    decimal amount = ViewBag.Amount != null ? (decimal)ViewBag.Amount : 0;
 }
 
 <!DOCTYPE html>
@@ -40,11 +41,11 @@
                     <div class="receipt-box">
                         <div class="info-row">
                             <span class="text-muted">Mã giao dịch</span>
-                            <span class="fw-bold text-dark">VNQ-982731</span> 
+                            <span class="fw-bold text-dark">@transactionCode</span>
                         </div>
                         <div class="info-row">
                             <span class="text-muted">Mã đơn hàng</span>
-                            <span class="fw-bold text-dark">#ORD-1082</span>
+                            <span class="fw-bold text-dark">@orderId</span>
                         </div>
                         <div class="info-row">
                             <span class="text-muted">Phương thức</span>
@@ -56,11 +57,11 @@
                         </div>
                         <div class="info-row align-items-center mt-2 pt-2 border-top">
                             <span class="fw-bold text-dark">Số tiền</span>
-                            <span class="fw-extrabold fs-5 text-success">153.000 đ</span>
+                            <span class="fw-extrabold fs-5 text-success">@amount.ToString("N0") đ</span>
                         </div>
                     </div>
 
-                    <a href="~/Order/Tracking" class="btn btn-main d-block text-decoration-none">
+                    <a href="~/Order/Tracking?id=@orderId" class="btn btn-main d-block text-decoration-none">
                         Theo dõi đơn hàng
                     </a>
                     <a href="~/Menu/Index" class="btn btn-sub d-block text-decoration-none">
@@ -78,11 +79,11 @@
 
                     <div class="receipt-box text-center py-4">
                         <i class="fa-solid fa-triangle-exclamation fs-1 text-warning mb-3"></i>
-                        <h6 class="fw-bold text-dark m-0">Đơn hàng #ORD-1082 chưa được ghi nhận.</h6>
+                        <h6 class="fw-bold text-dark m-0">Đơn hàng @orderId chưa được ghi nhận.</h6>
                         <p class="text-muted small mt-1 mb-0">Tài khoản của bạn chưa bị trừ tiền.</p>
                     </div>
 
-                    <a href="~/Payment/Index" class="btn btn-main d-block text-decoration-none text-white">
+                    <a href="~/Payment/Index?orderId=@orderId&amount=@amount" class="btn btn-main d-block text-decoration-none text-white">
                         Thử thanh toán lại
                     </a>
                     <a href="~/Order/Checkout" class="btn btn-sub d-block text-decoration-none">
