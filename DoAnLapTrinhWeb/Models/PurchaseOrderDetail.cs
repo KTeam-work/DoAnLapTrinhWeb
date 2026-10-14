@@ -25,6 +25,7 @@ namespace DoAnLapTrinhWeb.Models
         public string ingredient_id { get; set; }
         public decimal quantity { get; set; }
         public decimal unit_price { get; set; }
+        public Nullable<System.DateTime> expiry_date { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<InventoryTransaction> InventoryTransactions { get; set; }
