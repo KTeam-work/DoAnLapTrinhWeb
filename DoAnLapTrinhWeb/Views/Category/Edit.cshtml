@@ -2,7 +2,7 @@
     ViewData["Title"] = "Chỉnh sửa danh mục";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+@model DoAnLapTrinhWeb.Models.Category
 <link rel="stylesheet" href="~/Css/styleProduct_index.css" />
 
 <div class="product-page">
@@ -225,346 +225,107 @@
 
 
 <script>
+    /* =====================================================
+       1. ĐỔ DỮ LIỆU CŨ VÀO FORM (DÙNG JSON.SERIALIZE ĐỂ TRÁNH LỖI KÝ TỰ)
+       ===================================================== */
+    document.addEventListener("DOMContentLoaded", function () {
+        // Dùng Html.Raw + Json.Encode để C# tự động escape ký tự đặc biệt, dấu nháy, khoảng trắng
+        const categoryId = @Html.Raw(Json.Encode(Model.category_id != null ? Model.category_id.Trim() : ""));
+        const categoryName = @Html.Raw(Json.Encode(Model.category_name ?? ""));
+        const categoryDesc = @Html.Raw(Json.Encode(Model.description ?? ""));
+        const categoryStatus = @Html.Raw(Json.Encode(Model.status ?? "Active"));
+
+        document.getElementById("categoryId").value = categoryId;
+        document.getElementById("categoryName").value = categoryName;
+        document.getElementById("categoryDescription").value = categoryDesc;
+        document.getElementById("categoryStatus").value = categoryStatus;
+    });
 
     /* =====================================================
-       LẤY ID TỪ URL
-       Ví dụ:
-       /Category/Edit?id=CAT0000001
+       2. LƯU THAY ĐỔI (GỬI POST REQUEST VỀ CONTROLLER)
        ===================================================== */
+    document.getElementById("editCategoryForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
+        const categoryId = document.getElementById("categoryId").value.trim();
+        const name = document.getElementById("categoryName").value.trim();
+        const description = document.getElementById("categoryDescription").value.trim();
+        const status = document.getElementById("categoryStatus").value;
+        const error = document.getElementById("nameError");
 
+        error.classList.add("d-none");
 
-    const categoryId =
-        params.get("id");
-
-
-    function getCategories() {
-
-        const data =
-            localStorage.getItem("milkTeaCategories");
-
-
-        if (!data) {
-
-            const defaults = [
-
-                {
-                    id: "CAT0000001",
-                    name: "Trà sữa",
-                    description:
-                        "Các sản phẩm trà sữa truyền thống và hiện đại.",
-                    status: "Active"
-                },
-
-                {
-                    id: "CAT0000002",
-                    name: "Trà trái cây",
-                    description:
-                        "Các loại trà kết hợp cùng trái cây tươi.",
-                    status: "Active"
-                },
-
-                {
-                    id: "CAT0000003",
-                    name: "Trà truyền thống",
-                    description:
-                        "Các sản phẩm trà nguyên bản.",
-                    status: "Active"
-                },
-
-                {
-                    id: "CAT0000004",
-                    name: "Macchiato",
-                    description:
-                        "Các sản phẩm trà kết hợp lớp kem Macchiato.",
-                    status: "Active"
-                },
-
-                {
-                    id: "CAT0000005",
-                    name: "Topping",
-                    description:
-                        "Các loại topping dùng kèm đồ uống.",
-                    status: "Active"
-                },
-
-                {
-                    id: "CAT0000006",
-                    name: "Bánh",
-                    description:
-                        "Các loại bánh dùng kèm trà và trà sữa.",
-                    status: "Inactive"
-                }
-
-            ];
-
-
-            localStorage.setItem(
-                "milkTeaCategories",
-                JSON.stringify(defaults)
-            );
-
-
-            return defaults;
-
+        if (!name) {
+            error.textContent = "Vui lòng nhập tên danh mục.";
+            error.classList.remove("d-none");
+            document.getElementById("categoryName").focus();
+            return;
         }
 
+        const formData = new URLSearchParams();
+        formData.append("category_id", categoryId);
+        formData.append("category_name", name);
+        formData.append("description", description);
+        formData.append("status", status);
 
         try {
+            let response = await fetch('@Url.Action("Edit", "Category")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString()
+            });
 
-            return JSON.parse(data);
+            let result = await response.json();
 
-        } catch {
+            if (result.success) {
+                alert("Lưu thay đổi thành công vào Database!");
+                window.location.href = '@Url.Action("Index", "Category")';
+            } else {
+                alert(result.message || "Có lỗi xảy ra khi cập nhật.");
+            }
+        } catch (err) {
+            console.error("Lỗi kết nối:", err);
+            alert("Không thể kết nối đến máy chủ.");
+        }
+    });
 
-            return [];
+    /* =====================================================
+       3. XÓA DANH MỤC
+       ===================================================== */
+    document.getElementById("btnDelete").addEventListener("click", async function () {
+        const categoryId = document.getElementById("categoryId").value.trim();
+        const categoryName = document.getElementById("categoryName").value;
 
+        const confirmed = confirm(`Bạn có chắc chắn muốn xóa danh mục "${categoryName}" này không?\n\nThao tác này không thể hoàn tác.`);
+        if (!confirmed) {
+            return;
         }
 
-    }
-
-
-    function saveCategories(categories) {
-
-        localStorage.setItem(
-            "milkTeaCategories",
-            JSON.stringify(categories)
-        );
-
-    }
-
-
-    const categories =
-        getCategories();
-
-
-    const category =
-        categories.find(
-            item => item.id === categoryId
-        );
-
-
-    /*
-       Nếu không tìm thấy danh mục
-    */
-
-    if (!category) {
-
-        alert(
-            "Không tìm thấy danh mục cần chỉnh sửa."
-        );
-
-        window.location.href =
-            "@Url.Action("Index", "Category")";
-
-    } else {
-
-        document
-            .getElementById("categoryId")
-            .value = category.id;
-
-
-        document
-            .getElementById("categoryName")
-            .value = category.name;
-
-
-        document
-            .getElementById("categoryDescription")
-            .value = category.description || "";
-
-
-        document
-            .getElementById("categoryStatus")
-            .value = category.status;
-
-    }
-
-
-    /* =====================================================
-       LƯU THAY ĐỔI
-       ===================================================== */
-
-    document
-        .getElementById("editCategoryForm")
-        .addEventListener(
-            "submit",
-            function (event) {
-
-                event.preventDefault();
-
-
-                const name =
-                    document
-                        .getElementById("categoryName")
-                        .value
-                        .trim();
-
-
-                const description =
-                    document
-                        .getElementById("categoryDescription")
-                        .value
-                        .trim();
-
-
-                const status =
-                    document
-                        .getElementById("categoryStatus")
-                        .value;
-
-
-                const error =
-                    document.getElementById("nameError");
-
-
-                error.classList.add("d-none");
-
-
-                if (!name) {
-
-                    error.textContent =
-                        "Vui lòng nhập tên danh mục.";
-
-                    error.classList.remove("d-none");
-
-                    return;
-
-                }
-
-
-                /*
-                   Kiểm tra trùng tên
-                   nhưng bỏ qua chính danh mục
-                   đang chỉnh sửa
-                */
-
-                const duplicate =
-                    categories.some(
-                        item =>
-                            item.id !== categoryId &&
-                            item.name
-                                .trim()
-                                .toLowerCase() ===
-                            name.toLowerCase()
-                    );
-
-
-                if (duplicate) {
-
-                    error.textContent =
-                        "Tên danh mục này đã tồn tại.";
-
-                    error.classList.remove("d-none");
-
-                    return;
-
-                }
-
-
-                /*
-                   Tìm index
-                */
-
-                const index =
-                    categories.findIndex(
-                        item =>
-                            item.id === categoryId
-                    );
-
-
-                if (index === -1) {
-
-                    alert(
-                        "Không tìm thấy danh mục."
-                    );
-
-                    return;
-
-                }
-
-
-                /*
-                   QUAN TRỌNG:
-                   id KHÔNG thay đổi
-                */
-
-                categories[index] = {
-
-                    id: categories[index].id,
-
-                    name: name,
-
-                    description: description,
-
-                    status: status
-
-                };
-
-
-                saveCategories(categories);
-
-
-                alert(
-                    "Lưu thay đổi thành công!"
-                );
-
-
-                window.location.href =
-                    "@Url.Action("Index", "Category")";
-
+        const formData = new URLSearchParams();
+        formData.append("id", categoryId);
+
+        try {
+            let response = await fetch('@Url.Action("Delete", "Category")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString()
+            });
+
+            let result = await response.json();
+
+            if (result.success) {
+                alert("Xóa danh mục thành công!");
+                window.location.href = '@Url.Action("Index", "Category")';
+            } else {
+                alert(result.message || "Không thể xóa danh mục này.");
             }
-        );
-
-
-    /* =====================================================
-       XÓA
-       ===================================================== */
-
-    document
-        .getElementById("btnDelete")
-        .addEventListener(
-            "click",
-            function () {
-
-                if (!category) {
-                    return;
-                }
-
-
-                const confirmed =
-                    confirm(
-                        `Bạn có chắc chắn muốn xóa danh mục "${category.name}" không?\n\nThao tác này không thể hoàn tác.`
-                    );
-
-
-                if (!confirmed) {
-                    return;
-                }
-
-
-                const newCategories =
-                    categories.filter(
-                        item =>
-                            item.id !== categoryId
-                    );
-
-
-                saveCategories(newCategories);
-
-
-                alert(
-                    "Xóa danh mục thành công!"
-                );
-
-
-                window.location.href =
-                    "@Url.Action("Index", "Category")";
-
-            }
-        );
-
+        } catch (err) {
+            console.error("Lỗi kết nối:", err);
+            alert("Không thể kết nối đến máy chủ để xóa.");
+        }
+    });
 </script>
