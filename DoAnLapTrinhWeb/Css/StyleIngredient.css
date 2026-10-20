@@ -127,3 +127,27 @@ body {
             background-color: #f8f9fa;
             color: var(--lumitea-green);
 }
+
+
+.btn-action {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+}
+
+    .btn-action:hover {
+        transform: translateY(-2px);
+    }
+
+.btn-primary-subtle:hover {
+    background-color: #0d6efd !important;
+    color: #ffffff !important;
+}
+
+.btn-danger-subtle:hover {
+    background-color: #dc3545 !important;
+    color: #ffffff !important;
+}
