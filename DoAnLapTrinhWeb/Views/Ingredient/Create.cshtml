@@ -1,0 +1,229 @@
+﻿@model DoAnLapTrinhWeb.Models.Ingredient
+
+@{
+    ViewBag.Title = "Thêm Nguyên Liệu Mới";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LumiTea - Thêm Nguyên Liệu Mới</title>
+    <!-- Bootstrap 5 CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="~/Css/StyleIngredient.css?v=1.0" rel="stylesheet" />
+    <style>
+        .form-label {
+            font-weight: 600;
+            color: #344767;
+            font-size: 0.875rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 0.5rem;
+            border-color: #d2d6da;
+            padding: 0.55rem 0.85rem;
+            font-size: 0.9rem;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #596CFF;
+                box-shadow: 0 0 0 2px rgba(89, 108, 255, 0.2);
+            }
+
+        .card-form {
+            background: #ffffff;
+            border-radius: 1rem;
+            border: 1px solid #edf2f7;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+        }
+
+        .mau {
+            background: #fbf9f4
+        }
+    </style>
+</head>
+<body class="mau">
+
+    <main class="container-fluid px-4 py-4" style="max-width: 1000px;">
+
+        <!-- BREADCRUMB & HEADER -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1 small text-muted">
+                        <li class="breadcrumb-item">Vận hành Kho</li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Ingredient")" class="text-decoration-none text-muted">Danh mục Nguyên liệu</a></li>
+                        <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Thêm mới</li>
+                    </ol>
+                </nav>
+                <h3 class="fw-bold mb-0 text-lumitea">
+                    <i class="bi bi-plus-circle me-2"></i>Thêm Nguyên Liệu Mới
+                </h3>
+            </div>
+            <div>
+                <a href="@Url.Action("Index", "Ingredient")" class="btn btn-outline-secondary btn-sm fw-semibold bg-white px-3 py-2 rounded-2 shadow-sm">
+                    <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+                </a>
+            </div>
+        </div>
+
+        <!-- FORM THÊM NGUYÊN LIỆU -->
+        @using (Html.BeginForm("Create", "Ingredient", FormMethod.Post, new { id = "createIngredientForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="card-form p-4 mb-4">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger py-2 px-3 small rounded-3 mb-4">
+                        @Html.ValidationSummary(false, "", new { @class = "text-danger mb-0" })
+                    </div>
+                }
+
+                <div class="row g-3">
+                    <!-- Mã nguyên liệu -->
+                    <div class="col-md-6">
+                        <label for="ingredient_id" class="form-label">
+                            Mã nguyên liệu <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-upc-scan"></i></span>
+                            @Html.TextBoxFor(m => m.ingredient_id, new
+                             {
+                                 @class = "form-control border-start-0 ps-0 text-uppercase fw-semibold bg-light text-muted",
+                                 @readonly = "readonly",
+                                 @Value = Model?.ingredient_id
+                             })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.ingredient_id, "", new { @class = "text-danger small" })
+                        <div class="form-text small">Định danh duy nhất, không trùng lặp trong hệ thống.</div>
+                    </div>
+
+                    <!-- Tên nguyên liệu -->
+                    <div class="col-md-6">
+                        <label for="name" class="form-label">
+                            Tên nguyên liệu <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-tag"></i></span>
+                            @Html.TextBoxFor(m => m.name, new
+                            {
+                                @class = "form-control border-start-0 ps-0",
+                                placeholder = "VD: Trà Đen Phúc Long, Bột sữa B-One...",
+                                required = "required",
+                                maxlength = "150"
+                            })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.name, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <!-- Đơn vị tính -->
+                    <div class="col-md-4">
+                        <label for="unit" class="form-label">
+                            Đơn vị tính (ĐVT) <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-calculator"></i></span>
+                            <!-- Đã bỏ value="@Model?.unit" để ô input trống và hiện placeholder -->
+                            <input list="unitSuggestions" name="unit" id="unit" class="form-control border-start-0 ps-0" placeholder="Chọn hoặc nhập ĐVT..." required />
+                            <datalist id="unitSuggestions">
+                                <option value="g">Gam (g)</option>
+                                <option value="kg">Kilogam (kg)</option>
+                                <option value="ml">Mililit (ml)</option>
+                                <option value="lit">Lít</option>
+                                <option value="hop">Hộp</option>
+                                <option value="chai">Chai</option>
+                                <option value="tui">Túi / Bịch</option>
+                            </datalist>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.unit, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <!-- Số lượng tồn kho ban đầu -->
+                    <div class="col-md-4">
+                        <label for="quantity_in_stock" class="form-label">
+                            Tồn kho khởi tạo
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-box-seam"></i></span>
+                            @Html.TextBoxFor(m => m.quantity_in_stock, "{0:G29}", new
+                            {
+                                @type = "number",
+                                @step = "any",
+                                @min = "0",
+                                @class = "form-control border-start-0 ps-0",
+                                placeholder = "0.000",
+                                @Value = (Model?.quantity_in_stock ?? 0)
+                            })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.quantity_in_stock, "", new { @class = "text-danger small" })
+                        <div class="form-text small">Số lượng thực tế khi kiểm kê đầu kỳ.</div>
+                    </div>
+
+                    <!-- Định mức tối thiểu -->
+                    <div class="col-md-4">
+                        <label for="min_threshold" class="form-label">
+                            Định mức tối thiểu (Ngưỡng báo động) <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-bell"></i></span>
+                            @Html.TextBoxFor(m => m.min_threshold, "{0:G29}", new
+                            {
+                                @type = "number",
+                                @step = "any",
+                                @min = "0",
+                                @class = "form-control border-start-0 ps-0",
+                                placeholder = "VD: 100",
+                                required = "required",
+                                @Value = (Model?.min_threshold ?? 0)
+                            })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.min_threshold, "", new { @class = "text-danger small" })
+                        <div class="form-text small">Cảnh báo "Sắp hết" khi tồn kho chạm mức này.</div>
+                    </div>
+
+                    <!-- Trạng thái -->
+                    <div class="col-md-6">
+                        <label for="status" class="form-label">Trạng thái sử dụng</label>
+                        <select name="status" id="status" class="form-select">
+                            <option value="Active" @(Model?.status == "Active" || string.IsNullOrEmpty(Model?.status) ? "selected" : "")>Hoạt động (Đang áp dụng pha chế)</option>
+                            <option value="Inactive" @(Model?.status == "Inactive" ? "selected" : "")>Tạm ngừng (Không hiển thị chọn công thức)</option>
+                        </select>
+                        @Html.ValidationMessageFor(m => m.status, "", new { @class = "text-danger small" })
+                    </div>
+                </div>
+
+                <hr class="my-4 text-muted opacity-25">
+
+                <!-- NÚT THAO TÁC FORM -->
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="@Url.Action("Index", "Ingredient")" class="btn btn-light border px-4 py-2 fw-semibold">
+                        Hủy
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold text-white shadow-sm">
+                        <i class="bi bi-check-lg me-1"></i> Lưu nguyên liệu
+                    </button>
+                </div>
+            </div>
+        }
+
+    </main>
+
+    <!-- JS LIBS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Tự động chuyển mã nguyên liệu thành chữ in hoa và không dấu cách
+            $('#ingredient_id').on('input', function () {
+                $(this).val($(this).val().toUpperCase().replace(/\s+/g, '_'));
+            });
+        });
+    </script>
+</body>
+</html>
