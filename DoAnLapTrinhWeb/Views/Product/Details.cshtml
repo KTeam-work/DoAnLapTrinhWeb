@@ -1,15 +1,27 @@
-﻿@model DoAnLapTrinhWeb.Controllers.ProductViewModel
+﻿@model DoAnLapTrinhWeb.Models.Product
 
 @{
     ViewData["Title"] = "Chi tiết sản phẩm";
 
-    var minPrice = Model.Sizes.Any()
-        ? Model.Sizes.Min(x => x.Price)
-        : 0;
+    var sizes = Model.ProductSizes ?? new List<DoAnLapTrinhWeb.Models.ProductSize>();
+    var productToppings = Model.ProductToppings ?? new List<DoAnLapTrinhWeb.Models.ProductTopping>();
 
-    var maxPrice = Model.Sizes.Any()
-        ? Model.Sizes.Max(x => x.Price)
-        : 0;
+    var minPrice = sizes.Any() ? sizes.Min(x => x.price_add) : 0;
+    var maxPrice = sizes.Any() ? sizes.Max(x => x.price_add) : 0;
+
+    string pId = Model.product_id != null ? Model.product_id.Trim() : "";
+    string pName = Model.name ?? "";
+    string pDesc = Model.description ?? "";
+    string pStatus = Model.status ?? "Đang bán";
+    string catName = Model.Category != null ? Model.Category.category_name : "Khác";
+
+    var sizeSObj = sizes.FirstOrDefault(s => s.size_name == "S");
+    var sizeMObj = sizes.FirstOrDefault(s => s.size_name == "M");
+    var sizeLObj = sizes.FirstOrDefault(s => s.size_name == "L");
+
+    decimal valS = sizeSObj != null ? sizeSObj.price_add : 0;
+    decimal valM = sizeMObj != null ? sizeMObj.price_add : 0;
+    decimal valL = sizeLObj != null ? sizeLObj.price_add : 0;
 }
 
 <link rel="stylesheet" href="~/Css/styleProduct_index.css" />
@@ -20,460 +32,478 @@
          HEADER
          ========================================================= -->
     <div class="product-heading">
-
         <div class="heading-left">
-
             <div class="heading-icon">
                 <i class="bi bi-cup-hot-fill"></i>
             </div>
-
             <div>
-
                 <h1 class="page-title">
                     Chi tiết sản phẩm
                 </h1>
-
                 <p class="page-subtitle">
                     Xem thông tin chi tiết về sản phẩm, giá bán và topping.
                 </p>
-
             </div>
-
         </div>
 
+        <div class="d-flex align-items-center gap-2">
+            <!-- Nút Mở Modal Sửa -->
+            <button type="button" class="btn btn-outline-success d-inline-flex align-items-center px-3"
+                    style="border-color: #20584f; color: #20584f; font-weight: 600; border-radius: 10px;"
+                    onclick="openEditModal('@pId', '@pName', '@catName', '@pStatus', '@pDesc', '@valS', '@valM', '@valL')">
+                <i class="bi bi-pencil-square me-2"></i> Chỉnh sửa
+            </button>
 
-        <a href="@Url.Action("Index", "Product")"
-           class="btn-filter d-inline-flex align-items-center px-3 text-decoration-none">
+            <!-- Nút Xóa -->
+            <button type="button" class="btn btn-outline-danger d-inline-flex align-items-center px-3"
+                    style="font-weight: 600; border-radius: 10px;"
+                    onclick="deleteProduct('@pId', '@pName')">
+                <i class="bi bi-trash-fill me-2"></i> Xóa sản phẩm
+            </button>
 
-            <i class="bi bi-arrow-left me-2"></i>
-
-            Quay lại danh sách
-
-        </a>
-
+            <a href="@Url.Action("Index", "Product")"
+               class="btn-filter d-inline-flex align-items-center px-3 text-decoration-none">
+                <i class="bi bi-arrow-left me-2"></i>
+                Quay lại danh sách
+            </a>
+        </div>
     </div>
-
 
     <!-- =========================================================
          PRODUCT DETAIL
          ========================================================= -->
     <div class="row g-4">
 
-        <!-- =====================================================
-             LEFT - PRODUCT INFORMATION
-             ===================================================== -->
+        <!-- LEFT - PRODUCT INFORMATION -->
         <div class="col-lg-5">
-
             <div class="product-table-card h-100">
-
                 <div class="p-4 text-center">
-
-                    <!-- PRODUCT ICON -->
                     <div class="d-flex justify-content-center mb-4">
-
-                        <div style="
-                            width:130px;
-                            height:130px;
-                            border-radius:24px;
-                            background:#eaf3ef;
-                            display:flex;
-                            align-items:center;
-                            justify-content:center;
-                            border:1px solid #e6dcc2;
-                        ">
-
-                            <i class="bi bi-cup-straw"
-                               style="
-                               font-size:55px;
-                               color:#20584f;
-                               ">
-                            </i>
-
+                        <div style="width:130px; height:130px; border-radius:24px; background:#eaf3ef; display:flex; align-items:center; justify-content:center; border:1px solid #e6dcc2;">
+                            <i class="bi bi-cup-straw" style="font-size:55px; color:#20584f;"></i>
                         </div>
-
                     </div>
 
-
-                    <!-- NAME -->
-                    <h2 style="
-                        margin:0;
-                        color:#17463e;
-                        font-size:22px;
-                        font-weight:800;
-                    ">
-                        @Model.ProductName
+                    <h2 style="margin:0; color:#17463e; font-size:22px; font-weight:800;">
+                        @pName
                     </h2>
 
-
-                    <!-- CODE -->
                     <div class="mt-3">
-
-                        <span class="product-code">
-                            @Model.ProductId
-                        </span>
-
+                        <span class="product-code">@pId</span>
                     </div>
 
-
-                    <!-- STATUS -->
                     <div class="mt-3">
-
-                        @if (Model.Status == "Đang bán")
+                        @if (pStatus == "Đang bán" || pStatus == "Active")
                         {
-                            <span class="status-badge available">
-
-                                <i class="bi bi-circle-fill"></i>
-
-                                Đang bán
-
-                            </span>
+                            <span class="status-badge available"><i class="bi bi-circle-fill"></i> Đang bán</span>
                         }
                         else
                         {
-                            <span class="status-badge unavailable">
-
-                                <i class="bi bi-circle-fill"></i>
-
-                                Ngừng bán
-
-                            </span>
+                            <span class="status-badge unavailable"><i class="bi bi-circle-fill"></i> Ngừng bán</span>
                         }
-
                     </div>
-
                 </div>
-
-
-                <!-- BASIC INFO -->
 
                 <div class="px-4 pb-4">
-
-                    <div style="
-                        border-top:1px solid #eee8da;
-                        padding-top:20px;
-                    ">
-
+                    <div style="border-top:1px solid #eee8da; padding-top:20px;">
                         <div class="mb-3">
-
-                            <div class="form-label">
-                                Danh mục
-                            </div>
-
+                            <div class="form-label">Danh mục</div>
                             <div>
-
                                 <span class="category-badge">
-
-                                    <i class="bi bi-tag-fill me-1"></i>
-
-                                    @Model.CategoryName
-
+                                    <i class="bi bi-tag-fill me-1"></i> @catName
                                 </span>
-
                             </div>
-
                         </div>
-
 
                         <div>
-
-                            <div class="form-label">
-                                Mô tả sản phẩm
+                            <div class="form-label">Mô tả sản phẩm</div>
+                            <div style="color:#78837e; font-size:13px; line-height:1.7;">
+                                @pDesc
                             </div>
-
-                            <div style="
-                                color:#78837e;
-                                font-size:13px;
-                                line-height:1.7;
-                            ">
-                                @Model.Description
-                            </div>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
-
-        <!-- =====================================================
-             RIGHT - PRICE + TOPPING
-             ===================================================== -->
+        <!-- RIGHT - PRICE + TOPPING -->
         <div class="col-lg-7">
-
             <!-- PRICE CARD -->
             <div class="product-table-card mb-4">
-
                 <div class="table-top">
-
                     <div>
-
                         <h2 class="table-title">
-                            <i class="bi bi-cash-stack me-2"></i>
-                            Giá bán theo size
+                            <i class="bi bi-cash-stack me-2"></i> Giá bán theo size
                         </h2>
-
-                        <span class="table-note">
-                            Giá được quản lý theo bảng ProductSizes
-                        </span>
-
+                        <span class="table-note">Giá được quản lý theo bảng ProductSizes</span>
                     </div>
-
                 </div>
-
 
                 <div class="p-4">
-
                     <div class="row g-3">
-
-                        @foreach (var size in Model.Sizes)
+                        @if (sizes.Any())
                         {
-                            <div class="col-md-4">
-
-                                <div style="
-                                    border:1px solid #e6dcc2;
-                                    border-radius:14px;
-                                    padding:20px;
-                                    text-align:center;
-                                    background:#fffdf8;
-                                ">
-
-                                    <div style="
-                                        width:48px;
-                                        height:48px;
-                                        margin:0 auto 12px;
-                                        border-radius:50%;
-                                        display:flex;
-                                        align-items:center;
-                                        justify-content:center;
-                                        background:#eaf3ef;
-                                        color:#20584f;
-                                        font-weight:800;
-                                    ">
-                                        @size.SizeName
+                            foreach (var size in sizes)
+                            {
+                                <div class="col-md-4">
+                                    <div style="border:1px solid #e6dcc2; border-radius:14px; padding:20px; text-align:center; background:#fffdf8;">
+                                        <div style="width:48px; height:48px; margin:0 auto 12px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#eaf3ef; color:#20584f; font-weight:800;">
+                                            @size.size_name
+                                        </div>
+                                        <div style="color:#78837e; font-size:12px; font-weight:700; margin-bottom:6px;">
+                                            SIZE @size.size_name
+                                        </div>
+                                        <div style="color:#c65b4a; font-size:18px; font-weight:800;">
+                                            @size.price_add.ToString("N0") đ
+                                        </div>
                                     </div>
-
-
-                                    <div style="
-                                        color:#78837e;
-                                        font-size:12px;
-                                        font-weight:700;
-                                        margin-bottom:6px;
-                                    ">
-                                        SIZE @size.SizeName
-                                    </div>
-
-
-                                    <div style="
-                                        color:#c65b4a;
-                                        font-size:18px;
-                                        font-weight:800;
-                                    ">
-                                        @size.Price.ToString("N0") đ
-                                    </div>
-
                                 </div>
-
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-12 text-center py-3 text-muted">
+                                Sản phẩm chưa cấu hình giá theo size.
                             </div>
                         }
-
                     </div>
-
                 </div>
-
             </div>
-
 
             <!-- TOPPING CARD -->
             <div class="product-table-card">
-
                 <div class="table-top">
-
                     <div>
-
                         <h2 class="table-title">
-
-                            <i class="bi bi-plus-circle me-2"></i>
-
-                            Topping đi kèm
-
+                            <i class="bi bi-plus-circle me-2"></i> Topping đi kèm
                         </h2>
-
-                        <span class="table-note">
-                            Danh sách topping thuộc sản phẩm
-                        </span>
-
+                        <span class="table-note">Danh sách topping thuộc sản phẩm</span>
                     </div>
-
-                    <span class="category-badge">
-                        @Model.Toppings.Count topping
-                    </span>
-
+                    <span class="category-badge">@productToppings.Count topping</span>
                 </div>
 
-
                 <div class="p-4">
-
-                    @if (Model.Toppings.Any())
+                    @if (productToppings.Any())
                     {
                         <div class="row g-3">
-
-                            @foreach (var topping in Model.Toppings)
+                            @foreach (var pt in productToppings)
                             {
+                                string toppingName = pt.Topping != null ? pt.Topping.name : "Topping";
                                 <div class="col-md-6">
-
-                                    <div style="
-                                        display:flex;
-                                        align-items:center;
-                                        gap:12px;
-                                        padding:14px 15px;
-                                        border:1px solid #e6dcc2;
-                                        border-radius:12px;
-                                        background:#fffdf8;
-                                    ">
-
-                                        <div style="
-                                            width:38px;
-                                            height:38px;
-                                            flex:0 0 38px;
-                                            border-radius:10px;
-                                            display:flex;
-                                            align-items:center;
-                                            justify-content:center;
-                                            background:#fff7d7;
-                                            color:#9a6b00;
-                                        ">
-
+                                    <div style="display:flex; align-items:center; gap:12px; padding:14px 15px; border:1px solid #e6dcc2; border-radius:12px; background:#fffdf8;">
+                                        <div style="width:38px; height:38px; flex:0 0 38px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:#fff7d7; color:#9a6b00;">
                                             <i class="bi bi-stars"></i>
-
                                         </div>
-
-                                        <div style="
-                                            color:#213430;
-                                            font-size:13px;
-                                            font-weight:700;
-                                        ">
-                                            @topping
+                                        <div style="color:#213430; font-size:13px; font-weight:700;">
+                                            @toppingName
                                         </div>
-
                                     </div>
-
                                 </div>
                             }
-
                         </div>
                     }
                     else
                     {
                         <div class="text-center py-4">
-
-                            <i class="bi bi-info-circle"
-                               style="
-                               font-size:30px;
-                               color:#b7c5bf;
-                               ">
-                            </i>
-
-                            <p style="
-                                margin:10px 0 0;
-                                color:#78837e;
-                                font-size:13px;
-                            ">
-                                Sản phẩm chưa có topping.
-                            </p>
-
+                            <i class="bi bi-info-circle" style="font-size:30px; color:#b7c5bf;"></i>
+                            <p style="margin:10px 0 0; color:#78837e; font-size:13px;">Sản phẩm chưa có topping.</p>
                         </div>
                     }
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
-
-    <!-- =========================================================
-         BOTTOM INFORMATION
-         ========================================================= -->
+    <!-- BOTTOM INFORMATION -->
     <div class="product-table-card mt-4">
-
         <div class="table-top">
-
             <div>
-
-                <h2 class="table-title">
-                    <i class="bi bi-info-circle me-2"></i>
-                    Tổng quan sản phẩm
-                </h2>
-
+                <h2 class="table-title"><i class="bi bi-info-circle me-2"></i> Tổng quan sản phẩm</h2>
             </div>
-
         </div>
 
-
         <div class="p-4">
-
             <div class="row g-4">
-
                 <div class="col-md-4">
-
-                    <div class="form-label">
-                        Mã sản phẩm
-                    </div>
-
-                    <span class="product-code">
-                        @Model.ProductId
-                    </span>
-
+                    <div class="form-label">Mã sản phẩm</div>
+                    <span class="product-code">@pId</span>
                 </div>
-
-
                 <div class="col-md-4">
-
-                    <div class="form-label">
-                        Danh mục
-                    </div>
-
-                    <div class="category-badge">
-                        @Model.CategoryName
-                    </div>
-
+                    <div class="form-label">Danh mục</div>
+                    <div class="category-badge">@catName</div>
                 </div>
-
-
                 <div class="col-md-4">
-
-                    <div class="form-label">
-                        Khoảng giá
-                    </div>
-
+                    <div class="form-label">Khoảng giá</div>
                     <div class="product-price">
-
                         @if (minPrice == maxPrice)
                         {
                             @minPrice.ToString("N0") <text>đ</text>
                         }
                         else
                         {
-                            @minPrice.ToString("N0")
-                            <text> - </text>
-                            @maxPrice.ToString("N0")
-                            <text>đ</text>
+                            @minPrice.ToString("N0") <text> - </text> @maxPrice.ToString("N0") <text>đ</text>
                         }
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
+    </div>
+</div>
 
+<!-- =============================================================
+     MODAL CHỈNH SỬA SẢN PHẨM (ĐẶT TẠI TRANG DETAILS)
+     ============================================================= -->
+<div class="modal fade product-page-modal" id="editProductModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i> Chỉnh sửa sản phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editProductForm">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <label class="modal-label">Mã sản phẩm</label>
+                            <input type="text" id="editProductId" class="form-control" readonly />
+                        </div>
+                        <div class="col-md-8">
+                            <label class="modal-label">Tên sản phẩm <span class="text-danger">*</span></label>
+                            <input type="text" id="editProductName" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="modal-label">Loại sản phẩm</label>
+                            <select id="editProductCategory" class="form-select">
+                                @if (ViewBag.Categories != null)
+                                {
+                                    foreach (var cat in (List<DoAnLapTrinhWeb.Models.Category>)ViewBag.Categories)
+                                    {
+                                        <option value="@cat.category_name">@cat.category_name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="modal-label">Trạng thái</label>
+                            <select id="editProductStatus" class="form-select">
+                                <option value="Đang bán">Đang bán</option>
+                                <option value="Ngừng bán">Ngừng bán</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="modal-label">Mô tả sản phẩm</label>
+                            <textarea id="editProductDescription" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <h5 style="color:#20584f; font-weight:800;"><i class="bi bi-cash-stack me-2"></i> Cập nhật giá theo size</h5>
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-4"><label class="modal-label">Size S</label><input type="number" id="editPriceS" class="form-control" /></div>
+                            <div class="col-md-4"><label class="modal-label">Size M</label><input type="number" id="editPriceM" class="form-control" /></div>
+                            <div class="col-md-4"><label class="modal-label">Size L</label><input type="number" id="editPriceL" class="form-control" /></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-filter" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn-save" onclick="saveProductEdit()">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- =========================================================
+     PRODUCT REVIEWS SECTION (REDESIGNED)
+     ========================================================= -->
+<div class="product-table-card mt-4 p-4" style="border: 1px solid #e6dcc2; border-radius: 20px; background: #fff; box-shadow: 0 10px 30px rgba(33,52,48,.04);">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 pb-3 mb-4" style="border-bottom: 2px dashed #f0eada;">
+        <div class="d-flex align-items-center gap-3">
+            <div style="width: 48px; height: 48px; border-radius: 14px; background: #eaf3ef; color: #20584f; display: flex; align-items:center; justify-content:center; font-size: 22px;">
+                <i class="bi bi-chat-square-quote-fill"></i>
+            </div>
+            <div>
+                <h2 class="table-title mb-0" style="font-size: 20px; font-weight: 800; color: #17463e;">
+                    Đánh giá từ khách hàng
+                </h2>
+                <span class="table-note" style="color: #78837e; font-size: 13px;">Phản hồi và trải nghiệm thực tế về sản phẩm</span>
+            </div>
+        </div>
+        <div style="background: #eaf3ef; color: #20584f; padding: 6px 16px; border-radius: 30px; font-weight: 700; font-size: 13px; border: 1px solid #d0e2db;">
+            <i class="bi bi-star-fill text-warning me-1"></i> @(Model.ProductReviews != null ? Model.ProductReviews.Count : 0) phản hồi
+        </div>
     </div>
 
+    <div>
+        @if (Model.ProductReviews != null && Model.ProductReviews.Any())
+        {
+            <div class="row g-4">
+                @foreach (var review in Model.ProductReviews)
+                {
+                    string customerName = review.Customer != null && !string.IsNullOrEmpty(review.Customer.full_name)
+                                            ? review.Customer.full_name.Trim()
+                                            : "Khách hàng ẩn danh";
+
+                    // Lấy chữ cái đầu làm Avatar chữ cái nếu khách chưa có ảnh
+                    string initial = !string.IsNullOrEmpty(customerName) ? customerName.Substring(0, 1).ToUpper() : "K";
+                    string comment = review.comment ?? "";
+                    int rating = review.rating;
+                    string reviewDate = review.created_at != default(DateTime)
+                                            ? review.created_at.ToString("dd/MM/yyyy HH:mm")
+                                            : "";
+
+                    <div class="col-md-6">
+                        <div style="border: 1px solid #eef2ef; border-radius: 16px; padding: 20px; background: #fafcfb; height: 100%; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease;"
+                             onmouseover="this.style.borderColor='#20584f'; this.style.transform='translateY(-2px)';"
+                             onmouseout="this.style.borderColor='#eef2ef'; this.style.transform='translateY(0)';">
+                            <div>
+                                <!-- Header của từng Card đánh giá -->
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="d-flex align-items-center gap-2.5" style="gap: 10px;">
+                                        <div style="width: 38px; height: 38px; border-radius: 50%; background: #20584f; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
+                                            @initial
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 700; color: #213430; font-size: 14px; line-height: 1.2;">
+                                                @customerName
+                                            </div>
+                                            <div style="color: #99a39f; font-size: 11px; margin-top: 2px;">
+                                                @reviewDate
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Số sao đánh giá -->
+                                    <div style="color: #f5c84b; font-size: 13px; letter-spacing: 1px; background: #fff; padding: 4px 10px; border-radius: 20px; border: 1px solid #f2eedb;">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= rating)
+                                            {
+                                                <i class="bi bi-star-fill"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-star text-muted opacity-25"></i>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <!-- Nội dung bình luận -->
+                                <div style="color: #4a5c55; font-size: 13.5px; line-height: 1.6; background: #fff; padding: 12px 14px; border-radius: 10px; border: 1px solid #edf2f0;">
+                                    &ldquo;@comment&rdquo;
+                                </div>
+                            </div>
+                            <!-- Footer nhỏ trong card -->
+                            <div class="d-flex align-items-center justify-content-end mt-3 pt-2 text-muted" style="font-size: 11px;">
+                                <span class="badge bg-light text-dark fw-normal border">Đã mua hàng</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5" style="background: #fafcfb; border-radius: 16px; border: 1px dashed #dbe4e1;">
+                <div style="width: 60px; height: 60px; border-radius: 50%; background: #eaf3ef; color: #20584f; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 24px;">
+                    <i class="bi bi-chat-left-text"></i>
+                </div>
+                <h5 style="color: #213430; font-weight: 700; font-size: 16px; margin-bottom: 4px;">Chưa có đánh giá nào</h5>
+                <p style="color: #78837e; font-size: 13px; margin: 0;">Sản phẩm này hiện chưa nhận được phản hồi công khai từ khách hàng.</p>
+            </div>
+        }
+    </div>
 </div>
+
+<!-- =============================================================
+     JAVASCRIPT XỬ LÝ SỬA / XÓA
+     ============================================================= -->
+<script>
+    function openEditModal(id, name, category, status, description, priceS, priceM, priceL) {
+        document.getElementById("editProductId").value = id;
+        document.getElementById("editProductName").value = name;
+        document.getElementById("editProductCategory").value = category;
+        document.getElementById("editProductStatus").value = status;
+        document.getElementById("editProductDescription").value = description;
+
+        document.getElementById("editPriceS").value = priceS > 0 ? priceS : "";
+        document.getElementById("editPriceM").value = priceM > 0 ? priceM : "";
+        document.getElementById("editPriceL").value = priceL > 0 ? priceL : "";
+
+        var modal = new bootstrap.Modal(document.getElementById('editProductModal'));
+        modal.show();
+    }
+
+    async function saveProductEdit() {
+        var productId = document.getElementById("editProductId").value.trim();
+        var productName = document.getElementById("editProductName").value.trim();
+        var category = document.getElementById("editProductCategory").value;
+        var status = document.getElementById("editProductStatus").value;
+        var description = document.getElementById("editProductDescription").value.trim();
+
+        var priceS = document.getElementById("editPriceS").value.trim();
+        var priceM = document.getElementById("editPriceM").value.trim();
+        var priceL = document.getElementById("editPriceL").value.trim();
+
+        if (!productName) {
+            alert("Tên sản phẩm không được để trống.");
+            return;
+        }
+
+        var formData = new URLSearchParams();
+        formData.append("product_id", productId);
+        formData.append("name", productName);
+        formData.append("category_name", category);
+        formData.append("status", status);
+        formData.append("description", description);
+        if (priceS !== "") formData.append("priceS", priceS);
+        if (priceM !== "") formData.append("priceM", priceM);
+        if (priceL !== "") formData.append("priceL", priceL);
+
+        try {
+            let response = await fetch('@Url.Action("Edit", "Product")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString()
+            });
+
+            let result = await response.json();
+            if (result.success) {
+                alert(result.message);
+                window.location.reload();
+            } else {
+                alert(result.message);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Lỗi kết nối máy chủ.");
+        }
+    }
+
+    async function deleteProduct(id, name) {
+        if (!confirm("Bạn có chắc chắn muốn xóa sản phẩm '" + name + "' này không?")) {
+            return;
+        }
+
+        var formData = new URLSearchParams();
+        formData.append("id", id);
+
+        try {
+            let response = await fetch('@Url.Action("Delete", "Product")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString()
+            });
+
+            let result = await response.json();
+            if (result.success) {
+                alert(result.message);
+                // Sau khi xóa thành công, chuyển hướng về lại trang danh sách Index
+                window.location.href = '@Url.Action("Index", "Product")';
+            } else {
+                alert(result.message);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Lỗi kết nối máy chủ.");
+        }
+    }
+</script>

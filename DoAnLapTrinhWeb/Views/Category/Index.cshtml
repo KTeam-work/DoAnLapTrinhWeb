@@ -2,7 +2,7 @@
     ViewData["Title"] = "Quản lý danh mục";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+@model IEnumerable<DoAnLapTrinhWeb.Models.Category>
 <link rel="stylesheet" href="~/Css/styleProduct_index.css" />
 
 <style>
@@ -373,7 +373,45 @@
                         <th style="width: 150px;" class="text-center">Thao tác</th>
                     </tr>
                 </thead>
-                <tbody id="categoryTableBody"></tbody>
+                <tbody id="categoryTableBody">
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                <span class="product-code">@item.category_id.Trim()</span>
+            </td>
+            <td>
+                <span class="cat-icon">📁</span>
+                <span class="product-name">@item.category_name</span>
+            </td>
+            <td>
+                <div class="description">
+                    @(string.IsNullOrEmpty(item.description) ? "Chưa có mô tả" : item.description)
+                </div>
+            </td>
+            <td>
+                @if (item.status == "Active")
+                {
+                    <span class="status-badge available">
+                        <i class="bi bi-check-circle-fill"></i> Đang hoạt động
+                    </span>
+                }
+                else
+                {
+                    <span class="status-badge unavailable">
+                        <i class="bi bi-pause-circle-fill"></i> Ngừng hoạt động
+                    </span>
+                }
+            </td>
+            <td class="text-center">
+                <a href="@Url.Action("Edit", "Category", new { id = item.category_id.Trim() })"
+                   class="action-btn edit-btn" title="Chỉnh sửa">
+                    <i class="bi bi-pencil-square"></i>
+                </a>
+            </td>
+        </tr>
+    }
+</tbody>
             </table>
         </div>
 
@@ -406,47 +444,47 @@
 
 
 <script>
+    /* =========================================================
+       1. ĐỌC DỮ LIỆU THẬT TỪ BẢNG HTML (DO C# & SQL SERVER RENDER)
+       ========================================================= */
+    function getCategoriesFromTable() {
+        const rows = document.querySelectorAll("#categoryTableBody tr");
+        let categories = [];
 
-    /* DỮ LIỆU DEMO - sau này thay bằng dữ liệu từ Database */
-    const defaultCategories = [
-        { id: "CAT0000001", name: "Trà sữa", description: "Các sản phẩm trà sữa truyền thống và hiện đại.", status: "Active" },
-        { id: "CAT0000002", name: "Trà trái cây", description: "Các loại trà kết hợp cùng trái cây tươi.", status: "Active" },
-        { id: "CAT0000003", name: "Trà truyền thống", description: "Các sản phẩm trà nguyên bản.", status: "Active" },
-        { id: "CAT0000004", name: "Macchiato", description: "Các sản phẩm trà kết hợp lớp kem Macchiato.", status: "Active" },
-        { id: "CAT0000005", name: "Topping", description: "Các loại topping dùng kèm đồ uống.", status: "Active" },
-        { id: "CAT0000006", name: "Bánh", description: "Các loại bánh dùng kèm trà và trà sữa.", status: "Inactive" }
-    ];
+        rows.forEach(row => {
+            // Đọc các giá trị đã render từ C# Razor vào
+            const idEl = row.querySelector(".product-code");
+            const nameEl = row.querySelector(".product-name");
+            const descEl = row.querySelector(".description");
+            const statusBadge = row.querySelector(".status-badge");
 
-    /* Biểu tượng mặc định cho dữ liệu cũ chưa có trường icon */
-    const defaultIcons = {
-        "CAT0000001": "🧋",
-        "CAT0000002": "🍓",
-        "CAT0000003": "🍵",
-        "CAT0000004": "☕",
-        "CAT0000005": "🧊",
-        "CAT0000006": "🍰"
-    };
+            if (idEl && nameEl) {
+                const id = idEl.textContent.trim();
+                const name = nameEl.textContent.trim();
+                const description = descEl ? descEl.textContent.trim() : "";
+                
+                // Kiểm tra xem trạng thái là Active hay Inactive dựa vào class của badge
+                let status = "Active";
+                if (statusBadge && statusBadge.classList.contains("unavailable")) {
+                    status = "Inactive";
+                }
 
-    function getCategories() {
-        const data = localStorage.getItem("milkTeaCategories");
+                categories.push({
+                    id: id,
+                    name: name,
+                    description: description,
+                    status: status,
+                    element: row // Lưu lại tham chiếu đến dòng HTML để ẩn/hiện khi lọc
+                });
+            }
+        });
 
-        if (!data) {
-            localStorage.setItem("milkTeaCategories", JSON.stringify(defaultCategories));
-            return [...defaultCategories];
-        }
-
-        try {
-            return JSON.parse(data);
-        } catch {
-            localStorage.setItem("milkTeaCategories", JSON.stringify(defaultCategories));
-            return [...defaultCategories];
-        }
+        return categories;
     }
 
-    function saveCategories(categories) {
-        localStorage.setItem("milkTeaCategories", JSON.stringify(categories));
-    }
-
+    /* =========================================================
+       2. CÁC HÀM HIỆU ỨNG VÀ HỖ TRỢ GIAO DIỆN
+       ========================================================= */
     function escapeHtml(value) {
         return String(value)
             .replaceAll("&", "&amp;")
@@ -454,20 +492,6 @@
             .replaceAll(">", "&gt;")
             .replaceAll('"', "&quot;")
             .replaceAll("'", "&#039;");
-    }
-
-    /* Escape rồi mới tô sáng từ khóa */
-    function highlight(text, keyword) {
-        const safe = escapeHtml(text);
-        if (!keyword) return safe;
-
-        const safeKeyword = escapeHtml(keyword)
-            .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-        return safe.replace(
-            new RegExp("(" + safeKeyword + ")", "gi"),
-            '<mark class="hl">$1</mark>'
-        );
     }
 
     /* Số đếm chạy từ giá trị cũ lên giá trị mới */
@@ -487,124 +511,61 @@
         requestAnimationFrame(step);
     }
 
-    function renderCategories() {
+    /* =========================================================
+       3. HÀM TÌM KIẾM VÀ LỌC TRỰC TIẾP TRÊN BẢNG HTML
+       ========================================================= */
+    function filterCategories() {
+        const categories = getCategoriesFromTable();
+        const rawKeyword = document.getElementById("searchCategory").value.trim().toLowerCase();
+        const statusFilter = document.getElementById("statusFilter").value;
 
-        const categories = getCategories();
-        const rawKeyword = document.getElementById("searchCategory").value.trim();
-        const keyword = rawKeyword.toLowerCase();
-        const status = document.getElementById("statusFilter").value;
+        let visibleCount = 0;
 
-        const filtered = categories.filter(category => {
+        categories.forEach(item => {
+            const matchKeyword = !rawKeyword ||
+                item.id.toLowerCase().includes(rawKeyword) ||
+                item.name.toLowerCase().includes(rawKeyword) ||
+                item.description.toLowerCase().includes(rawKeyword);
 
-            const matchKeyword =
-                !keyword ||
-                category.id.toLowerCase().includes(keyword) ||
-                category.name.toLowerCase().includes(keyword) ||
-                (category.description || "").toLowerCase().includes(keyword);
+            const matchStatus = statusFilter === "all" ||
+                (statusFilter === "active" && item.status === "Active") ||
+                (statusFilter === "inactive" && item.status === "Inactive");
 
-            const matchStatus =
-                status === "all" ||
-                (status === "active" && category.status === "Active") ||
-                (status === "inactive" && category.status === "Inactive");
-
-            return matchKeyword && matchStatus;
+            if (matchKeyword && matchStatus) {
+                item.element.style.display = ""; // Hiển thị dòng
+                visibleCount++;
+            } else {
+                item.element.style.display = "none"; // Ẩn dòng không khớp
+            }
         });
 
-        const tbody = document.getElementById("categoryTableBody");
         const emptyState = document.getElementById("emptyState");
-
-        tbody.innerHTML = "";
-
-        if (filtered.length === 0) {
-
+        if (visibleCount === 0) {
             emptyState.classList.remove("d-none");
-
         } else {
-
             emptyState.classList.add("d-none");
-
-            filtered.forEach((category, index) => {
-
-                const row = document.createElement("tr");
-                row.style.animationDelay = (index * 0.06) + "s";
-
-                const isActive = category.status === "Active";
-                const icon = category.icon || defaultIcons[category.id] || "📁";
-
-                const statusHtml = isActive
-                    ? `<span class="status-badge available">
-                           <i class="bi bi-check-circle-fill"></i>
-                           Đang hoạt động
-                       </span>`
-                    : `<span class="status-badge unavailable">
-                           <i class="bi bi-pause-circle-fill"></i>
-                           Ngừng hoạt động
-                       </span>`;
-
-                row.innerHTML = `
-                    <td>
-                        <span class="product-code">${highlight(category.id, rawKeyword)}</span>
-                    </td>
-
-                    <td>
-                        <span class="cat-icon ${isActive ? "" : "off"}">${escapeHtml(icon)}</span>
-                        <span class="product-name">${highlight(category.name, rawKeyword)}</span>
-                    </td>
-
-                    <td>
-                        <div class="description">
-                            ${highlight(category.description || "Chưa có mô tả", rawKeyword)}
-                        </div>
-                    </td>
-
-                    <td>${statusHtml}</td>
-
-                    <td class="text-center">
-                        <a href="@Url.Action("Edit", "Category")?id=${encodeURIComponent(category.id)}"
-                           class="action-btn edit-btn"
-                           title="Chỉnh sửa">
-                            <i class="bi bi-pencil-square"></i>
-                        </a>
-                    </td>
-                `;
-
-                tbody.appendChild(row);
-            });
         }
 
-        updateSummary(categories, filtered);
+        // Cập nhật lại số liệu thống kê tổng quan
+        updateSummary(categories.length, visibleCount);
     }
 
-    function updateSummary(categories, filtered) {
-
+    function updateSummary(total, displayed) {
+        const categories = getCategoriesFromTable();
         const active = categories.filter(item => item.status === "Active").length;
         const inactive = categories.filter(item => item.status === "Inactive").length;
 
-        animateNumber(document.getElementById("totalCategories"), categories.length);
+        animateNumber(document.getElementById("totalCategories"), total);
         animateNumber(document.getElementById("activeCategories"), active);
         animateNumber(document.getElementById("inactiveCategories"), inactive);
-        animateNumber(document.getElementById("displayCategories"), filtered.length);
+        animateNumber(document.getElementById("displayCategories"), displayed);
 
-        document.getElementById("resultText").textContent = `${filtered.length} danh mục`;
+        document.getElementById("resultText").textContent = `${displayed} danh mục`;
     }
 
-    /* Skeleton ngắn khi mới vào trang cho cảm giác "đang tải" */
-    function showSkeleton() {
-        const tbody = document.getElementById("categoryTableBody");
-        let html = "";
-        for (let i = 0; i < 4; i++) {
-            html += `<tr class="skeleton-row">
-                <td><div class="skeleton-bar" style="width:80px"></div></td>
-                <td><div class="skeleton-bar" style="width:140px"></div></td>
-                <td><div class="skeleton-bar" style="width:75%"></div></td>
-                <td><div class="skeleton-bar" style="width:110px"></div></td>
-                <td><div class="skeleton-bar mx-auto" style="width:34px"></div></td>
-            </tr>`;
-        }
-        tbody.innerHTML = html;
-    }
-
-    /* Ripple cho các nút */
+    /* =========================================================
+       4. HIỆU ỨNG RIPPLE CHO NÚT BẤM & SỰ KIỆN TƯƠNG TÁC
+       ========================================================= */
     document.querySelectorAll(".btn-tea, .btn-filter").forEach(btn => {
         btn.addEventListener("click", function (e) {
             const rect = this.getBoundingClientRect();
@@ -619,16 +580,18 @@
         });
     });
 
-    document.getElementById("searchCategory").addEventListener("input", renderCategories);
-    document.getElementById("statusFilter").addEventListener("change", renderCategories);
+    document.getElementById("searchCategory").addEventListener("input", filterCategories);
+    document.getElementById("statusFilter").addEventListener("change", filterCategories);
 
     document.getElementById("btnReset").addEventListener("click", function () {
         document.getElementById("searchCategory").value = "";
         document.getElementById("statusFilter").value = "all";
-        renderCategories();
+        filterCategories();
     });
 
-    showSkeleton();
-    setTimeout(renderCategories, 500);
-
+    // Khởi chạy thống kê lần đầu khi vừa load trang xong
+    window.addEventListener("DOMContentLoaded", () => {
+        const categories = getCategoriesFromTable();
+        updateSummary(categories.length, categories.length);
+    });
 </script>

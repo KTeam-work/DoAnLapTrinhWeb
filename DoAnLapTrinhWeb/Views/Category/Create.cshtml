@@ -517,54 +517,19 @@
 </div>
 
 <script>
-
-    function getCategories() {
-        const data = localStorage.getItem("milkTeaCategories");
-
-        if (!data) {
-            const defaults = [
-                { id: "CAT0000001", name: "Trà sữa", description: "Các sản phẩm trà sữa truyền thống và hiện đại.", status: "Active" },
-                { id: "CAT0000002", name: "Trà trái cây", description: "Các loại trà kết hợp cùng trái cây tươi.", status: "Active" },
-                { id: "CAT0000003", name: "Trà truyền thống", description: "Các sản phẩm trà nguyên bản.", status: "Active" },
-                { id: "CAT0000004", name: "Macchiato", description: "Các sản phẩm trà kết hợp lớp kem Macchiato.", status: "Active" },
-                { id: "CAT0000005", name: "Topping", description: "Các loại topping dùng kèm đồ uống.", status: "Active" },
-                { id: "CAT0000006", name: "Bánh", description: "Các loại bánh dùng kèm trà và trà sữa.", status: "Inactive" }
-            ];
-            localStorage.setItem("milkTeaCategories", JSON.stringify(defaults));
-            return defaults;
-        }
-
-        try { return JSON.parse(data); } catch { return []; }
-    }
-
-    function saveCategories(categories) {
-        localStorage.setItem("milkTeaCategories", JSON.stringify(categories));
-    }
-
-    function generateNextCategoryId(categories) {
-        let maxNumber = 0;
-        categories.forEach(category => {
-            const match = /^CAT(\d{7})$/.exec(category.id);
-            if (match) {
-                const number = parseInt(match[1], 10);
-                if (number > maxNumber) maxNumber = number;
-            }
-        });
-        return "CAT" + String(maxNumber + 1).padStart(7, "0");
-    }
-
-    /* ===== Khởi tạo ===== */
-    const categories = getCategories();
-    const newCategoryId = generateNextCategoryId(categories);
-
     const $ = id => document.getElementById(id);
     const nameInput = $("categoryName");
     const descInput = $("categoryDescription");
     const statusInput = $("categoryStatus");
     const errorBox = $("nameError");
 
-    $("categoryId").value = newCategoryId;
-    $("previewId").textContent = newCategoryId;
+    // Lấy mã danh mục tự sinh từ ViewBag (đã được C# truyền ra qua ô input readonly)
+    // Hoặc ta có thể lấy giá trị mặc định được render sẵn trên HTML
+    const generatedId = "@ViewBag.NextId";
+    if (generatedId) {
+        $("categoryId").value = generatedId;
+        $("previewId").textContent = generatedId;
+    }
 
     let selectedIcon = "🧋";
 
@@ -669,49 +634,60 @@
         nameInput.focus();
     }
 
-    /* ===== Submit ===== */
-    $("createCategoryForm").addEventListener("submit", function (event) {
+    /* ===== SUBMIT GỬI VỀ BACKEND (CONTROLLER C#) ===== */
+    $("createCategoryForm").addEventListener("submit", async function (event) {
         event.preventDefault();
 
-        const name = nameInput.value.trim();
+        const category_id = $("categoryId").value.trim();
+        const category_name = nameInput.value.trim();
         const description = descInput.value.trim();
         const status = statusInput.value;
 
         errorBox.classList.add("d-none");
 
-        if (!name) {
+        if (!category_name) {
             showError("Vui lòng nhập tên danh mục.");
             return;
         }
 
-        const duplicate = categories.some(item =>
-            item.name.trim().toLowerCase() === name.toLowerCase());
+        // Đóng gói dữ liệu gửi lên Controller qua chuẩn FormData / AJAX POST
+        const formData = new URLSearchParams();
+        formData.append("category_id", category_id);
+        formData.append("category_name", category_name);
+        formData.append("description", description);
+        formData.append("status", status);
 
-        if (duplicate) {
-            showError("Tên danh mục này đã tồn tại.");
-            return;
+        try {
+            const btn = $("btnSave");
+            btn.classList.add("loading");
+
+            // Gọi đường dẫn Action Create trong CategoryController.cs của C#
+            let response = await fetch('@Url.Action("Create", "Category")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString()
+            });
+
+            let result = await response.json();
+
+            if (result.success) {
+                btn.innerHTML = '<i class="bi bi-check2-circle me-1"></i> Đã lưu!';
+                showToast("Thêm danh mục thành công vào Database!");
+                launchConfetti();
+
+                setTimeout(() => {
+                    window.location.href = result.redirectUrl || '@Url.Action("Index", "Category")';
+                }, 1500);
+            } else {
+                btn.classList.remove("loading");
+                showError(result.message || "Có lỗi xảy ra khi lưu.");
+            }
+        } catch (err) {
+            console.error("Lỗi kết nối:", err);
+            $("btnSave").classList.remove("loading");
+            showError("Không thể kết nối đến máy chủ.");
         }
-
-        categories.push({
-            id: newCategoryId,
-            name: name,
-            description: description,
-            status: status,
-            icon: selectedIcon
-        });
-
-        saveCategories(categories);
-
-        const btn = $("btnSave");
-        btn.classList.add("loading");
-        btn.innerHTML = '<i class="bi bi-check2-circle me-1"></i> Đã lưu!';
-
-        showToast("Thêm danh mục thành công!");
-        launchConfetti();
-
-        setTimeout(() => {
-            window.location.href = "@Url.Action("Index", "Category")";
-        }, 1700);
     });
-
 </script>

@@ -592,579 +592,198 @@
 
 </div>
 
-
 <script>
-
-    var initialToppings =
-        @Html.Raw(Json.Encode(toppings));
-
-    var toppingStorageKey =
-        "demo_milktea_toppings";
-
-    var toppingData =
-        JSON.parse(
-            localStorage.getItem(toppingStorageKey)
-            || JSON.stringify(initialToppings)
-        );
-
+    // Nhận trực tiếp danh sách từ Controller thông qua ViewBag
+    var initialToppings = @Html.Raw(Json.Encode(ViewBag.ToppingsList ?? new List<object>()));
+    var toppingData = initialToppings;
 
     var toppingModalInstance = null;
     var toppingViewModalInstance = null;
 
-
     document.addEventListener("DOMContentLoaded", function () {
-
-        toppingModalInstance =
-            new bootstrap.Modal(
-                document.getElementById("toppingModal")
-            );
-
-
-        toppingViewModalInstance =
-            new bootstrap.Modal(
-                document.getElementById("toppingViewModal")
-            );
-
-
+        toppingModalInstance = new bootstrap.Modal(document.getElementById("toppingModal"));
+        toppingViewModalInstance = new bootstrap.Modal(document.getElementById("toppingViewModal"));
         renderToppings();
-
     });
 
-
-    function saveToppingData() {
-
-        localStorage.setItem(
-            toppingStorageKey,
-            JSON.stringify(toppingData)
-        );
-
-    }
-
-
     function generateToppingId() {
-
-        var maxNumber = 0;
-
-
-        toppingData.forEach(function (item) {
-
-            var number =
-                parseInt(
-                    item.Id.replace("TP", ""),
-                    10
-                );
-
-
-            if (!isNaN(number) && number > maxNumber) {
-                maxNumber = number;
-            }
-
-        });
-
-
-        return "TP" +
-            String(maxNumber + 1)
-                .padStart(7, "0");
-
+        return "TP" + Math.floor(1000000 + Math.random() * 9000000);
     }
-
 
     function openAddTopping() {
-
-        document.getElementById("toppingModalTitle")
-            .innerHTML =
-            '<i class="bi bi-plus-circle-fill me-2"></i>Thêm topping';
-
-
+        document.getElementById("toppingModalTitle").innerHTML = '<i class="bi bi-plus-circle-fill me-2"></i>Thêm topping';
         document.getElementById("toppingEditId").value = "";
-
-        document.getElementById("toppingId").value =
-            generateToppingId();
-
+        document.getElementById("toppingId").value = generateToppingId();
         document.getElementById("toppingName").value = "";
-
         document.getElementById("toppingPrice").value = "";
-
         document.getElementById("toppingShort").value = "";
-
-        document.getElementById("toppingStatus").value =
-            "Đang bán";
-
-
+        document.getElementById("toppingStatus").value = "Đang bán";
         toppingModalInstance.show();
-
     }
-
 
     function editTopping(id) {
+        var item = toppingData.find(function (x) { return x.Id === id; });
+        if (!item) return;
 
-        var item =
-            toppingData.find(function (x) {
-                return x.Id === id;
-            });
-
-
-        if (!item) {
-            return;
-        }
-
-
-        document.getElementById("toppingModalTitle")
-            .innerHTML =
-            '<i class="bi bi-pencil-fill me-2"></i>Chỉnh sửa topping';
-
-
-        document.getElementById("toppingEditId").value =
-            item.Id;
-
-        document.getElementById("toppingId").value =
-            item.Id;
-
-        document.getElementById("toppingName").value =
-            item.Name;
-
-        document.getElementById("toppingPrice").value =
-            item.Price;
-
-        document.getElementById("toppingShort").value =
-            item.Short;
-
-        document.getElementById("toppingStatus").value =
-            item.Status;
-
+        document.getElementById("toppingModalTitle").innerHTML = '<i class="bi bi-pencil-fill me-2"></i>Chỉnh sửa topping';
+        document.getElementById("toppingEditId").value = item.Id;
+        document.getElementById("toppingId").value = item.Id;
+        document.getElementById("toppingName").value = item.Name;
+        document.getElementById("toppingPrice").value = item.Price;
+        document.getElementById("toppingShort").value = item.Short;
+        document.getElementById("toppingStatus").value = item.Status;
 
         toppingModalInstance.show();
-
     }
 
+    // Gửi AJAX lưu dữ liệu (Thêm hoặc Sửa) xuống CSDL qua ToppingController
+    async function saveTopping() {
+        var editId = document.getElementById("toppingEditId").value;
+        var id = document.getElementById("toppingId").value.trim();
+        var name = document.getElementById("toppingName").value.trim();
+        var price = document.getElementById("toppingPrice").value;
+        var shortCode = document.getElementById("toppingShort").value.trim();
+        var status = document.getElementById("toppingStatus").value;
 
-    function saveTopping() {
-
-        var editId =
-            document.getElementById("toppingEditId").value;
-
-
-        var id =
-            document.getElementById("toppingId")
-                .value
-                .trim();
-
-        var name =
-            document.getElementById("toppingName")
-                .value
-                .trim();
-
-        var price =
-            Number(
-                document.getElementById("toppingPrice")
-                    .value
-            );
-
-        var short =
-            document.getElementById("toppingShort")
-                .value
-                .trim()
-                .toUpperCase();
-
-        var status =
-            document.getElementById("toppingStatus").value;
-
-
-        if (name === "") {
-
+        if (!name) {
             alert("Vui lòng nhập tên topping.");
-
             return;
         }
 
-
-        if (
-            isNaN(price) ||
-            price < 0
-        ) {
-
+        if (price === "" || Number(price) < 0) {
             alert("Vui lòng nhập giá hợp lệ.");
-
             return;
         }
 
+        var formData = new URLSearchParams();
+        formData.append("id", id);
+        formData.append("name", name);
+        formData.append("price", price);
+        formData.append("shortCode", shortCode);
+        formData.append("status", status);
 
-        if (short === "") {
+        var url = editId === "" ? '@Url.Action("Create", "Topping")' : '@Url.Action("Edit", "Topping")';
 
-            short =
-                name
-                    .split(" ")
-                    .map(function (x) {
-                        return x.charAt(0);
-                    })
-                    .join("")
-                    .substring(0, 3)
-                    .toUpperCase();
-
-        }
-
-
-        if (editId === "") {
-
-            toppingData.push({
-
-                Id: id,
-                Name: name,
-                Short: short,
-                Price: price,
-                ProductCount: 0,
-                Status: status
-
+        try {
+            let res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString()
             });
-
-
-            alert("Đã thêm topping thành công.");
-
-        }
-        else {
-
-            var item =
-                toppingData.find(function (x) {
-                    return x.Id === editId;
-                });
-
-
-            if (item) {
-
-                item.Name = name;
-                item.Short = short;
-                item.Price = price;
-                item.Status = status;
-
+            let result = await res.json();
+            alert(result.message);
+            if (result.success) {
+                window.location.reload();
             }
-
-
-            alert("Đã cập nhật topping thành công.");
-
+        } catch (err) {
+            console.error(err);
+            alert("Lỗi kết nối máy chủ.");
         }
-
-
-        saveToppingData();
-
-        renderToppings();
-
-        toppingModalInstance.hide();
-
     }
-
 
     function viewTopping(id) {
+        var item = toppingData.find(function (x) { return x.Id === id; });
+        if (!item) return;
 
-        var item =
-            toppingData.find(function (x) {
-                return x.Id === id;
-            });
-
-
-        if (!item) {
-            return;
-        }
-
-
-        document.getElementById("viewToppingShort")
-            .textContent =
-            item.Short;
-
-
-        document.getElementById("viewToppingName")
-            .textContent =
-            item.Name;
-
-
-        document.getElementById("viewToppingId")
-            .value =
-            item.Id;
-
-
-        document.getElementById("viewToppingPrice")
-            .value =
-            "+" +
-            Number(item.Price)
-                .toLocaleString("vi-VN") +
-            " đ";
-
-
-        document.getElementById("viewToppingProductCount")
-            .value =
-            item.ProductCount +
-            " sản phẩm";
-
-
-        document.getElementById("viewToppingStatus")
-            .innerHTML =
-            item.Status === "Đang bán"
-                ? '<span class="status-badge available"><i class="bi bi-circle-fill"></i> Đang bán</span>'
-                : '<span class="status-badge unavailable"><i class="bi bi-circle-fill"></i> Ngừng bán</span>';
-
+        document.getElementById("viewToppingShort").textContent = item.Short;
+        document.getElementById("viewToppingName").textContent = item.Name;
+        document.getElementById("viewToppingId").value = item.Id;
+        document.getElementById("viewToppingPrice").value = "+" + Number(item.Price).toLocaleString("vi-VN") + " đ";
+        document.getElementById("viewToppingProductCount").value = item.ProductCount + " sản phẩm";
+        document.getElementById("viewToppingStatus").innerHTML = item.Status === "Đang bán"
+            ? '<span class="status-badge available"><i class="bi bi-circle-fill"></i> Đang bán</span>'
+            : '<span class="status-badge unavailable"><i class="bi bi-circle-fill"></i> Ngừng bán</span>';
 
         toppingViewModalInstance.show();
-
     }
 
+    // Gửi AJAX xóa dữ liệu khỏi CSDL qua ToppingController
+    async function deleteTopping(id) {
+        var item = toppingData.find(function (x) { return x.Id === id; });
+        if (!item) return;
 
-    function deleteTopping(id) {
+        if (!confirm("Bạn có chắc chắn muốn xóa topping '" + item.Name + "' này không?")) return;
 
-        var item =
-            toppingData.find(function (x) {
-                return x.Id === id;
+        var formData = new URLSearchParams();
+        formData.append("id", id);
+
+        try {
+            let res = await fetch('@Url.Action("Delete", "Topping")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString()
             });
-
-
-        if (!item) {
-            return;
+            let result = await res.json();
+            alert(result.message);
+            if (result.success) {
+                window.location.reload();
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Lỗi kết nối máy chủ.");
         }
-
-
-        var confirmed =
-            confirm(
-                "Bạn có chắc chắn muốn xóa topping này không?\n\n" +
-                "Mã: " + item.Id +
-                "\nTên: " + item.Name
-            );
-
-
-        if (!confirmed) {
-            return;
-        }
-
-
-        toppingData =
-            toppingData.filter(function (x) {
-                return x.Id !== id;
-            });
-
-
-        saveToppingData();
-
-        renderToppings();
-
-
-        alert(
-            "Đã xóa " +
-            item.Name +
-            " khỏi danh sách demo."
-        );
-
     }
-
 
     function renderToppings() {
+        var keyword = document.getElementById("toppingKeyword") ? document.getElementById("toppingKeyword").value.toLowerCase().trim() : "";
+        var status = document.getElementById("toppingFilterStatus") ? document.getElementById("toppingFilterStatus").value : "";
 
-        var keyword =
-            document.getElementById("toppingKeyword")
-                ? document.getElementById("toppingKeyword")
-                    .value
-                    .toLowerCase()
-                    .trim()
-                : "";
-
-
-        var status =
-            document.getElementById("toppingFilterStatus")
-                ? document.getElementById("toppingFilterStatus")
-                    .value
-                : "";
-
-
-        var filtered =
-            toppingData.filter(function (item) {
-
-                var text =
-                    (
-                        item.Id +
-                        " " +
-                        item.Name +
-                        " " +
-                        item.Short
-                    ).toLowerCase();
-
-
-                var matchKeyword =
-                    text.includes(keyword);
-
-                var matchStatus =
-                    status === "" ||
-                    item.Status === status;
-
-
-                return matchKeyword && matchStatus;
-
-            });
-
-
-        var container =
-            document.getElementById("toppingContainer");
-
-
-        container.innerHTML = "";
-
-
-        filtered.forEach(function (item) {
-
-            var col =
-                document.createElement("div");
-
-            col.className =
-                "col-xl-4 col-md-6";
-
-
-            col.innerHTML =
-
-                '<div class="topping-card border rounded-4 h-100 p-4" style="background:#ffffff;box-shadow:0 8px 24px rgba(33,52,48,.06);">' +
-
-                    '<div class="d-flex align-items-start justify-content-between">' +
-
-            '<div class="topping-icon rounded-4 d-flex align-items-center justify-content-center" style="width:64px;height:64px;background:#eaf3ef;color:#20584f;font-weight:800;font-size:18px;">' +
-
-                            escapeHtml(item.Short) +
-
-                        '</div>' +
-
-                        (
-                            item.Status === "Đang bán"
-                                ? '<span class="status-badge available"><i class="bi bi-circle-fill"></i> Đang bán</span>'
-                                : '<span class="status-badge unavailable"><i class="bi bi-circle-fill"></i> Ngừng bán</span>'
-                        ) +
-
-                    '</div>' +
-
-
-                    '<div class="mt-4">' +
-
-                        '<div class="small" style="color:#78837e;">' +
-                            escapeHtml(item.Id) +
-                        '</div>' +
-
-                        '<div class="product-name mt-1" style="font-size:20px;">' +
-                            escapeHtml(item.Name) +
-                        '</div>' +
-
-                    '</div>' +
-
-
-                    '<div class="d-flex align-items-end justify-content-between mt-4">' +
-
-                        '<div>' +
-
-                            '<div class="small" style="color:#78837e;">Giá thêm</div>' +
-
-                            '<div class="product-price" style="font-size:23px;">+' +
-                                Number(item.Price).toLocaleString("vi-VN") +
-                                ' đ</div>' +
-
-                        '</div>' +
-
-
-                        '<div class="text-end">' +
-
-                            '<div class="small" style="color:#78837e;">Đang dùng</div>' +
-
-                            '<div style="font-size:18px;font-weight:800;color:#213430;">' +
-                                item.ProductCount +
-                            '</div>' +
-
-                        '</div>' +
-
-                    '</div>' +
-
-
-                    '<div class="d-flex gap-2 mt-4 pt-3 border-top">' +
-
-                        '<button type="button" class="btn-filter flex-grow-1" onclick="viewTopping(\'' +
-                            item.Id +
-                        '\')">' +
-
-                            '<i class="bi bi-eye-fill me-1"></i>Xem' +
-
-                        '</button>' +
-
-                        '<button type="button" class="btn-filter" onclick="editTopping(\'' +
-                            item.Id +
-                        '\')">' +
-
-                            '<i class="bi bi-pencil-fill"></i>' +
-
-                        '</button>' +
-
-                        '<button type="button" class="action-btn delete-btn" onclick="deleteTopping(\'' +
-                            item.Id +
-                        '\')">' +
-
-                            '<i class="bi bi-trash-fill"></i>' +
-
-                        '</button>' +
-
-                    '</div>' +
-
-                '</div>';
-
-
-            container.appendChild(col);
-
+        var filtered = toppingData.filter(function (item) {
+            var text = (item.Id + " " + item.Name + " " + item.Short).toLowerCase();
+            var matchKeyword = text.includes(keyword);
+            var matchStatus = status === "" || item.Status === status;
+            return matchKeyword && matchStatus;
         });
 
+        var container = document.getElementById("toppingContainer");
+        container.innerHTML = "";
 
-        var active =
-            toppingData.filter(function (x) {
-                return x.Status === "Đang bán";
-            }).length;
+        filtered.forEach(function (item) {
+            var col = document.createElement("div");
+            col.className = "col-xl-4 col-md-6";
+            col.innerHTML = '<div class="topping-card border rounded-4 h-100 p-4" style="background:#ffffff;box-shadow:0 8px 24px rgba(33,52,48,.06);">' +
+                '<div class="d-flex align-items-start justify-content-between">' +
+                '<div class="topping-icon rounded-4 d-flex align-items-center justify-content-center" style="width:64px;height:64px;background:#eaf3ef;color:#20584f;font-weight:800;font-size:18px;">' +
+                escapeHtml(item.Short) +
+                '</div>' +
+                (item.Status === "Đang bán" ? '<span class="status-badge available"><i class="bi bi-circle-fill"></i> Đang bán</span>' : '<span class="status-badge unavailable"><i class="bi bi-circle-fill"></i> Ngừng bán</span>') +
+                '</div>' +
+                '<div class="mt-4">' +
+                '<div class="small" style="color:#78837e;">' + escapeHtml(item.Id) + '</div>' +
+                '<div class="product-name mt-1" style="font-size:20px;">' + escapeHtml(item.Name) + '</div>' +
+                '</div>' +
+                '<div class="d-flex align-items-end justify-content-between mt-4">' +
+                '<div>' +
+                '<div class="small" style="color:#78837e;">Giá thêm</div>' +
+                '<div class="product-price" style="font-size:23px;">+' + Number(item.Price).toLocaleString("vi-VN") + ' đ</div>' +
+                '</div>' +
+                '<div class="text-end">' +
+                '<div class="small" style="color:#78837e;">Đang dùng</div>' +
+                '<div style="font-size:18px;font-weight:800;color:#213430;">' + item.ProductCount + '</div>' +
+                '</div>' +
+                '</div>' +
+                '<div class="d-flex gap-2 mt-4 pt-3 border-top">' +
+                '<button type="button" class="btn-filter flex-grow-1" onclick="viewTopping(\'' + item.Id + '\')"><i class="bi bi-eye-fill me-1"></i>Xem</button>' +
+                '<button type="button" class="btn-filter" onclick="editTopping(\'' + item.Id + '\')"><i class="bi bi-pencil-fill"></i></button>' +
+                '<button type="button" class="action-btn delete-btn" onclick="deleteTopping(\'' + item.Id + '\')"><i class="bi bi-trash-fill"></i></button>' +
+                '</div>' +
+                '</div>';
+            container.appendChild(col);
+        });
 
+        var active = toppingData.filter(function (x) { return x.Status === "Đang bán"; }).length;
+        var inactive = toppingData.filter(function (x) { return x.Status === "Ngừng bán"; }).length;
 
-        var inactive =
-            toppingData.filter(function (x) {
-                return x.Status === "Ngừng bán";
-            }).length;
-
-
-        document.getElementById("activeToppingCount")
-            .textContent =
-            active;
-
-
-        document.getElementById("toppingTotal")
-            .textContent =
-            toppingData.length;
-
-
-        document.getElementById("toppingInactive")
-            .textContent =
-            inactive;
-
+        document.getElementById("activeToppingCount").textContent = active;
+        document.getElementById("toppingTotal").textContent = toppingData.length;
+        document.getElementById("toppingInactive").textContent = inactive;
     }
 
-
-    function closeToppingModal() {
-
-        if (toppingModalInstance) {
-            toppingModalInstance.hide();
-        }
-
-    }
-
-
-    function closeToppingViewModal() {
-
-        if (toppingViewModalInstance) {
-            toppingViewModalInstance.hide();
-        }
-
-    }
-
+    function closeToppingModal() { if (toppingModalInstance) toppingModalInstance.hide(); }
+    function closeToppingViewModal() { if (toppingViewModalInstance) toppingViewModalInstance.hide(); }
 
     function escapeHtml(value) {
-
         return String(value == null ? "" : value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
-
 </script>
