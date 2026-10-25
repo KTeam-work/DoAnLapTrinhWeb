@@ -1,137 +1,154 @@
+using DoAnLapTrinhWeb.Models;
+using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web.Mvc;
-using System.Web.Security;
-using DoAnLapTrinhWeb.Controllers;
-//using DoAnLapTrinhWeb.Models;
 
 namespace DoAnLapTrinhWeb.Controllers
 {
     public class AccountController : Controller
     {
-        //// GET: /Account/Register
-        //[HttpGet]
-        //public ActionResult Register()
-        //{
-        //    if (Session["UserId"] != null)
-        //    {
-        //        return RedirectToAction("Index", "Home");
-        //    }
-        //    //return View(new RegisterViewModel());
-        //    return View();
-        //}
+        private QUANLYBANTRASUAEntities db = new QUANLYBANTRASUAEntities();
 
-        //// POST: /Account/Register
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Register(RegisterViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(model);
-        //    }
+        [HttpGet]
+        public ActionResult Login()
+        {
+            if (Session["UserId"] != null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            return View();
+        }
 
-        //    if (UserRepository.UsernameExists(model.Username))
-        //    {
-        //        ModelState.AddModelError("Username", "Tên đăng nhập này đã được sử dụng.");
-        //    }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(string Username, string Password)
+        {
+            if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password))
+            {
+                ModelState.AddModelError("", "Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.");
+                return View();
+            }
 
-        //    if (UserRepository.EmailExists(model.Email))
-        //    {
-        //        ModelState.AddModelError("Email", "Email này đã được đăng ký.");
-        //    }
+            var user = db.Users.FirstOrDefault(x => x.username == Username && x.password == Password);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Tên đăng nhập hoặc mật khẩu không đúng.");
+                return View();
+            }
 
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(model);
-        //    }
+            if (user.status != "Active")
+            {
+                ModelState.AddModelError("", "Tài khoản đã bị khóa hoặc chưa kích hoạt.");
+                return View();
+            }
 
-        //    var newUser = new User
-        //    {
-        //        FullName = model.FullName,
-        //        Username = model.Username,
-        //        Email = model.Email,
-        //        PhoneNumber = model.Phone
-        //    };
+            Session["UserId"] = user.user_id;
+            Session["Username"] = user.username;
+            Session["FullName"] = user.full_name;
 
-        //    UserRepository.Add(newUser, model.Password);
+            return RedirectToAction("Index", "Home");
+        }
 
-        //    // Tự động đăng nhập ngay sau khi đăng ký thành công
-        //    Session["UserId"] = newUser.Id;
-        //    Session["UserName"] = newUser.FullName;
+        public ActionResult Logout()
+        {
+            Session.Clear();
+            Session.Abandon();
+            return RedirectToAction("Login");
+        }
 
-        //    TempData["SuccessMessage"] = "Đăng ký tài khoản thành công! Chào mừng bạn đến với TV1.";
-        //    return RedirectToAction("Index", "Home");
-        //}
+        [HttpGet]
+        public ActionResult Register()
+        {
+            return View();
+        }
 
-        //// GET: /Account/Login
-        //[HttpGet]
-        //public ActionResult Login()
-        //{
-        //    if (Session["UserId"] != null)
-        //    {
-        //        return RedirectToAction("Index", "Home");
-        //    }
-        //    return View(new LoginViewModel());
-        //}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Register(string FullName, string Username, string Email, string Phone, string Password, string ConfirmPassword)
+        {
+            if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password) || string.IsNullOrEmpty(FullName))
+            {
+                ViewBag.Error = "Vui lòng nhập đầy đủ thông tin.";
+                return View();
+            }
 
-        // POST: /Account/Login
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Login(LoginViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(model);
-        //    }
+            string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            if (string.IsNullOrEmpty(Email) || !Regex.IsMatch(Email, emailPattern))
+            {
+                ViewBag.Error = "Địa chỉ email không hợp lệ (ví dụ: ban@gmail.com).";
+                return View();
+            }
 
-        //    var user = UserRepository.FindByUsernameOrEmail(model.UsernameOrEmail);
+            if (Password != ConfirmPassword)
+            {
+                ViewBag.Error = "Mật khẩu xác nhận không khớp.";
+                return View();
+            }
 
-        //    if (user == null || !UserRepository.VerifyPassword(user, model.Password))
-        //    {
-        //        ModelState.AddModelError("", "Tên đăng nhập/email hoặc mật khẩu không đúng.");
-        //        return View(model);
-        //    }
+            string passwordPattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$";
+            if (!Regex.IsMatch(Password, passwordPattern))
+            {
+                ViewBag.Error = "Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt.";
+                return View();
+            }
 
-        //    Session["UserId"] = user.Id;
-        //    Session["UserName"] = user.FullName;
+            if (db.Users.Any(x => x.username == Username))
+            {
+                ViewBag.Error = "Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.";
+                return View();
+            }
 
-        //    if (model.RememberMe)
-        //    {
-        //        FormsAuthentication.SetAuthCookie(user.Username, true);
-        //    }
+            if (db.Users.Any(x => x.email == Email))
+            {
+                ViewBag.Error = "Email này đã được đăng ký.";
+                return View();
+            }
 
-        //    return RedirectToAction("Index", "Home");
-        //}
+            User newUser = new User()
+            {
+                user_id = Guid.NewGuid().ToString("N").Substring(0, 10),
+                full_name = FullName,
+                username = Username,
+                password = Password,
+                email = Email,
+                phone = Phone,
+                role_id = "R02",
+                status = "Active",
+                created_at = DateTime.Now
+            };
 
-        // GET: /Account/Logout
-        //public ActionResult Logout()
-        //{
-        //    Session.Clear();
-        //    Session.Abandon();
-        //    FormsAuthentication.SignOut();
-        //    return RedirectToAction("Login", "Account");
-        //}
+            db.Users.Add(newUser);
+            db.SaveChanges();
 
-        // GET: /Account/ForgotPassword
-        //[HttpGet]
-        //public ActionResult ForgotPassword()
-        //{
-        //    return View(new ForgotPasswordViewModel());
-        //}
+            TempData["SuccessMessage"] = "Đăng ký thành công! Vui lòng đăng nhập.";
+            return RedirectToAction("Login");
+        }
 
-        //// POST: /Account/ForgotPassword
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult ForgotPassword(ForgotPasswordViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(model);
-        //    }
+        [HttpGet]
+        public ActionResult ForgotPassword()
+        {
+            return View();
+        }
 
-        //    // Ghi chú: project chưa cấu hình dịch vụ gửi email thật.
-        //    // Ở đây chỉ xác nhận là đã "gửi" (không tiết lộ email có tồn tại hay không, để tránh dò quét tài khoản).
-        //    model.EmailSent = true;
-        //    return View(model);
-        //}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ForgotPassword(string Email)
+        {
+            if (string.IsNullOrEmpty(Email))
+            {
+                ModelState.AddModelError("", "Vui lòng nhập email.");
+                return View();
+            }
+
+            ViewBag.EmailSent = true;
+            return View();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }
