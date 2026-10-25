@@ -3,9 +3,9 @@
     ViewBag.Title = "Tài khoản";
     ViewBag.Active = "profile";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    string initials = string.IsNullOrWhiteSpace(Model.FullName)
+    string initials = string.IsNullOrWhiteSpace(Model.full_name)
         ? "?"
-        : string.Join("", Model.FullName.Split(' ').Where(s => s.Length > 0).Select(s => s[0])).ToUpper();
+        : string.Join("", Model.full_name.Split(' ').Where(s => s.Length > 0).Select(s => s[0])).ToUpper();
     if (initials.Length > 2) { initials = initials.Substring(initials.Length - 2); }
 }
 
@@ -205,8 +205,8 @@
     <div class="profile-head">
         <div class="avatar">@initials</div>
         <div>
-            <h1>Xin chào, @Model.FullName</h1>
-            <p>Thành viên từ @Model.CreatedAt.ToString("MM/yyyy")</p>
+            <h1>Xin chào, @Model.full_name</h1>
+            <p>Thành viên từ @Model.created_at.ToString("MM/yyyy")</p>
         </div>
     </div>
 
@@ -224,15 +224,15 @@
                 @Html.AntiForgeryToken()
                 <div class="field">
                     <label for="FullName">Họ và tên</label>
-                    <input type="text" id="FullName" name="FullName" value="@Model.FullName" />
+                    <input type="text" id="FullName" name="FullName" value="@Model.full_name" />
                 </div>
                 <div class="field">
                     <label for="Email">Email</label>
-                    <input type="email" id="Email" name="Email" value="@Model.Email" />
+                    <input type="email" id="Email" name="Email" value="@Model.email" />
                 </div>
                 <div class="field">
                     <label for="PhoneNumber">Số điện thoại</label>
-                    <input type="tel" id="PhoneNumber" name="PhoneNumber" value="@Model.PhoneNumber" />
+                    <input type="tel" id="PhoneNumber" name="PhoneNumber" value="@Model.phone" />
                 </div>
                 <button type="submit" class="btn-primary">Lưu thay đổi</button>
             }

@@ -1,96 +1,102 @@
+using System.Linq;
 using System.Web.Mvc;
-
+using System.Text.RegularExpressions;
+using DoAnLapTrinhWeb.Models;
 
 namespace DoAnLapTrinhWeb.Controllers
 {
     public class ProfileController : Controller
     {
-        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        private QUANLYBANTRASUAEntities db = new QUANLYBANTRASUAEntities();
+
+        // Lấy user đang đăng nhập từ Session["UserId"] (giá trị là user_id kiểu string)
+        private User GetCurrentUser()
         {
-            // Chưa đăng nhập thì không cho xem trang hồ sơ
-            if (Session["UserId"] == null)
-            {
-                filterContext.Result = RedirectToAction("Login", "Account");
-                return;
-            }
-            base.OnActionExecuting(filterContext);
+            if (Session["UserId"] == null) return null;
+            string id = Session["UserId"].ToString();
+            return db.Users.FirstOrDefault(x => x.user_id == id);
         }
 
-        //private User CurrentUser
-        //{
-        //    get { return UserRepository.FindById((int)Session["UserId"]); }
-        //}
-
-        // GET: /Profile/Index
+        // ===== TRANG TÀI KHOẢN =====
         [HttpGet]
         public ActionResult Index()
         {
-            //var user = CurrentUser;
-            //if (user == null)
-            //{
-            //    return RedirectToAction("Login", "Account");
-            //}
+            var user = GetCurrentUser();
+            if (user == null) return RedirectToAction("Login", "Account");
+            return View(user);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateProfile(string FullName, string Email, string PhoneNumber)
+        {
+            var user = GetCurrentUser();
+            if (user == null) return RedirectToAction("Login", "Account");
+
+            user.full_name = FullName;
+            user.email = Email;
+            user.phone = PhoneNumber;
+            db.SaveChanges();
+
+            TempData["SuccessMessage"] = "Cập nhật thông tin thành công!";
+            return RedirectToAction("Index");
+        }
+
+        // ===== ĐỔI MẬT KHẨU =====
+        [HttpGet]
+        public ActionResult ChangePassword()
+        {
+            if (Session["UserId"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
             return View();
         }
 
-        // POST: /Profile/UpdateProfile
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult UpdateProfile(UpdateProfileViewModel model)
-        //{
-        //    var user = CurrentUser;
-        //    if (user == null)
-        //    {
-        //        return RedirectToAction("Login", "Account");
-        //    }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangePassword(string CurrentPassword, string NewPassword, string ConfirmNewPassword)
+        {
+            var user = GetCurrentUser();
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
-        //    if (!ModelState.IsValid)
-        //    {
-        //        TempData["ErrorMessage"] = "Vui lòng kiểm tra lại thông tin đã nhập.";
-        //        return RedirectToAction("Index");
-        //    }
+            if (NewPassword != ConfirmNewPassword)
+            {
+                ModelState.AddModelError("", "Mật khẩu xác nhận không khớp.");
+                return View();
+            }
 
-        //    user.FullName = model.FullName;
-        //    user.Email = model.Email;
-        //    user.PhoneNumber = model.PhoneNumber;
+            // Kiểm tra mật khẩu mới bằng Regex
+            string passwordPattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$";
 
-        //    Session["UserName"] = user.FullName;
-        //    TempData["SuccessMessage"] = "Đã cập nhật thông tin cá nhân.";
-        //    return RedirectToAction("Index");
-        //}
+            if (string.IsNullOrEmpty(NewPassword) || !Regex.IsMatch(NewPassword, passwordPattern))
+            {
+                ModelState.AddModelError("", "Mật khẩu mới phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt.");
+                return View();
+            }
 
-        // GET: /Profile/ChangePassword
-        //[HttpGet]
-        //public ActionResult ChangePassword()
-        //{
-        //    return View(new ChangePasswordViewModel());
-        //}
+            // Kiểm tra mật khẩu hiện tại
+            if (user.password != CurrentPassword)
+            {
+                ModelState.AddModelError("", "Mật khẩu hiện tại không đúng.");
+                return View();
+            }
 
-        // POST: /Profile/ChangePassword
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult ChangePassword(ChangePasswordViewModel model)
-        //{
-        //    var user = CurrentUser;
-        //    if (user == null)
-        //    {
-        //        return RedirectToAction("Login", "Account");
-        //    }
+            // Lưu mật khẩu mới
+            user.password = NewPassword;
+            db.SaveChanges();
 
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(model);
-        //    }
+            TempData["SuccessMessage"] = "Đổi mật khẩu thành công!";
+            return RedirectToAction("Index", "Home");
+        }
 
-        //    if (!UserRepository.VerifyPassword(user, model.CurrentPassword))
-        //    {
-        //        ModelState.AddModelError("CurrentPassword", "Mật khẩu hiện tại không đúng.");
-        //        return View(model);
-        //    }
-
-        //    UserRepository.SetPassword(user, model.NewPassword);
-        //    TempData["SuccessMessage"] = "Đã đổi mật khẩu thành công.";
-        //    return RedirectToAction("Index");
-        //}
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

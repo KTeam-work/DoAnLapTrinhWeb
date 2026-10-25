@@ -1,5 +1,4 @@
-﻿@*@model DoAnLapTrinhWeb.Models.RegisterViewModel*@
-@{
+﻿@{
     ViewBag.Title = "Đăng ký";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -120,10 +119,16 @@
             }
 </style>
 
-<!-- KHUNG GIAO DIỆN CHÍNH -->
 <div class="tv1-auth-container">
     <div class="tv1-card">
         <h2>Tạo tài khoản</h2>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="tv1-alert">
+                <p>@ViewBag.Error</p>
+            </div>
+        }
 
         @if (!ViewData.ModelState.IsValid)
         {
@@ -135,36 +140,30 @@
             </div>
         }
 
-        @*@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "tv1-form" }))
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "tv1-form" }))
         {
             @Html.AntiForgeryToken()
 
-            @Html.LabelFor(m => m.FullName, "Họ và tên")
-            @Html.TextBoxFor(m => m.FullName, new { placeholder = "Nguyễn Văn A" })
-            @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "field-error" })
+            <label>Họ và tên</label>
+            @Html.TextBox("FullName", "", new { placeholder = "Nguyễn Văn A" })
 
-            @Html.LabelFor(m => m.Username, "Tên đăng nhập")
-            @Html.TextBoxFor(m => m.Username, new { placeholder = "username" })
-            @Html.ValidationMessageFor(m => m.Username, "", new { @class = "field-error" })
+            <label>Tên đăng nhập</label>
+            @Html.TextBox("Username", "", new { placeholder = "username" })
 
-            @Html.LabelFor(m => m.Email, "Địa chỉ Email")
-            @Html.TextBoxFor(m => m.Email, new { type = "email", placeholder = "ban@email.com" })
-            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "field-error" })
+            <label>Địa chỉ Email</label>
+            @Html.TextBox("Email", "", new { type = "email", placeholder = "ban@email.com" })
 
-            @Html.LabelFor(m => m.Phone, "Số điện thoại")
-            @Html.TextBoxFor(m => m.Phone, new { placeholder = "09xxxxxxxx" })
-            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "field-error" })
+            <label>Số điện thoại</label>
+            @Html.TextBox("Phone", "", new { placeholder = "09xxxxxxxx" })
 
-            @Html.LabelFor(m => m.Password, "Mật khẩu")
-            @Html.PasswordFor(m => m.Password, new { placeholder = "••••••••" })
-            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "field-error" })
+            <label>Mật khẩu</label>
+            @Html.Password("Password", "", new { placeholder = "••••••••" })
 
-            @Html.LabelFor(m => m.ConfirmPassword, "Xác nhận mật khẩu")
-            @Html.PasswordFor(m => m.ConfirmPassword, new { placeholder = "••••••••" })
-            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "field-error" })
+            <label>Xác nhận mật khẩu</label>
+            @Html.Password("ConfirmPassword", "", new { placeholder = "••••••••" })
 
             <button type="submit" class="tv1-btn">Đăng ký</button>
-        }*@
+        }
 
         <div class="tv1-links">
             Đã có tài khoản? <a href="@Url.Action("Login", "Account")">Đăng nhập ngay</a>
