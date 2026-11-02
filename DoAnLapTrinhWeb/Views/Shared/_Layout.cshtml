@@ -1,377 +1,228 @@
-﻿<!DOCTYPE html>
+﻿@using DoAnLapTrinhWeb.Models
+@{
+    string userId = Session["UserId"]?.ToString();
+    string fullName = Session["FullName"]?.ToString() ?? Session["Username"]?.ToString();
+    string userRole = (Session["UserRole"]?.ToString() ?? "").Trim();
+    bool isAdmin = (userRole == "R01");
+    bool isStaff = (userRole == "R02");
+}
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - LumiTea</title>
 
-    <title>@ViewData["Title"] - Bông Trà Admin</title>
-
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet" />
-
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-          rel="stylesheet" />
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
     <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
+    <!-- FILE CSS GỐC CHO NAVBAR XANH RÊU + LOGO TRÒN GIỮA -->
     <link rel="stylesheet" href="~/Css/styleNavbar.css" />
+    <style>
+        /* Đảm bảo thanh navbar không cắt cụt menu thả xuống */
+        .admin-navbar, .navbar-inner, .navbar-right {
+            overflow: visible !important;
+        }
 
+        /* Định vị cho khối account */
+        .account.dropdown {
+            position: relative;
+        }
 
+            /* TẠO CẦU NỐI VÔ HÌNH: Tránh mất chuột khi rê từ nút xuống menu */
+            .account.dropdown::after {
+                content: "";
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                height: 12px; /* Lấp đầy khoảng trống giữa nút và menu */
+                display: block;
+            }
+
+            /* Menu thả xuống cố định vị trí sát mép */
+            .account.dropdown .dropdown-menu {
+                margin-top: 0 !important;
+                top: 100% !important;
+                right: 0 !important;
+                left: auto !important;
+                z-index: 99999 !important;
+                min-width: 210px;
+            }
+
+                /* Hỗ trợ cả 2 cơ chế: Bấm click (.show) HOẶC Rê chuột (:hover) đều giữ chặt menu */
+                .account.dropdown:hover .dropdown-menu,
+                .account.dropdown .dropdown-menu.show {
+                    display: block !important;
+                    opacity: 1 !important;
+                    visibility: visible !important;
+                    transform: none !important;
+                    pointer-events: auto !important;
+                }
+
+            /* Đảm bảo các item bên trong nhận sự kiện click chuột */
+            .account.dropdown .dropdown-item {
+                cursor: pointer;
+                pointer-events: auto !important;
+            }
+
+        #staffDropdownMenu {
+            cursor: pointer;
+            z-index: 10;
+        }
+    </style>
 </head>
 
 <body>
 
     <!-- =====================================================
-         NAVBAR
+         NAVBAR CHUẨN: XANH RÊU - LOGO TRẮNG Ở GIỮA (CHO KHÁCH)
     ====================================================== -->
-
     <nav class="admin-navbar">
-
         <div class="navbar-inner">
 
-            <!-- =================================================
-                 MENU BÊN TRÁI
-            ================================================== -->
-
+            <!-- ==================== MENU BÊN TRÁI ==================== -->
             <div class="menu-side left">
-
                 <div class="main-menu">
-
-                    <!-- TRANG CHỦ -->
                     <div class="menu-item">
-
-                        <a href="/" class="menu-link">
+                        <a href="@Url.Action("Index", "Home")" class="menu-link">
                             <i class="bi bi-house-door"></i>
                             <span>Trang chủ</span>
                         </a>
-
                     </div>
 
-
-                    <!-- SẢN PHẨM -->
                     <div class="menu-item">
-
-                        <a href="#" class="menu-link">
+                        <a href="@Url.Action("Index", "Menu")" class="menu-link">
                             <i class="bi bi-cup-hot"></i>
-                            <span>Sản phẩm</span>
-                            <i class="bi bi-chevron-down arrow"></i>
+                            <span>Thực đơn</span>
                         </a>
-
-                        <div class="dropdown-menu-custom">
-
-                            <div class="dropdown-title">
-                                Sản phẩm
-                            </div>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-grid"></i>
-                                Danh sách sản phẩm
-                            </a>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-tags"></i>
-                                Danh mục
-                            </a>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-arrows-angle-expand"></i>
-                                Size sản phẩm
-                            </a>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-plus-circle"></i>
-                                Topping
-                            </a>
-
-                        </div>
-
                     </div>
-
-
-                    <!-- ĐƠN HÀNG -->
-                    <div class="menu-item">
-
-                        <a href="#" class="menu-link">
-                            <i class="bi bi-receipt"></i>
-                            <span>Đơn hàng</span>
-                            <i class="bi bi-chevron-down arrow"></i>
-                        </a>
-
-                        <div class="dropdown-menu-custom">
-
-                            <div class="dropdown-title">
-                                Đơn hàng
-                            </div>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-receipt"></i>
-                                Tất cả đơn hàng
-                            </a>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-globe2"></i>
-                                Đơn Online
-                            </a>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-shop"></i>
-                                Đơn tại quầy
-                            </a>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-hourglass-split"></i>
-                                Đơn đang xử lý
-                            </a>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-clock-history"></i>
-                                Lịch sử trạng thái
-                            </a>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- KHÁCH HÀNG -->
-                    <div class="menu-item">
-
-                        <a href="#" class="menu-link">
-                            <i class="bi bi-people"></i>
-                            <span>Khách hàng</span>
-                            <i class="bi bi-chevron-down arrow"></i>
-                        </a>
-
-                        <div class="dropdown-menu-custom">
-
-                            <div class="dropdown-title">
-                                Khách hàng
-                            </div>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-person-lines-fill"></i>
-                                Danh sách khách hàng
-                            </a>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-star"></i>
-                                Đánh giá sản phẩm
-                            </a>
-
-                        </div>
-
-                    </div>
-
                 </div>
-
             </div>
 
-
-            <!-- =================================================
-                 LOGO GIỮA
-            ================================================== -->
-
-            <a href="/" class="brand">
-
+            <!-- ==================== LOGO TRÒN TRẮNG Ở CHÍNH GIỮA ==================== -->
+            <a href="@Url.Action("Index", "Home")" class="brand">
                 <div class="brand-icon">
                     <i class="bi bi-cup-hot-fill"></i>
                 </div>
-
                 <div class="brand-text">
-
-                    <span class="brand-name">
-                        LumiTea
-                    </span>
-
-                    <span class="brand-sub">
-                        Uống Đi!
-                    </span>
-
+                    <span class="brand-name">LumiTea</span>
+                    <span class="brand-sub">Trà Sữa Đậm Vị</span>
                 </div>
-
             </a>
 
-
-            <!-- =================================================
-                 MENU BÊN PHẢI
-            ================================================== -->
-
+            <!-- ==================== MENU BÊN PHẢI ==================== -->
             <div class="menu-side right">
-
                 <div class="main-menu">
 
-                    <!-- KHO -->
+                    <!-- GIỎ HÀNG -->
                     <div class="menu-item">
-
-                        <a href="#" class="menu-link">
-                            <i class="bi bi-box-seam"></i>
-                            <span>Kho</span>
-                            <i class="bi bi-chevron-down arrow"></i>
+                        <a href="@Url.Action("Index", "Cart")" class="menu-link">
+                            <i class="bi bi-bag"></i>
+                            <span>Giỏ hàng</span>
                         </a>
-
-                        <div class="dropdown-menu-custom">
-
-                            <div class="dropdown-title">
-                                Quản lý kho
-                            </div>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-box"></i>
-                                Nguyên liệu
-                            </a>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-journal-text"></i>
-                                Công thức
-                            </a>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-arrow-left-right"></i>
-                                Nhập / Xuất kho
-                            </a>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-clock-history"></i>
-                                Lịch sử kho
-                            </a>
-
-                        </div>
-
                     </div>
 
-
-                    <!-- KHUYẾN MÃI -->
-                    <div class="menu-item">
-
-                        <a href="#" class="menu-link">
-                            <i class="bi bi-ticket-perforated"></i>
-                            <span>Khuyến mãi</span>
-                            <i class="bi bi-chevron-down arrow"></i>
-                        </a>
-
-                        <div class="dropdown-menu-custom">
-
-                            <div class="dropdown-title">
-                                Khuyến mãi
-                            </div>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-ticket"></i>
-                                Voucher
-                            </a>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-person-check"></i>
-                                Voucher khách hàng
-                            </a>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- QUẢN LÝ -->
-                    <div class="menu-item">
-
-                        <a href="#" class="menu-link">
-                            <i class="bi bi-gear"></i>
-                            <span>Quản lý</span>
-                            <i class="bi bi-chevron-down arrow"></i>
-                        </a>
-
-                        <div class="dropdown-menu-custom">
-
-                            <div class="dropdown-title">
-                                Hệ thống
-                            </div>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-person-circle"></i>
-                                Tài khoản
-                            </a>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-shield-lock"></i>
-                                Phân quyền
-                            </a>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-clock"></i>
-                                Ca làm việc
-                            </a>
-
-                            <a href="#" class="dropdown-link">
-                                <i class="bi bi-calendar2-check"></i>
-                                Phân ca nhân viên
-                            </a>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- THÔNG BÁO + TÀI KHOẢN -->
-
+                    <!-- THÔNG BÁO VÀ TÀI KHOẢN -->
                     <div class="navbar-right">
-
                         <div class="notification">
-
                             <i class="bi bi-bell"></i>
-
-                            <span class="notification-badge">
-                                3
-                            </span>
-
+                            <span class="notification-badge">0</span>
                         </div>
 
-
-                        <div class="account">
-
-                            <div class="avatar">
-                                AD
+                        @if (string.IsNullOrEmpty(userId))
+                        {
+                            <!-- CHƯA ĐĂNG NHẬP -->
+                            <div class="d-flex align-items-center gap-2 ms-2">
+                                <a href="@Url.Action("Login", "Account")" class="btn btn-outline-light btn-sm rounded-pill px-3 py-1" style="font-size: 0.85rem;">
+                                    Đăng nhập
+                                </a>
+                                <a href="@Url.Action("Register", "Account")" class="btn btn-warning btn-sm rounded-pill px-3 py-1 text-dark fw-bold" style="font-size: 0.85rem;">
+                                    Đăng ký
+                                </a>
                             </div>
+                        }
+                        else
+                        {
+                            <!-- ĐÃ ĐĂNG NHẬP -->
+                            <div class="account dropdown">
+                                <button class="btn border-0 p-0 d-flex align-items-center bg-transparent shadow-none"
+                                        type="button"
+                                        id="userDropdownMenu"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    <div class="avatar" style="background-color: #f1b44c; color: #1e1e2d; font-weight: 700; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        KH
+                                    </div>
+                                    <div class="account-info ms-2 text-start">
+                                        <div class="account-name text-white fw-semibold small">@fullName</div>
+                                        <div class="account-role text-white-50" style="font-size: 0.75rem;">Khách hàng</div>
+                                    </div>
+                                    <i class="bi bi-chevron-down account-arrow ms-2 text-white small"></i>
+                                </button>
 
-                            <div class="account-info">
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="userDropdownMenu">
+                                    @if (isAdmin)
+                                    {
+                                        <li>
+                                            <a class="dropdown-item py-2 fw-semibold text-danger" href="@Url.Action("Index", "Dashboard")">
+                                                <i class="bi bi-speedometer2 me-2"></i> Vào Trang Quản Trị
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                    }
+                                    else if (isStaff)
+                                    {
+                                        <li>
+                                            <a class="dropdown-item py-2 fw-semibold text-success" href="@Url.Action("Index", "Shift")">
+                                                <i class="bi bi-clipboard-check me-2"></i> Vào Ca Làm Việc
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                    }
 
-                                <div class="account-name">
-                                    Admin
-                                </div>
-
-                                <div class="account-role">
-                                    Quản trị viên
-                                </div>
-
+                                    <li>
+                                        <a class="dropdown-item py-2" href="@Url.Action("MyOrders", "Order")">
+                                            <i class="bi bi-bag-check me-2"></i> Đơn mua của tôi
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item py-2" href="@Url.Action("Index", "Profile")">
+                                            <i class="bi bi-person me-2"></i> Tài khoản của tôi
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item py-2 text-danger" href="@Url.Action("Logout", "Account")">
+                                            <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
-
-                            <i class="bi bi-chevron-down account-arrow"></i>
-
-                        </div>
+                        }
 
                     </div>
 
                 </div>
-
             </div>
 
         </div>
-
     </nav>
 
+    <!-- NỘI DUNG CHÍNH CÁC VIEW CON CỦA KHÁCH -->
+    <main class="py-4">
+        <div class="container-fluid px-4">
+            @RenderBody()
+        </div>
+    </main>
 
-    <!-- =====================================================
-         NỘI DUNG TRANG
-    ====================================================== -->
-    @RenderBody()
-
-
-    <!-- Bootstrap JS -->
+    <!-- Bootstrap 5 Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

@@ -37,17 +37,33 @@ namespace DoAnLapTrinhWeb.Controllers
                 return View();
             }
 
-            if (user.status != "Active")
+            if (user.status != null && user.status.Trim() != "Active")
             {
                 ModelState.AddModelError("", "Tài khoản đã bị khóa hoặc chưa kích hoạt.");
                 return View();
             }
 
-            Session["UserId"] = user.user_id;
-            Session["Username"] = user.username;
+            // Lưu session và cắt khoảng trắng đệm của NCHAR(10)
+            Session["UserId"] = user.user_id.Trim();
+            Session["Username"] = user.username.Trim();
             Session["FullName"] = user.full_name;
 
-            return RedirectToAction("Index", "Home");
+            string roleId = (user.role_id ?? "").Trim();
+            Session["UserRole"] = roleId;
+
+            // Điều hướng theo database: R01 = Admin, R02 = Staff, R03 = Customer
+            if (roleId == "R01")
+            {
+                return RedirectToAction("Index", "Product"); // Admin vào quản lý món
+            }
+            else if (roleId == "R02")
+            {
+                return RedirectToAction("Index", "Shift");   // Staff vào ca làm việc
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");    // Khách hàng vào trang chủ
+            }
         }
 
         public ActionResult Logout()
@@ -107,13 +123,13 @@ namespace DoAnLapTrinhWeb.Controllers
 
             User newUser = new User()
             {
-                user_id = Guid.NewGuid().ToString("N").Substring(0, 10),
+                user_id = ("U" + Guid.NewGuid().ToString("N")).Substring(0, 10),
                 full_name = FullName,
                 username = Username,
                 password = Password,
                 email = Email,
                 phone = Phone,
-                role_id = "R02",
+                role_id = "R03", 
                 status = "Active",
                 created_at = DateTime.Now
             };

@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Quản lý sản phẩm";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 
     var categories = ViewBag.Categories as List<DoAnLapTrinhWeb.Models.Category>
         ?? new List<DoAnLapTrinhWeb.Models.Category>();

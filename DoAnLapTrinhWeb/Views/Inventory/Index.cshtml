@@ -1,5 +1,14 @@
 ﻿@{
     ViewBag.Title = "Lập Phiếu Nhập Kho";
+    string userRole = (Session["UserRole"]?.ToString() ?? "").Trim();
+    if (userRole == "R01" || userRole.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_StaffLayout.cshtml";
+    }
 }
 
 <!DOCTYPE html>

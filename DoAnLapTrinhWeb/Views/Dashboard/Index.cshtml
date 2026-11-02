@@ -1,6 +1,6 @@
 ﻿@{
     ViewBag.Title = "Dashboard Quản Lý - LumiTea";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 
     var lowStock = ViewBag.LowStockIngredients as List<DoAnLapTrinhWeb.Models.Ingredient> ?? new List<DoAnLapTrinhWeb.Models.Ingredient>();
     var recentOrders = ViewBag.RecentOrders as List<DoAnLapTrinhWeb.Models.Order> ?? new List<DoAnLapTrinhWeb.Models.Order>();
