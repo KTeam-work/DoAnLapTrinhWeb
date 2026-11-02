@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using DoAnLapTrinhWeb.Models;
 
@@ -25,7 +26,8 @@ namespace DoAnLapTrinhWeb.Controllers
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 string kw = keyword.Trim().ToLower();
-                products = products.Where(p => p.product_id.ToLower().Contains(kw) || p.name.ToLower().Contains(kw));
+                products = products.Where(p => (p.product_id != null && p.product_id.ToLower().Contains(kw))
+                                            || (p.name != null && p.name.ToLower().Contains(kw)));
             }
 
             // 2. LỌC THEO LOẠI SẢN PHẨM
@@ -37,7 +39,28 @@ namespace DoAnLapTrinhWeb.Controllers
             // 3. LỌC THEO TRẠNG THÁI
             if (!string.IsNullOrWhiteSpace(status))
             {
-                products = products.Where(p => p.status == status);
+                string st = status.Trim().ToLower();
+
+                // Nhóm ngừng bán
+                if (st == "ngừng bán" || st == "ngung ban" || st == "unavailable" || st == "inactive")
+                {
+                    products = products.Where(p => p.status != null &&
+                        (p.status.Trim().ToLower() == "unavailable" ||
+                         p.status.Trim().ToLower() == "inactive" ||
+                         p.status.Trim().ToLower() == "ngừng bán"));
+                }
+                // Nhóm đang bán
+                else if (st == "đang bán" || st == "dang ban" || st == "available" || st == "active")
+                {
+                    products = products.Where(p => p.status != null &&
+                        (p.status.Trim().ToLower() == "available" ||
+                         p.status.Trim().ToLower() == "active" ||
+                         p.status.Trim().ToLower() == "đang bán"));
+                }
+                else
+                {
+                    products = products.Where(p => p.status != null && p.status.Trim().ToLower() == st);
+                }
             }
 
             // GỬI LẠI THÔNG TIN FILTER RA VIEW
@@ -53,13 +76,31 @@ namespace DoAnLapTrinhWeb.Controllers
             ViewBag.ActiveProducts = db.Products.Count(p => p.status == "Active" || p.status == "Đang bán");
             ViewBag.InactiveProducts = db.Products.Count(p => p.status == "Inactive" || p.status == "Ngừng bán");
 
-            // TỰ SINH MÃ SẢN PHẨM MỚI CHO MODAL THÊM
-            var lastProduct = db.Products.OrderByDescending(p => p.product_id).FirstOrDefault();
+            // TỰ SINH MÃ SẢN PHẨM MỚI (XỬ LÝ AN TOÀN - KHÔNG BỊ LỖI FORMATEXCEPTION)
             string nextId = "SP0000001";
-            if (lastProduct != null && !string.IsNullOrEmpty(lastProduct.product_id))
+            try
             {
-                int num = int.Parse(lastProduct.product_id.Trim().Replace("SP", "")) + 1;
-                nextId = "SP" + num.ToString("D7");
+                var productIds = db.Products.Select(p => p.product_id).ToList();
+                int maxNum = 0;
+                foreach (var pid in productIds)
+                {
+                    if (!string.IsNullOrEmpty(pid))
+                    {
+                        var match = Regex.Match(pid, @"\d+");
+                        if (match.Success && int.TryParse(match.Value, out int currentNum))
+                        {
+                            if (currentNum > maxNum)
+                            {
+                                maxNum = currentNum;
+                            }
+                        }
+                    }
+                }
+                nextId = "SP" + (maxNum + 1).ToString("D7");
+            }
+            catch
+            {
+                nextId = "SP0000001";
             }
             ViewBag.NextProductId = nextId;
 
@@ -100,8 +141,7 @@ namespace DoAnLapTrinhWeb.Controllers
                 int nextSizeNum = 1;
                 if (lastSize != null && !string.IsNullOrEmpty(lastSize.size_id))
                 {
-                    // Lấy phần số trong mã size_id (Ví dụ: PS0000001 -> 1)
-                    string numStr = System.Text.RegularExpressions.Regex.Match(lastSize.size_id, @"\d+").Value;
+                    string numStr = Regex.Match(lastSize.size_id, @"\d+").Value;
                     if (!string.IsNullOrEmpty(numStr))
                     {
                         int.TryParse(numStr, out nextSizeNum);
@@ -118,7 +158,7 @@ namespace DoAnLapTrinhWeb.Controllers
                         product_id = newProd.product_id,
                         size_name = "S",
                         price_add = priceS.Value,
-                        status = "Active" // Hoặc "Đang bán" tùy DB của em quy định
+                        status = "Active"
                     });
                 }
 
@@ -186,6 +226,7 @@ namespace DoAnLapTrinhWeb.Controllers
                 return Json(new { success = false, message = "Lỗi hệ thống: " + ex.Message });
             }
         }
+
         // =========================================================
         // TRANG DETAILS SẢN PHẨM: Chi tiết kèm Size, Topping
         // =========================================================
@@ -234,7 +275,6 @@ namespace DoAnLapTrinhWeb.Controllers
                     return Json(new { success = false, message = "Không tìm thấy sản phẩm cần sửa." });
                 }
 
-                // Cập nhật thông tin cơ bản
                 prod.name = !string.IsNullOrWhiteSpace(name) ? name.Trim() : prod.name;
 
                 var cat = db.Categories.FirstOrDefault(c => c.category_name.Trim().ToLower() == category_name.Trim().ToLower());
@@ -248,10 +288,9 @@ namespace DoAnLapTrinhWeb.Controllers
 
                 db.Entry(prod).State = EntityState.Modified;
 
-                // Cập nhật giá theo Size trong ProductSizes
                 var currentSizes = db.ProductSizes.Where(s => s.product_id.Trim() == trimmedId).ToList();
 
-                // Xử lý Size S
+                // Size S
                 var sizeS = currentSizes.FirstOrDefault(s => s.size_name == "S");
                 if (priceS.HasValue)
                 {
@@ -259,7 +298,7 @@ namespace DoAnLapTrinhWeb.Controllers
                     else { db.ProductSizes.Add(new ProductSize { size_id = "PS" + Guid.NewGuid().ToString("N").Substring(0, 8), product_id = trimmedId, size_name = "S", price_add = priceS.Value, status = "Active" }); }
                 }
 
-                // Xử lý Size M
+                // Size M
                 var sizeM = currentSizes.FirstOrDefault(s => s.size_name == "M");
                 if (priceM.HasValue)
                 {
@@ -267,7 +306,7 @@ namespace DoAnLapTrinhWeb.Controllers
                     else { db.ProductSizes.Add(new ProductSize { size_id = "PS" + Guid.NewGuid().ToString("N").Substring(0, 8), product_id = trimmedId, size_name = "M", price_add = priceM.Value, status = "Active" }); }
                 }
 
-                // Xử lý Size L
+                // Size L
                 var sizeL = currentSizes.FirstOrDefault(s => s.size_name == "L");
                 if (priceL.HasValue)
                 {
@@ -302,14 +341,12 @@ namespace DoAnLapTrinhWeb.Controllers
 
                 if (prod != null)
                 {
-                    // Xóa dữ liệu liên quan ở bảng ProductSizes và ProductToppings
                     var sizes = db.ProductSizes.Where(s => s.product_id.Trim() == trimmedId);
                     db.ProductSizes.RemoveRange(sizes);
 
                     var toppings = db.ProductToppings.Where(t => t.product_id.Trim() == trimmedId);
                     db.ProductToppings.RemoveRange(toppings);
 
-                    // Xóa sản phẩm
                     db.Products.Remove(prod);
                     db.SaveChanges();
 
@@ -329,7 +366,6 @@ namespace DoAnLapTrinhWeb.Controllers
         {
             try
             {
-                // 1. Check đăng nhập (Session key "UserId" thống nhất với TV1)
                 if (Session["UserId"] == null)
                 {
                     return Json(new { success = false, message = "Vui lòng đăng nhập để đánh giá sản phẩm." });
@@ -337,7 +373,6 @@ namespace DoAnLapTrinhWeb.Controllers
 
                 string customerId = Session["UserId"].ToString().Trim();
 
-                // 2. Validate rating từ 1 đến 5 sao
                 if (rating < 1 || rating > 5)
                 {
                     return Json(new { success = false, message = "Số sao đánh giá phải từ 1 đến 5 sao!" });
@@ -345,7 +380,6 @@ namespace DoAnLapTrinhWeb.Controllers
 
                 string pId = product_id.Trim();
 
-                // 3. LUỒNG QUAN TRỌNG: Check OrderDetails xem khách đã mua sản phẩm này chưa
                 bool hasPurchased = db.OrderDetails
                     .Any(od => od.product_id.Trim() == pId && od.Order.customer_id.Trim() == customerId);
 
@@ -354,7 +388,6 @@ namespace DoAnLapTrinhWeb.Controllers
                     return Json(new { success = false, message = "Bạn chỉ có thể đánh giá sau khi đã mua và sử dụng sản phẩm này!" });
                 }
 
-                // 4. Lưu đánh giá vào CSDL
                 var review = new ProductReview
                 {
                     review_id = "RV" + Guid.NewGuid().ToString("N").Substring(0, 7).ToUpper(),
@@ -385,6 +418,7 @@ namespace DoAnLapTrinhWeb.Controllers
             base.Dispose(disposing);
         }
     }
+
     public static class ProductService
     {
         private static DoAnLapTrinhWeb.Models.QUANLYBANTRASUAEntities db = new DoAnLapTrinhWeb.Models.QUANLYBANTRASUAEntities();

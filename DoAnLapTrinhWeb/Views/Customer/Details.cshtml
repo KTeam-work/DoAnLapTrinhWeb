@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Hồ sơ Khách hàng - " + (Model?.full_name ?? "Chi tiết");
-
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var orders = Model?.Orders?.OrderByDescending(o => o.created_at).ToList() ?? new List<DoAnLapTrinhWeb.Models.Order>();
     decimal totalSpent = orders.Where(o => o.status == "Completed").Sum(o => (decimal?)o.total_amount) ?? 0;
     string rank = (Model?.loyalty_point >= 1000 || totalSpent >= 10000000) ? "VIP" : ((Model?.loyalty_point >= 500 || totalSpent >= 5000000) ? "Gold" : "Standard");
