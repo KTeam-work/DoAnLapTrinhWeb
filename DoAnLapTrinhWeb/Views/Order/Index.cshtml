@@ -1,0 +1,275 @@
+﻿@model IEnumerable<DoAnLapTrinhWeb.Models.Order>
+@{
+    ViewBag.Title = "Quản Lý Đơn Hàng";
+
+    // Tự động chọn Layout dựa trên quyền trong Session
+    string role = (Session["UserRole"]?.ToString() ?? "").Trim();
+    if (role == "R02")
+    {
+        // Nhân viên sử dụng StaffLayout
+        Layout = "~/Views/Shared/_StaffLayout.cshtml";
+    }
+    else
+    {
+        // Admin sử dụng AdminLayout
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+}
+
+<!-- Tận dụng lại CSS thiết kế đẹp từ trang Index của Danh Mục -->
+<link rel="stylesheet" href="~/Css/styleProduct_index.css" />
+<link href="~/Css/StyleOrderIndex.css" rel="stylesheet" />
+
+<div class="product-page">
+
+    <!-- HEADER -->
+    <div class="product-heading">
+        <div class="heading-left">
+            <div class="heading-icon">
+                <i class="bi bi-receipt"></i>
+            </div>
+            <div>
+                <h1 class="page-title">Quản lý Đơn hàng</h1>
+                <p class="page-subtitle">Xử lý và theo dõi các đơn đặt hàng từ khách hàng</p>
+            </div>
+        </div>
+
+        <button class="btn btn-tea" onclick="location.reload()">
+            <i class="bi bi-arrow-clockwise me-2"></i>
+            Làm mới trang
+        </button>
+    </div>
+
+    <!-- SUMMARY (THỐNG KÊ NHANH) -->
+    <div class="summary-grid">
+        <div class="summary-card">
+            <span class="summary-label">Tổng số đơn</span>
+            <strong class="summary-number">@(Model?.Count() ?? 0)</strong>
+            <div class="summary-icon"><i class="bi bi-clipboard-data"></i></div>
+        </div>
+        <div class="summary-card">
+            <span class="summary-label">Chờ xác nhận (Mới)</span>
+            <strong class="summary-number text-warning">@(Model?.Count(x => x.status == "Pending") ?? 0)</strong>
+            <div class="summary-icon"><i class="bi bi-hourglass-split"></i></div>
+        </div>
+        <div class="summary-card">
+            <span class="summary-label">Đang pha chế</span>
+            <strong class="summary-number text-primary">@(Model?.Count(x => x.status == "Preparing") ?? 0)</strong>
+            <div class="summary-icon"><i class="bi bi-cup-straw"></i></div>
+        </div>
+        <div class="summary-card">
+            <span class="summary-label">Đang giao hàng</span>
+            <strong class="summary-number text-info">@(Model?.Count(x => x.status == "Delivering") ?? 0)</strong>
+            <div class="summary-icon"><i class="bi bi-truck"></i></div>
+        </div>
+    </div>
+
+    <!-- FILTER BỘ LỌC -->
+    <div class="filter-card">
+        <div class="filter-head">
+            <i class="bi bi-funnel-fill"></i>
+            <span>Tìm kiếm & lọc đơn hàng</span>
+        </div>
+        <div class="filter-body">
+            <div class="row g-4 align-items-end">
+                <div class="col-lg-7">
+                    <label class="form-label">Từ khóa</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" id="searchOrder" class="form-control" placeholder="Nhập mã đơn hàng hoặc tên khách..." />
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <label class="form-label">Trạng thái đơn</label>
+                    <select id="statusFilter" class="form-select">
+                        <option value="all">Tất cả trạng thái</option>
+                        <option value="Pending">Chờ xác nhận</option>
+                        <option value="Confirmed">Đã xác nhận</option>
+                        <option value="Preparing">Đang pha chế</option>
+                        <option value="Delivering">Đang giao hàng</option>
+                        <option value="Completed">Hoàn thành</option>
+                        <option value="Cancelled">Đã huỷ</option>
+                    </select>
+                </div>
+                <div class="col-lg-2">
+                    <button type="button" id="btnReset" class="btn btn-filter w-100">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>
+                        Đặt lại
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BẢNG DANH SÁCH ĐƠN HÀNG -->
+    <div class="product-table-card">
+        <div class="table-top">
+            <div>
+                <h2 class="table-title">Danh sách đơn hàng</h2>
+                <span class="table-note">Nhân viên chú ý kiểm tra và cập nhật trạng thái liên tục</span>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle text-nowrap">
+                <thead>
+                    <tr>
+                        <th>Mã Đơn</th>
+                        <th>Ngày Đặt</th>
+                        <th>Khách Hàng</th>
+                        <th>Loại Giao Hàng</th>
+                        <th>Tổng Tiền</th>
+                        <th>Trạng Thái</th>
+                        <th class="text-center">Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody id="orderTableBody">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="product-code">#@item.order_id</span>
+                                </td>
+                                <td>@item.created_at.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <span class="customer-info text-muted">@item.customer_id</span>
+                                </td>
+                                <td>
+                                    @if (item.delivery_type == "Delivery")
+                                    {
+                                        <span class="text-primary fw-medium"><i class="bi bi-bicycle me-1"></i> Giao tận nơi</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success fw-medium"><i class="bi bi-shop me-1"></i> Nhận tại quán</span>
+                                    }
+                                </td>
+                                <td><strong class="text-danger">@item.total_amount.ToString("N0") đ</strong></td>
+                                <td>
+                                    @{
+                                        string badgeClass = "bg-secondary text-white";
+                                        string statusText = item.status;
+                                        string rawStatus = item.status;
+
+                                        switch (item.status)
+                                        {
+                                            case "Pending": badgeClass = "status-pending"; statusText = "Chờ xác nhận"; break;
+                                            case "Confirmed": badgeClass = "status-confirmed"; statusText = "Đã nhận đơn"; break;
+                                            case "Preparing": badgeClass = "status-preparing"; statusText = "Đang pha chế"; break;
+                                            case "Ready": badgeClass = "bg-info text-dark"; statusText = "Đã xong món"; break;
+                                            case "Delivering": badgeClass = "status-delivering"; statusText = "Đang giao"; break;
+                                            case "Completed": badgeClass = "status-completed"; statusText = "Hoàn thành"; break;
+                                            case "Cancelled": badgeClass = "status-cancelled"; statusText = "Đã huỷ"; break;
+                                        }
+                                    }
+                                    <span class="status-badge @badgeClass" data-status="@rawStatus">@statusText</span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <!-- Nút Chi Tiết -->
+                                        <a href="@Url.Action("Details", "Order", new { id = item.order_id.Trim() })"
+                                           class="btn btn-sm btn-outline-dark action-btn" title="Xem chi tiết">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        <!-- Các Nút Chuyển Trạng Thái Gọi API -->
+                                        @if (item.status == "Pending")
+                                        {
+                                           <button class="btn btn-sm btn-warning action-btn text-dark fw-bold" onclick="updateOrderStatus('@item.order_id.Trim()', 'Confirmed')" title="Nhận Đơn">
+                                               <i class="bi bi-check2-circle"></i> Nhận đơn
+                                           </button>
+                                        }
+                                        else if (item.status == "Confirmed")
+                                        {
+                                            <button class="btn btn-sm btn-primary action-btn text-dark" onclick="updateOrderStatus('@item.order_id.Trim()', 'Preparing')" title="Bắt đầu pha chế">
+                                                <i class="bi bi-cup-straw"></i> Pha chế
+                                            </button>
+                                        }
+                                        else if (item.status == "Preparing")
+                                        {
+                                            <button class="btn btn-sm btn-info action-btn text-dark" onclick="updateOrderStatus('@item.order_id.Trim()', 'Delivering')" title="Giao hàng">
+                                                <i class="bi bi-truck"></i> Giao hàng
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                                Không có đơn hàng nào trong hệ thống.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     JAVASCRIPT XỬ LÝ LỌC & GỌI API CẬP NHẬT TRẠNG THÁI
+     ========================================================= -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Hàm gọi API thay đổi trạng thái đơn hàng
+    function updateOrderStatus(orderId, newStatus) {
+        if (confirm("Xác nhận chuyển trạng thái cho đơn hàng " + orderId + "?")) {
+            $.ajax({
+                url: '/api/orders/' + orderId + '/status?newStatus=' + newStatus,
+                type: 'PUT',
+                success: function (res) {
+                    if (res.success) {
+                        alert(res.message);
+                        location.reload(); // Tải lại để lấy giao diện cập nhật
+                    } else {
+                        alert("Lỗi: " + res.message);
+                    }
+                },
+                error: function () {
+                    alert("Không thể kết nối đến máy chủ API.");
+                }
+            });
+        }
+    }
+
+    // Hàm Lọc Đơn Hàng bằng JavaScript (không cần reload trang)
+    function filterOrders() {
+        const keyword = document.getElementById("searchOrder").value.trim().toLowerCase();
+        const statusFilter = document.getElementById("statusFilter").value;
+        const rows = document.querySelectorAll("#orderTableBody tr");
+
+        rows.forEach(row => {
+            const codeEl = row.querySelector(".product-code");
+            if (!codeEl) return; // Bỏ qua dòng thông báo trống
+
+            const orderId = codeEl.textContent.toLowerCase();
+            const customer = row.querySelector(".customer-info").textContent.toLowerCase();
+            const status = row.querySelector(".status-badge").getAttribute("data-status");
+
+            const matchKeyword = !keyword || orderId.includes(keyword) || customer.includes(keyword);
+            const matchStatus = statusFilter === "all" || status === statusFilter;
+
+            if (matchKeyword && matchStatus) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+
+    document.getElementById("searchOrder").addEventListener("input", filterOrders);
+    document.getElementById("statusFilter").addEventListener("change", filterOrders);
+
+    document.getElementById("btnReset").addEventListener("click", function () {
+        document.getElementById("searchOrder").value = "";
+        document.getElementById("statusFilter").value = "all";
+        filterOrders();
+    });
+</script>

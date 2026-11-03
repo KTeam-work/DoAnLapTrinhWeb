@@ -33,6 +33,7 @@ namespace DoAnLapTrinhWeb.Models
         public string status { get; set; }
         public string note { get; set; }
         public System.DateTime created_at { get; set; }
+        public string delivery_address { get; set; }
     
         public virtual Customer Customer { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

@@ -26,30 +26,26 @@ namespace DoAnLapTrinhWeb.Models
         {
             var cart = GetCart();
 
-            // Kiểm tra xem trong giỏ đã có món nào TRÙNG Y HỆT (cùng ID, cùng Size, cùng Topping) chưa
+            
             var existingItem = cart.FirstOrDefault(c =>
                 c.ProductId == newItem.ProductId &&
                 c.SizeId == newItem.SizeId &&
-                AreToppingsEqual(c.Toppings, newItem.Toppings)
+                AreToppingsEqual(c.Toppings, newItem.Toppings) &&
+                c.Note == newItem.Note 
             );
 
             if (existingItem != null)
             {
-                // Nếu giống y hệt, chỉ việc tăng số lượng (Quantity)
+                
                 existingItem.Quantity += newItem.Quantity;
-                // Nếu ghi chú mới khác ghi chú cũ thì nối thêm vào
-                if (!string.IsNullOrEmpty(newItem.Note))
-                {
-                    existingItem.Note = string.IsNullOrEmpty(existingItem.Note) ? newItem.Note : existingItem.Note + "; " + newItem.Note;
-                }
             }
             else
             {
-                // Nếu là món mới hoàn toàn hoặc khác size/topping, thêm dòng mới
+               
                 cart.Add(newItem);
             }
 
-            // Lưu ngược lại vào Session
+           
             HttpContext.Current.Session[CartSessionKey] = cart;
         }
 
