@@ -1,6 +1,10 @@
 ﻿@{
     ViewBag.Title = "Trang Chủ - LumiTea";
-    
+    string userRole = (Session["UserRole"]?.ToString() ?? "").Trim();
+    if (userRole == "R02")
+    {
+        Layout = "~/Views/Shared/_StaffLayout.cshtml";
+    }
 }
 
 <!DOCTYPE html>
