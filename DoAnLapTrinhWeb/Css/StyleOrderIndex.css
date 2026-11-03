@@ -1,0 +1,63 @@
+﻿.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-confirmed {
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+
+.status-preparing {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.status-delivering {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-completed {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-cancelled {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.action-btn {
+    transition: transform .25s, box-shadow .25s;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important; 
+    min-width: 36px !important; 
+    height: 36px !important; 
+    gap: 6px !important;
+    padding: 6px 14px !important;
+    white-space: nowrap !important;
+    border-radius: 8px !important;
+}
+
+    .action-btn:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .action-btn.btn-warning {
+        color: #212529 !important; /* Màu đen/xám đậm */
+    }
+        .action-btn.btn-warning:hover,
+        .action-btn.btn-warning:focus {
+            color: #000000 !important; /* Màu đen tuyền khi di chuột qua */
+        }

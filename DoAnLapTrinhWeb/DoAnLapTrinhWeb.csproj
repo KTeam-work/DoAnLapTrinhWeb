@@ -316,6 +316,7 @@
     <Content Include="Css\StyleInventory_LichSuNhap.css" />
     <Content Include="Css\StyleMenu.css" />
     <Content Include="Css\styleNavbar.css" />
+    <Content Include="Css\StyleOrderIndex.css" />
     <Content Include="Css\StyleOrder_Checkout.css" />
     <Content Include="Css\StyleOrder_Details.css" />
     <Content Include="Css\StyleOrder_History.css" />
@@ -414,6 +415,7 @@
     <Content Include="Views\Ingredient\Edit.cshtml" />
     <Content Include="Views\Shared\_AdminLayout.cshtml" />
     <Content Include="Views\Shared\_StaffLayout.cshtml" />
+    <Content Include="Views\Order\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
