@@ -1,7 +1,15 @@
 ﻿@model DoAnLapTrinhWeb.Controllers.OrderController.OrderDetailViewModel
 @{
     ViewBag.Title = "Chi Tiết Đơn Hàng - LumiTea";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    string userRole = (Session["UserRole"]?.ToString() ?? "").Trim();
+    if (userRole == "R01" || userRole.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_StaffLayout.cshtml";
+    }
 
     // Giả định tính phí giao hàng
     decimal shippingFee = Model.DeliveryType == "Delivery" ? 15000 : 0;
@@ -25,7 +33,7 @@
     <div class="container py-4">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
             <div class="d-flex align-items-center gap-3">
-                <a href="~/Order/History" class="text-decoration-none text-muted">
+                <a href="~/Order/Index" class="text-decoration-none text-muted">
                     <i class="fa-solid fa-arrow-left fs-5"></i>
                 </a>
                 <div>
