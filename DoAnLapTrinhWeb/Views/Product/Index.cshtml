@@ -10,7 +10,7 @@
     int totalProducts = ViewBag.TotalProducts ?? 0;
     int activeProducts = ViewBag.ActiveProducts ?? 0;
     int inactiveProducts = ViewBag.InactiveProducts ?? 0;
-    string nextProductId = ViewBag.NextProductId ?? "SP0000001";
+    string nextProductId = ViewBag.NextProductId ?? "PRD01";
 }
 
 <link rel="stylesheet" href="~/Css/styleProduct_index.css" />
@@ -216,13 +216,23 @@
                                     }
                                 </td>
                                 <td>
-                                    @if (product.status == "Đang bán" || product.status == "Active")
+                                    @if (product.status == "Available")
                                     {
-                                        <span class="status-badge available"><i class="bi bi-circle-fill"></i> Đang bán</span>
+                                        <span class="status-badge available">
+                                            <i class="bi bi-circle-fill"></i> Đang bán
+                                        </span>
+                                    }
+                                    else if (product.status == "Unavailable")
+                                    {
+                                        <span class="status-badge unavailable">
+                                            <i class="bi bi-circle-fill"></i> Ngừng bán
+                                        </span>
                                     }
                                     else
                                     {
-                                        <span class="status-badge unavailable"><i class="bi bi-circle-fill"></i> Ngừng bán</span>
+                                        <span class="status-badge unavailable">
+                                            <i class="bi bi-circle-fill"></i> Không xác định
+                                        </span>
                                     }
                                 </td>
                                 <td class="text-center">
@@ -301,8 +311,8 @@
                         <div class="col-md-6">
                             <label class="modal-label">Trạng thái</label>
                             <select id="newProductStatus" class="form-select">
-                                <option value="Đang bán">Đang bán</option>
-                                <option value="Ngừng bán">Ngừng bán</option>
+                                <option value="Available">Đang bán</option>
+                                <option value="Unavailable">Ngừng bán</option>
                             </select>
                         </div>
 

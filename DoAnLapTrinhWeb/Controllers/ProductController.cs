@@ -10,6 +10,37 @@ namespace DoAnLapTrinhWeb.Controllers
     public class ProductController : Controller
     {
         private QUANLYBANTRASUAEntities db = new QUANLYBANTRASUAEntities();
+        // TỰ SINH MÃ SẢN PHẨM: PRD01, PRD02, PRD03...
+        private string GenerateProductId()
+        {
+            var productIds = db.Products
+                .Select(p => p.product_id)
+                .ToList();
+
+            int maxNumber = 0;
+
+            foreach (var id in productIds)
+            {
+                if (string.IsNullOrWhiteSpace(id))
+                    continue;
+
+                string trimmedId = id.Trim();
+
+                // Chỉ lấy mã có định dạng PRD + số
+                if (trimmedId.StartsWith("PRD", StringComparison.OrdinalIgnoreCase))
+                {
+                    string numberPart = trimmedId.Substring(3);
+
+                    if (int.TryParse(numberPart, out int number))
+                    {
+                        if (number > maxNumber)
+                            maxNumber = number;
+                    }
+                }
+            }
+
+            return "PRD" + (maxNumber + 1).ToString("D2");
+        }
 
         // =========================================================
         // INDEX: Danh sách sản phẩm, Tìm kiếm & Lọc từ SQL Server
@@ -72,37 +103,29 @@ namespace DoAnLapTrinhWeb.Controllers
             ViewBag.Categories = db.Categories.ToList();
 
             // THỐNG KÊ TỔNG QUAN
-            ViewBag.TotalProducts = db.Products.Count();
-            ViewBag.ActiveProducts = db.Products.Count(p => p.status == "Active" || p.status == "Đang bán");
-            ViewBag.InactiveProducts = db.Products.Count(p => p.status == "Inactive" || p.status == "Ngừng bán");
+            var allProducts = db.Products.ToList();
 
-            // TỰ SINH MÃ SẢN PHẨM MỚI (XỬ LÝ AN TOÀN - KHÔNG BỊ LỖI FORMATEXCEPTION)
-            string nextId = "SP0000001";
-            try
-            {
-                var productIds = db.Products.Select(p => p.product_id).ToList();
-                int maxNum = 0;
-                foreach (var pid in productIds)
-                {
-                    if (!string.IsNullOrEmpty(pid))
-                    {
-                        var match = Regex.Match(pid, @"\d+");
-                        if (match.Success && int.TryParse(match.Value, out int currentNum))
-                        {
-                            if (currentNum > maxNum)
-                            {
-                                maxNum = currentNum;
-                            }
-                        }
-                    }
-                }
-                nextId = "SP" + (maxNum + 1).ToString("D7");
-            }
-            catch
-            {
-                nextId = "SP0000001";
-            }
-            ViewBag.NextProductId = nextId;
+            ViewBag.TotalProducts = allProducts.Count;
+
+            ViewBag.ActiveProducts = allProducts.Count(p =>
+                string.Equals(
+                    (p.status ?? "").Trim(),
+                    "Available",
+                    StringComparison.OrdinalIgnoreCase
+                )
+            );
+
+            ViewBag.InactiveProducts = allProducts.Count(p =>
+                string.Equals(
+                    (p.status ?? "").Trim(),
+                    "Unavailable",
+                    StringComparison.OrdinalIgnoreCase
+                )
+            );
+
+
+            // TỰ SINH MÃ SẢN PHẨM MỚI
+            ViewBag.NextProductId = GenerateProductId();
 
             return View(products.ToList());
         }
@@ -125,13 +148,30 @@ namespace DoAnLapTrinhWeb.Controllers
                 string catId = cat != null ? cat.category_id : db.Categories.Select(c => c.category_id).FirstOrDefault();
 
                 // 2. Tạo sản phẩm mới
+                // Kiểm tra trạng thái sản phẩm
+                string productStatus = string.IsNullOrWhiteSpace(status)
+                    ? "Available"
+                    : status.Trim();
+
+                if (productStatus != "Available" && productStatus != "Unavailable")
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Trạng thái sản phẩm không hợp lệ."
+                    });
+                }
+
+                // Tạo sản phẩm mới
+                string newProductId = GenerateProductId();
+
                 Product newProd = new Product
                 {
-                    product_id = !string.IsNullOrEmpty(product_id) ? product_id.Trim() : "SP0000001",
+                    product_id = newProductId,
                     name = name.Trim(),
                     category_id = catId,
                     description = description ?? "",
-                    status = string.IsNullOrEmpty(status) ? "Đang bán" : status
+                    status = productStatus
                 };
 
                 db.Products.Add(newProd);
@@ -189,20 +229,40 @@ namespace DoAnLapTrinhWeb.Controllers
                 }
 
                 // 4. Thêm Topping
-                if (!string.IsNullOrEmpty(toppings))
+                if (!string.IsNullOrWhiteSpace(toppings))
                 {
-                    var toppingNames = toppings.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    var toppingNames = toppings.Split(
+                        new char[] { ',' },
+                        StringSplitOptions.RemoveEmptyEntries
+                    );
+
                     foreach (var tName in toppingNames)
                     {
-                        var topObj = db.Toppings.FirstOrDefault(t => t.name.Trim().ToLower() == tName.Trim().ToLower());
-                        if (topObj != null)
+                        string toppingName = tName.Trim();
+
+                        var topObj = db.Toppings.FirstOrDefault(t =>
+                            t.name.Trim().ToLower() == toppingName.ToLower()
+                            && t.status == "Active"
+                        );
+
+                        if (topObj == null)
                         {
-                            db.ProductToppings.Add(new ProductTopping
+                            return Json(new
                             {
-                                product_id = newProd.product_id,
-                                topping_id = topObj.topping_id
+                                success = false,
+                                message = "Không tìm thấy topping đang hoạt động: " + toppingName
                             });
                         }
+
+                        db.ProductToppings.Add(new ProductTopping
+                        {
+                            id = "PT" + Guid.NewGuid().ToString("N")
+                                .Substring(0, 8).ToUpper(),
+
+                            product_id = newProd.product_id,
+                            topping_id = topObj.topping_id,
+                            is_allowed = true
+                        });
                     }
                 }
 
@@ -284,14 +344,32 @@ namespace DoAnLapTrinhWeb.Controllers
                 }
 
                 prod.description = description ?? "";
-                prod.status = status ?? prod.status;
+
+                // Chỉ chấp nhận hai trạng thái hợp lệ của SQL Server
+                if (!string.IsNullOrWhiteSpace(status))
+                {
+                    status = status.Trim();
+
+                    if (status != "Available" && status != "Unavailable")
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "Trạng thái sản phẩm không hợp lệ."
+                        });
+                    }
+
+                    prod.status = status;
+                }
 
                 db.Entry(prod).State = EntityState.Modified;
 
                 var currentSizes = db.ProductSizes.Where(s => s.product_id.Trim() == trimmedId).ToList();
 
                 // Size S
-                var sizeS = currentSizes.FirstOrDefault(s => s.size_name == "S");
+                var sizeS = currentSizes.FirstOrDefault(s =>
+    !string.IsNullOrWhiteSpace(s.size_name) &&
+    (s.size_name.Trim() == "S" || s.size_name.Trim() == "Size S"));
                 if (priceS.HasValue)
                 {
                     if (sizeS != null) { sizeS.price_add = priceS.Value; db.Entry(sizeS).State = EntityState.Modified; }
@@ -299,7 +377,9 @@ namespace DoAnLapTrinhWeb.Controllers
                 }
 
                 // Size M
-                var sizeM = currentSizes.FirstOrDefault(s => s.size_name == "M");
+                var sizeM = currentSizes.FirstOrDefault(s =>
+    !string.IsNullOrWhiteSpace(s.size_name) &&
+    (s.size_name.Trim() == "M" || s.size_name.Trim() == "Size M"));
                 if (priceM.HasValue)
                 {
                     if (sizeM != null) { sizeM.price_add = priceM.Value; db.Entry(sizeM).State = EntityState.Modified; }
@@ -307,7 +387,9 @@ namespace DoAnLapTrinhWeb.Controllers
                 }
 
                 // Size L
-                var sizeL = currentSizes.FirstOrDefault(s => s.size_name == "L");
+                var sizeL = currentSizes.FirstOrDefault(s =>
+    !string.IsNullOrWhiteSpace(s.size_name) &&
+    (s.size_name.Trim() == "L" || s.size_name.Trim() == "Size L"));
                 if (priceL.HasValue)
                 {
                     if (sizeL != null) { sizeL.price_add = priceL.Value; db.Entry(sizeL).State = EntityState.Modified; }
@@ -319,7 +401,18 @@ namespace DoAnLapTrinhWeb.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Lỗi khi cập nhật: " + ex.Message });
+                Exception inner = ex;
+
+                while (inner.InnerException != null)
+                {
+                    inner = inner.InnerException;
+                }
+
+                return Json(new
+                {
+                    success = false,
+                    message = "Lỗi khi cập nhật: " + inner.Message
+                });
             }
         }
 
@@ -331,33 +424,97 @@ namespace DoAnLapTrinhWeb.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(id))
+                if (string.IsNullOrWhiteSpace(id))
                 {
-                    return Json(new { success = false, message = "Mã sản phẩm không hợp lệ." });
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Mã sản phẩm không hợp lệ."
+                    });
                 }
 
                 string trimmedId = id.Trim();
-                var prod = db.Products.FirstOrDefault(p => p.product_id.Trim() == trimmedId);
 
-                if (prod != null)
+                var prod = db.Products.FirstOrDefault(
+                    p => p.product_id.Trim() == trimmedId
+                );
+
+                if (prod == null)
                 {
-                    var sizes = db.ProductSizes.Where(s => s.product_id.Trim() == trimmedId);
-                    db.ProductSizes.RemoveRange(sizes);
-
-                    var toppings = db.ProductToppings.Where(t => t.product_id.Trim() == trimmedId);
-                    db.ProductToppings.RemoveRange(toppings);
-
-                    db.Products.Remove(prod);
-                    db.SaveChanges();
-
-                    return Json(new { success = true, message = "Xóa sản phẩm thành công!" });
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Không tìm thấy sản phẩm cần xóa."
+                    });
                 }
 
-                return Json(new { success = false, message = "Không tìm thấy sản phẩm cần xóa." });
+                // Không xóa sản phẩm đã phát sinh đơn hàng
+                bool hasOrder = db.OrderDetails.Any(
+                    od => od.product_id.Trim() == trimmedId
+                );
+
+                if (hasOrder)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Không thể xóa sản phẩm vì sản phẩm đã phát sinh đơn hàng. Em có thể chuyển trạng thái sang Ngừng bán."
+                    });
+                }
+
+                // Không xóa sản phẩm đã có đánh giá
+                bool hasReview = db.ProductReviews.Any(
+                    r => r.product_id.Trim() == trimmedId
+                );
+
+                if (hasReview)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Không thể xóa sản phẩm vì sản phẩm đã có đánh giá. Em có thể chuyển trạng thái sang Ngừng bán."
+                    });
+                }
+
+                // Xóa các size thuộc sản phẩm
+                var sizes = db.ProductSizes.Where(
+                    s => s.product_id.Trim() == trimmedId
+                ).ToList();
+
+                db.ProductSizes.RemoveRange(sizes);
+
+                // Xóa các topping liên kết với sản phẩm
+                var toppings = db.ProductToppings.Where(
+                    t => t.product_id.Trim() == trimmedId
+                ).ToList();
+
+                db.ProductToppings.RemoveRange(toppings);
+
+                // Xóa sản phẩm
+                db.Products.Remove(prod);
+
+                db.SaveChanges();
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Xóa sản phẩm thành công!"
+                });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Lỗi khi xóa: " + ex.Message });
+                Exception inner = ex;
+
+                while (inner.InnerException != null)
+                {
+                    inner = inner.InnerException;
+                }
+
+                return Json(new
+                {
+                    success = false,
+                    message = "Lỗi khi xóa: " + inner.Message
+                });
             }
         }
 
@@ -436,7 +593,7 @@ namespace DoAnLapTrinhWeb.Controllers
         public static System.Collections.Generic.List<DoAnLapTrinhWeb.Models.Product> GetAvailable()
         {
             return db.Products
-                     .Where(p => p.status == "Active" || p.status == "Đang bán")
+                     .Where(p => p.status == "Available")
                      .ToList();
         }
     }
