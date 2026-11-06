@@ -37,17 +37,6 @@
           <Property Name="used_at" Type="datetime" />
           <Property Name="status" Type="varchar" MaxLength="20" Nullable="false" />
         </EntityType>
-        <EntityType Name="Ingredients">
-          <Key>
-            <PropertyRef Name="ingredient_id" />
-          </Key>
-          <Property Name="ingredient_id" Type="nchar" MaxLength="10" Nullable="false" />
-          <Property Name="name" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="unit" Type="varchar" MaxLength="20" Nullable="false" />
-          <Property Name="quantity_in_stock" Type="decimal" Precision="12" Scale="3" Nullable="false" />
-          <Property Name="min_threshold" Type="decimal" Precision="12" Scale="3" Nullable="false" />
-          <Property Name="status" Type="varchar" MaxLength="20" Nullable="false" />
-        </EntityType>
         <EntityType Name="InventoryTransactions">
           <Key>
             <PropertyRef Name="transaction_id" />
@@ -61,6 +50,17 @@
           <Property Name="reason" Type="nvarchar" MaxLength="255" />
           <Property Name="created_by" Type="nchar" MaxLength="10" />
           <Property Name="created_at" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Ingredients">
+          <Key>
+            <PropertyRef Name="ingredient_id" />
+          </Key>
+          <Property Name="ingredient_id" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="unit" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="quantity_in_stock" Type="decimal" Precision="12" Scale="3" Nullable="false" />
+          <Property Name="min_threshold" Type="decimal" Precision="12" Scale="3" Nullable="false" />
+          <Property Name="status" Type="varchar" MaxLength="20" Nullable="false" />
         </EntityType>
         <EntityType Name="OrderDetails">
           <Key>
@@ -227,6 +227,9 @@
           <Property Name="shift_id" Type="nchar" MaxLength="10" Nullable="false" />
           <Property Name="work_date" Type="date" Nullable="false" />
           <Property Name="created_at" Type="datetime" Nullable="false" />
+          <Property Name="check_in" Type="datetime" />
+          <Property Name="check_out" Type="datetime" />
+          <Property Name="total_hours" Type="decimal" Precision="4" Scale="2" />
         </EntityType>
         <EntityType Name="Suppliers">
           <Key>
@@ -671,8 +674,8 @@ warning 6035: The relationship 'FK_Recipe_ProductSize' has columns that are not 
           <EntitySet Name="Categories" EntityType="Self.Categories" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Customers" EntityType="Self.Customers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CustomerVouchers" EntityType="Self.CustomerVouchers" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Ingredients" EntityType="Self.Ingredients" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InventoryTransactions" EntityType="Self.InventoryTransactions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Ingredients" EntityType="Self.Ingredients" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OrderDetails" EntityType="Self.OrderDetails" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OrderDetailToppings" EntityType="Self.OrderDetailToppings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Orders" EntityType="Self.Orders" Schema="dbo" store:Type="Tables" />
@@ -1099,6 +1102,9 @@ warning 6035: The relationship 'FK_Recipe_ProductSize' has columns that are not 
           <Property Name="created_at" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Shift" Relationship="Self.FK__StaffShif__shift__48CFD27E" FromRole="StaffShifts" ToRole="Shifts" />
           <NavigationProperty Name="User" Relationship="Self.FK__StaffShif__user___47DBAE45" FromRole="StaffShifts" ToRole="Users" />
+          <Property Name="check_in" Type="DateTime" Precision="3" />
+          <Property Name="check_out" Type="DateTime" Precision="3" />
+          <Property Name="total_hours" Type="Decimal" Precision="4" Scale="2" />
         </EntityType>
         <EntityType Name="Supplier">
           <Key>
@@ -1940,6 +1946,9 @@ warning 6035: The relationship 'FK_Recipe_ProductSize' has columns that are not 
           <EntitySetMapping Name="StaffShifts">
             <EntityTypeMapping TypeName="QUANLYBANTRASUAModel.StaffShift">
               <MappingFragment StoreEntitySet="StaffShifts">
+                <ScalarProperty Name="total_hours" ColumnName="total_hours" />
+                <ScalarProperty Name="check_out" ColumnName="check_out" />
+                <ScalarProperty Name="check_in" ColumnName="check_in" />
                 <ScalarProperty Name="staff_shift_id" ColumnName="staff_shift_id" />
                 <ScalarProperty Name="user_id" ColumnName="user_id" />
                 <ScalarProperty Name="shift_id" ColumnName="shift_id" />

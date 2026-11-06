@@ -16,8 +16,23 @@ namespace DoAnLapTrinhWeb.Controllers
         public ActionResult Index(DateTime? date)
         {
             DateTime filterDate = (date ?? DateTime.Today).Date;
+            string currentUserId = (Session["UserId"]?.ToString() ?? "").Trim();
+            string userRole = (Session["UserRole"]?.ToString() ?? "").Trim();
+            bool isAdmin = userRole == "R01" || userRole.Equals("Admin", StringComparison.OrdinalIgnoreCase);
 
-            // Lấy danh sách những nhân viên ĐÃ ĐƯỢC XẾP CA ngày hôm nay
+            // Tìm ca làm việc của chính nhân viên đang đăng nhập trong ngày hôm nay
+            StaffShift myShiftToday = null;
+            if (!string.IsNullOrEmpty(currentUserId))
+            {
+                myShiftToday = db.StaffShifts
+                    .Include(s => s.Shift)
+                    .Include(s => s.User)
+                    .FirstOrDefault(s => s.user_id.Trim() == currentUserId && DbFunctions.TruncateTime(s.work_date) == filterDate);
+            }
+            ViewBag.MyShiftToday = myShiftToday;
+            ViewBag.SelectedDate = filterDate.ToString("yyyy-MM-dd");
+
+            // Danh sách toàn bộ ca trực trong ngày (dành cho Admin theo dõi)
             var todayShifts = db.StaffShifts
                 .Include(s => s.User)
                 .Include(s => s.User.Role)
@@ -26,99 +41,121 @@ namespace DoAnLapTrinhWeb.Controllers
                 .OrderBy(s => s.Shift.start_time)
                 .ToList();
 
-            // Danh sách mã nhân viên đã điểm danh hôm nay (lưu trong Session phiên làm việc)
-            var checkedInIds = Session["CheckedInStaffToday"] as List<string> ?? new List<string>();
-
-            ViewBag.CheckedInIds = checkedInIds;
-            ViewBag.SelectedDate = filterDate.ToString("yyyy-MM-dd");
-
             return View(todayShifts);
         }
 
-        // 2. XÁC NHẬN ĐIỂM DANH VÀO CA TRỰC BẰNG MÃ PIN
+        // 2. BẤM "VÀO CA" (Không dùng mã PIN, tự nhận diện user đăng nhập)
         [HttpPost]
-        public ActionResult CheckIn(string EmployeeCode, string PinCode)
+        public ActionResult CheckIn(string staffShiftId)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(EmployeeCode))
+                string currentUserId = (Session["UserId"]?.ToString() ?? "").Trim();
+                if (string.IsNullOrEmpty(currentUserId))
                 {
-                    TempData["Error"] = "Vui lòng chọn nhân viên có ca trực hôm nay!";
-                    return RedirectToAction("Index");
+                    TempData["Error"] = "Vui lòng đăng nhập để thực hiện vào ca!";
+                    return RedirectToAction("Login", "Account");
                 }
 
-                EmployeeCode = EmployeeCode.Trim();
                 DateTime today = DateTime.Today;
 
-                // CHẶN NGAY: Kiểm tra nhân viên này có lịch vào ca hôm nay không
-                var shiftToday = db.StaffShifts
-                    .Include(s => s.User)
-                    .Include(s => s.Shift)
-                    .FirstOrDefault(s => s.user_id.Trim() == EmployeeCode && DbFunctions.TruncateTime(s.work_date) == today);
-
-                if (shiftToday == null)
+                // Tìm ca phân công hôm nay của nhân viên
+                StaffShift shiftRecord;
+                if (!string.IsNullOrEmpty(staffShiftId))
                 {
-                    TempData["Error"] = "Nhân viên này không có lịch trực ca hôm nay, không thể điểm danh!";
+                    shiftRecord = db.StaffShifts.Include(s => s.Shift).FirstOrDefault(s => s.staff_shift_id.Trim() == staffShiftId.Trim());
+                }
+                else
+                {
+                    shiftRecord = db.StaffShifts
+                        .Include(s => s.Shift)
+                        .FirstOrDefault(s => s.user_id.Trim() == currentUserId && DbFunctions.TruncateTime(s.work_date) == today);
+                }
+
+                if (shiftRecord == null)
+                {
+                    TempData["Error"] = "Bạn không có lịch làm việc được phân công trong ngày hôm nay!";
                     return RedirectToAction("Index");
                 }
 
-                var user = shiftToday.User;
-
-                // Kiểm tra mã PIN 4 số (chấp nhận: 1234, mật khẩu tài khoản, hoặc 4 số cuối SĐT)
-                string phone = user.phone ?? "";
-                string last4 = phone.Length >= 4 ? phone.Substring(phone.Length - 4) : "";
-                bool isPinValid = (PinCode == "1234") || (PinCode == last4) || (user.password == PinCode);
-
-                if (!isPinValid)
+                if (shiftRecord.check_in != null)
                 {
-                    TempData["Error"] = "Mã PIN xác nhận không chính xác! (Mặc định: 1234 hoặc 4 số cuối SĐT)";
+                    TempData["Error"] = $"Bạn đã vào ca lúc {shiftRecord.check_in.Value:HH:mm:ss} rồi!";
                     return RedirectToAction("Index");
                 }
 
-                // Ghi nhận trạng thái ĐÃ ĐIỂM DANH
-                var checkedInList = Session["CheckedInStaffToday"] as List<string> ?? new List<string>();
-                if (!checkedInList.Contains(EmployeeCode))
-                {
-                    checkedInList.Add(EmployeeCode);
-                    Session["CheckedInStaffToday"] = checkedInList;
-                }
+                // Lưu giờ vào Database
+                shiftRecord.check_in = DateTime.Now;
+                db.Entry(shiftRecord).State = EntityState.Modified;
+                db.SaveChanges();
 
-                TempData["Success"] = $"Điểm danh thành công! Đã xác nhận nhân viên {user.full_name} vào ca [{shiftToday.Shift.shift_name}].";
+                TempData["Success"] = $"Vào ca thành công lúc {shiftRecord.check_in.Value:HH:mm:ss} (Ca: {shiftRecord.Shift?.shift_name})!";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Lỗi điểm danh: " + ex.Message;
+                TempData["Error"] = "Lỗi khi vào ca: " + ex.Message;
             }
 
             return RedirectToAction("Index");
         }
 
-        // 3. KẾT THÚC / RỜI CA LÀM VIỆC (RA CA)
+        // 3. BẤM "RA CA" (Lưu giờ ra & tính tổng giờ làm)
         [HttpPost]
-        public JsonResult CheckOut(string employeeCode)
+        public JsonResult CheckOut(string staffShiftId)
         {
             try
             {
-                if (string.IsNullOrEmpty(employeeCode)) return Json(new { success = false, message = "Mã không hợp lệ." });
-                employeeCode = employeeCode.Trim();
+                string currentUserId = (Session["UserId"]?.ToString() ?? "").Trim();
+                DateTime today = DateTime.Today;
 
-                var checkedInList = Session["CheckedInStaffToday"] as List<string> ?? new List<string>();
-                if (checkedInList.Contains(employeeCode))
+                StaffShift shiftRecord = null;
+                if (!string.IsNullOrEmpty(staffShiftId))
                 {
-                    checkedInList.Remove(employeeCode);
-                    Session["CheckedInStaffToday"] = checkedInList;
+                    shiftRecord = db.StaffShifts.Find(staffShiftId.Trim());
+                }
+                else if (!string.IsNullOrEmpty(currentUserId))
+                {
+                    shiftRecord = db.StaffShifts.FirstOrDefault(s => s.user_id.Trim() == currentUserId && DbFunctions.TruncateTime(s.work_date) == today);
                 }
 
-                return Json(new { success = true, message = "Đã xác nhận kết thúc ca làm việc (Ra ca) thành công!" });
+                if (shiftRecord == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy thông tin ca trực của bạn hôm nay!" });
+                }
+
+                if (shiftRecord.check_in == null)
+                {
+                    return Json(new { success = false, message = "Bạn chưa bấm 'Vào ca' nên không thể bấm 'Ra ca'!" });
+                }
+
+                if (shiftRecord.check_out != null)
+                {
+                    return Json(new { success = false, message = "Ca làm này đã được xác nhận kết thúc trước đó!" });
+                }
+
+                // Lưu giờ ra và tính tổng số giờ làm việc
+                DateTime outTime = DateTime.Now;
+                shiftRecord.check_out = outTime;
+
+                TimeSpan duration = outTime - shiftRecord.check_in.Value;
+                shiftRecord.total_hours = Math.Round((decimal)duration.TotalHours, 2);
+
+                db.Entry(shiftRecord).State = EntityState.Modified;
+                db.SaveChanges();
+
+                return Json(new
+                {
+                    success = true,
+                    message = $"Ra ca thành công lúc {outTime:HH:mm:ss}. Tổng thời gian làm: {shiftRecord.total_hours} giờ."
+                });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new { success = false, message = "Lỗi xử lý: " + ex.Message });
             }
         }
 
-        // 4. BẢNG PHÂN CA 7 NGÀY TUẦN
-        // GET: Shift/Schedule
+        // Các Action khác: Schedule, AssignShift, DeleteShift giữ nguyên
         public ActionResult Schedule(int? weekOffset)
         {
             int offset = weekOffset ?? 0;
@@ -144,7 +181,6 @@ namespace DoAnLapTrinhWeb.Controllers
             return View(shiftsInWeek);
         }
 
-        // 5. LƯU PHÂN CA (GỌI TỪ MODAL SCHEDULE)
         [HttpPost]
         public ActionResult AssignShift(string UserId, string ShiftId, DateTime WorkDate)
         {
@@ -160,7 +196,6 @@ namespace DoAnLapTrinhWeb.Controllers
                 ShiftId = ShiftId.Trim();
                 DateTime targetDate = WorkDate.Date;
 
-                // Ràng buộc UQ_StaffShifts_UserDate: 1 nhân viên chỉ trực 1 ca/ngày
                 bool isExisted = db.StaffShifts.Any(s => s.user_id.Trim() == UserId && DbFunctions.TruncateTime(s.work_date) == targetDate);
                 if (isExisted)
                 {
@@ -184,32 +219,20 @@ namespace DoAnLapTrinhWeb.Controllers
             }
             catch (Exception ex)
             {
-                var inner = ex.InnerException?.InnerException?.Message ?? ex.Message;
-                TempData["Error"] = "Lỗi khi phân ca: " + inner;
+                TempData["Error"] = "Lỗi khi phân ca: " + ex.Message;
             }
 
             return RedirectToAction("Schedule");
         }
 
-        // 6. HỦY PHÂN CA
         [HttpPost]
         public JsonResult DeleteShift(string id)
         {
             try
             {
                 if (string.IsNullOrEmpty(id)) return Json(new { success = false, message = "Mã không hợp lệ." });
-                id = id.Trim();
-
-                var item = db.StaffShifts.Find(id);
+                var item = db.StaffShifts.Find(id.Trim());
                 if (item == null) return Json(new { success = false, message = "Không tìm thấy dữ liệu ca trực." });
-
-                // Đồng thời gỡ khỏi danh sách đã điểm danh nếu có
-                var checkedInList = Session["CheckedInStaffToday"] as List<string> ?? new List<string>();
-                if (checkedInList.Contains(item.user_id.Trim()))
-                {
-                    checkedInList.Remove(item.user_id.Trim());
-                    Session["CheckedInStaffToday"] = checkedInList;
-                }
 
                 db.StaffShifts.Remove(item);
                 db.SaveChanges();

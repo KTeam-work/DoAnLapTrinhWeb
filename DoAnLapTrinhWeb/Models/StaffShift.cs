@@ -19,6 +19,9 @@ namespace DoAnLapTrinhWeb.Models
         public string shift_id { get; set; }
         public System.DateTime work_date { get; set; }
         public System.DateTime created_at { get; set; }
+        public Nullable<System.DateTime> check_in { get; set; }
+        public Nullable<System.DateTime> check_out { get; set; }
+        public Nullable<decimal> total_hours { get; set; }
     
         public virtual Shift Shift { get; set; }
         public virtual User User { get; set; }

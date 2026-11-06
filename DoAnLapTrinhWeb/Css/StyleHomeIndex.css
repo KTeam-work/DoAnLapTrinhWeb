@@ -1,4 +1,4 @@
-﻿﻿:root {
+﻿﻿﻿:root {
     --lumitea-primary: #1A4D3E;
     --lumitea-accent: #F6C90E;
     --lumitea-bg: #F8FAFC;
@@ -22,6 +22,8 @@ body {
     position: relative;
     background-color: #000;
     margin-top: -20px;
+    margin-left: 0;
+    margin-right: 0;
 }
 
     .carousel-container .list .item {
@@ -459,3 +461,44 @@ body {
     .news-link:hover {
         color: var(--lumitea-primary);
     }
+
+
+.carousel-container .list .item .content {
+    color: #ffffff !important;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.85);
+}
+
+
+.carousel-container .list .item .author {
+    color: #ffffff !important;
+    font-weight: 800;
+}
+
+
+.carousel-container .list .item .title {
+    color: #ffffff !important;
+    font-weight: 800;
+}
+
+
+.carousel-container .list .item .topic {
+    color: #F6C90E !important;
+    font-weight: 800;
+}
+
+
+.carousel-container .list .item .des {
+    color: #ffffff !important;
+    font-weight: 500;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+}
+
+.carousel-container .list .item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: brightness(0.65);
+}
+
+

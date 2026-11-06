@@ -8,7 +8,18 @@
     var shifts = ViewBag.Shifts as List<DoAnLapTrinhWeb.Models.Shift> ?? new List<DoAnLapTrinhWeb.Models.Shift>();
     var users = ViewBag.Users as List<DoAnLapTrinhWeb.Models.User> ?? new List<DoAnLapTrinhWeb.Models.User>();
 
-    // 7 ngày trong tuần từ Thứ 2 đến Chủ Nhật
+    string userRole = (Session["UserRole"]?.ToString() ?? "").Trim();
+    bool isAdmin = userRole == "R01" || userRole.Equals("Admin", StringComparison.OrdinalIgnoreCase);
+
+    if (isAdmin)
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_StaffLayout.cshtml";
+    }
+
     var weekDays = new List<DateTime>();
     for (int i = 0; i < 7; i++)
     {
@@ -175,15 +186,20 @@
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
         <div>
             <h1 class="page-title mb-1">Bảng Lịch Phân Ca Tuần</h1>
-            <p class="text-muted small mb-0">Quản lý và xếp lịch trực cho nhân sự toàn hệ thống LumiTea</p>
+            <p class="text-muted small mb-0">Theo dõi lịch trực làm việc của nhân sự toàn hệ thống</p>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a href="@Url.Action("Index", "Shift")" class="btn btn-outline-secondary fw-bold px-3 py-2 text-decoration-none" style="border-radius: 12px;">
-                <i class="fa-solid fa-fingerprint me-1"></i> Trang Điểm Danh Ca
+                <i class="fa-solid fa-arrow-left me-1"></i> Trang Điểm Danh Ca
             </a>
-            <button class="btn btn-success fw-bold px-3 py-2" style="border-radius: 12px; background-color: #10b981;" data-bs-toggle="modal" data-bs-target="#assignShiftModal">
-                <i class="fa-solid fa-plus me-1"></i> Phân Ca Mới
-            </button>
+
+            <!-- CHỈ ADMIN MỚI THẤY NÚT PHÂN CA -->
+            @if (isAdmin)
+            {
+                <button class="btn btn-success fw-bold px-3 py-2" style="border-radius: 12px; background-color: #10b981;" data-bs-toggle="modal" data-bs-target="#assignShiftModal">
+                    <i class="fa-solid fa-plus me-1"></i> Phân Ca Mới
+                </button>
+            }
         </div>
     </div>
 
@@ -243,16 +259,26 @@
                                 <td>
                                     @foreach (var item in assignedList)
                                     {
-                                        <div class="shift-chip position-relative pe-4">
+                                        <div class="shift-chip position-relative @(isAdmin ? "pe-4" : "")">
                                             <div class="emp-name">@(item.User != null ? item.User.full_name : "N/A")</div>
                                             <div class="emp-role">
                                                 <i class="fa-solid fa-user-tag me-1"></i>@(item.User?.Role != null ? item.User.Role.role_name : "Nhân viên")
                                             </div>
-                                            <button type="button" class="btn-close position-absolute top-50 end-0 translate-middle-y me-2"
-                                                    style="font-size: 0.65rem;" onclick="removeAssignedShift('@item.staff_shift_id.Trim()')" title="Hủy ca trực"></button>
+
+                                            <!-- CHỈ ADMIN MỚI CÓ NÚT XÓA HỦY CA -->
+                                            @if (isAdmin)
+                                            {
+                                                <button type="button" class="btn-close position-absolute top-50 end-0 translate-middle-y me-2"
+                                                        style="font-size: 0.65rem;" onclick="removeAssignedShift('@item.staff_shift_id.Trim()')" title="Hủy ca trực"></button>
+                                            }
                                         </div>
                                     }
-                                    <button type="button" class="btn-add-shift" onclick="openAssignModal('@d.ToString("yyyy-MM-dd")', '@sh.shift_id.Trim()')">+ Thêm</button>
+
+                                    <!-- CHỈ ADMIN MỚI CÓ NÚT + THÊM NHANH -->
+                                    @if (isAdmin)
+                                    {
+                                        <button type="button" class="btn-add-shift" onclick="openAssignModal('@d.ToString("yyyy-MM-dd")', '@sh.shift_id.Trim()')">+ Thêm</button>
+                                    }
                                 </td>
                             }
                         </tr>
@@ -263,85 +289,88 @@
     </div>
 </div>
 
-<!-- MODAL PHÂN CA LÀM VIỆC -->
-<div class="modal fade" id="assignShiftModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 20px; border: none; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
-            <form action="@Url.Action("AssignShift", "Shift")" method="post">
-                <div class="modal-header px-4 pt-4 border-0">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #d1fae5; color: #059669;">
-                            <i class="fa-solid fa-calendar-plus fs-5"></i>
+<!-- CHỈ RENDER MODAL PHÂN CA NẾU LÀ ADMIN -->
+@if (isAdmin)
+{
+    <div class="modal fade" id="assignShiftModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 20px; border: none; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+                <form action="@Url.Action("AssignShift", "Shift")" method="post">
+                    <div class="modal-header px-4 pt-4 border-0">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #d1fae5; color: #059669;">
+                                <i class="fa-solid fa-calendar-plus fs-5"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-dark mb-0">Phân Ca Làm Việc</h5>
+                                <p class="text-muted small mb-0">Xếp lịch làm việc cho nhân sự</p>
+                            </div>
                         </div>
-                        <div>
-                            <h5 class="fw-bold text-dark mb-0">Phân Ca Làm Việc</h5>
-                            <p class="text-muted small mb-0">Xếp lịch làm việc cho nhân sự</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body px-4 py-3">
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold">CHỌN NHÂN VIÊN <span class="text-danger">*</span></label>
+                            <select name="UserId" class="form-select select2-assign" style="width: 100%;" required>
+                                <option value="" disabled selected>-- Gõ tên hoặc Mã NV để tìm --</option>
+                                @foreach (var u in users)
+                                {
+                                    <option value="@u.user_id.Trim()">@u.user_id.Trim() - @u.full_name (@(u.Role != null ? u.Role.role_name : ""))</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold">NGÀY LÀM VIỆC <span class="text-danger">*</span></label>
+                            <input type="date" id="modalShiftDate" name="WorkDate" class="form-control bg-light fw-semibold" style="border-radius: 10px; padding: 11px; border: 1px solid #cbd5e1;" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold">CHỌN CA LÀM <span class="text-danger">*</span></label>
+                            <select id="modalShiftId" name="ShiftId" class="form-select bg-light text-dark fw-semibold" style="border-radius: 10px; padding: 11px; border: 1px solid #cbd5e1;" required>
+                                @foreach (var sh in shifts)
+                                {
+                                    <option value="@sh.shift_id.Trim()">@sh.shift_name (@sh.start_time.ToString(@"hh\:mm") - @sh.end_time.ToString(@"hh\:mm"))</option>
+                                }
+                            </select>
                         </div>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body px-4 py-3">
-
-                    <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold">CHỌN NHÂN VIÊN <span class="text-danger">*</span></label>
-                        <select name="UserId" class="form-select select2-assign" style="width: 100%;" required>
-                            <option value="" disabled selected>-- Gõ tên hoặc Mã NV để tìm --</option>
-                            @foreach (var u in users)
-                            {
-                                <option value="@u.user_id.Trim()">@u.user_id.Trim() - @u.full_name (@(u.Role != null ? u.Role.role_name : ""))</option>
-                            }
-                        </select>
+                    <div class="modal-footer px-4 pb-4 border-0">
+                        <button type="button" class="btn btn-light fw-semibold px-4" data-bs-dismiss="modal" style="border-radius: 10px;">Hủy</button>
+                        <button type="submit" class="btn btn-success fw-bold px-4" style="border-radius: 10px; background-color: #10b981; padding: 10px 24px;">Lưu Phân Ca</button>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold">NGÀY LÀM VIỆC <span class="text-danger">*</span></label>
-                        <input type="date" id="modalShiftDate" name="WorkDate" class="form-control bg-light fw-semibold" style="border-radius: 10px; padding: 11px; border: 1px solid #cbd5e1;" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold">CHỌN CA LÀM <span class="text-danger">*</span></label>
-                        <select id="modalShiftId" name="ShiftId" class="form-select bg-light text-dark fw-semibold" style="border-radius: 10px; padding: 11px; border: 1px solid #cbd5e1;" required>
-                            @foreach (var sh in shifts)
-                            {
-                                <option value="@sh.shift_id.Trim()">@sh.shift_name (@sh.start_time.ToString(@"hh\:mm") - @sh.end_time.ToString(@"hh\:mm"))</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer px-4 pb-4 border-0">
-                    <button type="button" class="btn btn-light fw-semibold px-4" data-bs-dismiss="modal" style="border-radius: 10px;">Hủy</button>
-                    <button type="submit" class="btn btn-success fw-bold px-4" style="border-radius: 10px; background-color: #10b981; padding: 10px 24px;">Lưu Phân Ca</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    function openAssignModal(dateStr, shiftId) {
-        document.getElementById('modalShiftDate').value = dateStr;
-        if (shiftId) {
-            document.getElementById('modalShiftId').value = shiftId;
-        }
-        new bootstrap.Modal(document.getElementById('assignShiftModal')).show();
-    }
-
-    function removeAssignedShift(id) {
-        if (!confirm("Bạn có chắc muốn hủy ca làm việc này của nhân viên?")) return;
-        $.post('@Url.Action("DeleteShift", "Shift")', { id: id }, function (res) {
-            if (res.success) {
-                location.reload();
-            } else {
-                alert(res.message);
+    <script>
+        function openAssignModal(dateStr, shiftId) {
+            document.getElementById('modalShiftDate').value = dateStr;
+            if (shiftId) {
+                document.getElementById('modalShiftId').value = shiftId;
             }
-        });
-    }
+            new bootstrap.Modal(document.getElementById('assignShiftModal')).show();
+        }
 
-    $(document).ready(function () {
-        $('.select2-assign').select2({
-            dropdownParent: $('#assignShiftModal'),
-            placeholder: "-- Gõ tên hoặc Mã NV để tìm --",
-            allowClear: true
+        function removeAssignedShift(id) {
+            if (!confirm("Bạn có chắc muốn hủy ca làm việc này của nhân viên?")) return;
+            $.post('@Url.Action("DeleteShift", "Shift")', { id: id }, function (res) {
+                if (res.success) {
+                    location.reload();
+                } else {
+                    alert(res.message);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $('.select2-assign').select2({
+                dropdownParent: $('#assignShiftModal'),
+                placeholder: "-- Gõ tên hoặc Mã NV để tìm --",
+                allowClear: true
+            });
         });
-    });
-</script>
+    </script>
+}
