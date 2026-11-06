@@ -18,11 +18,339 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-   
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="~/Scripts/ScriptHomeIndex.js"></script>
     <link href="~/Css/StyleHomeIndex.css" rel="stylesheet" />
+    <style>
+
+   
+
+        /* NÚT CHAT TRÒN */
+        .chat-toggle {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            width: 60px;
+            height: 60px;
+            border: none;
+            border-radius: 50%;
+            background: #5c3d2e;
+            color: white;
+            font-size: 25px;
+            cursor: pointer;
+            z-index: 9999;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+            transition: all 0.3s ease;
+        }
+
+        .chat-menu-link {
+            color: #8b5e3c;
+            font-weight: bold;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .chat-toggle:hover {
+            transform: scale(1.1);
+            background: #79513d;
+        }
+
+        .chat-menu-link {
+            color: #8b5e3c;
+            font-weight: bold;
+            text-decoration: underline;
+            margin: 0 3px;
+            cursor: pointer;
+        }
+
+        .chat-menu-link:hover {
+           color: #5c3d2e;
+        }
+        .chat-notify {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #28a745;
+            border: 2px solid white;
+            border-radius: 50%;
+            top: 5px;
+            right: 5px;
+        }
+
+        /* KHUNG CHAT */
+        .chat-widget {
+            position: fixed;
+            right: 25px;
+            bottom: 100px;
+            width: 360px;
+            height: 490px;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
+            z-index: 9998;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .chat-widget.active {
+            display: flex;
+            animation: chatAppear 0.25s ease;
+        }
+
+        @@keyframes chatAppear {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* HEADER */
+        .chat-widget-header {
+            background: #5c3d2e;
+            color: white;
+            padding: 13px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .chat-widget-header small {
+            font-size: 11px;
+            color: #eee;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            color: #5c3d2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 19px;
+        }
+
+        .chat-close {
+            border: none;
+            background: transparent;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .chat-close:hover {
+            color: #ffd8b5;
+        }
+
+        /* NỘI DUNG CHAT */
+        .chat-widget-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #fdfaf6;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-widget-body::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .chat-widget-body::-webkit-scrollbar-thumb {
+            background: #d8c5b9;
+            border-radius: 10px;
+        }
+
+        /* TIN NHẮN */
+        .msg-user {
+            display: flex;
+            justify-content: flex-end;
+            margin: 8px 0;
+        }
+
+        .msg-bot {
+            display: flex;
+            justify-content: flex-start;
+            margin: 8px 0;
+        }
+
+        .bubble {
+            display: inline-block;
+            padding: 10px 13px;
+            border-radius: 15px;
+            max-width: 85%;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .bubble-user {
+            background: #5c3d2e;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bubble-bot {
+            display: inline-block;
+            max-width: 85%;
+            padding: 10px 13px;
+            border-radius: 5px 15px 15px 15px;
+            background-color: #f3e5dc;
+            color: #4b362c;
+            font-size: 13px;
+            line-height: 1.5;
+            white-space: normal;
+            overflow-wrap: break-word;
+        }
+
+        /* AVATAR NHỎ CỦA AI */
+        .bot-message-content {
+            display: flex;
+            align-items: flex-end;
+            gap: 7px;
+            max-width: 90%;
+        }
+
+        .bot-small-avatar {
+            width: 25px;
+            height: 25px;
+            min-width: 25px;
+            border-radius: 50%;
+            background: #5c3d2e;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        /* TIN NHẮN CHÀO */
+        .welcome-message {
+            display: flex;
+            justify-content: flex-start;
+            margin: 8px 0;
+        }
+
+        .welcome-message .bubble {
+            max-width: 100%;
+        }
+
+        /* HIỆU ỨNG 3 DẤU CHẤM */
+        .typing-bubble {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 13px 15px;
+            min-width: 55px;
+            height: 38px;
+            background: #f0e5dc;
+            border-radius: 15px;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-dot {
+            width: 7px;
+            height: 7px;
+            background: #8b6b59;
+            border-radius: 50%;
+            animation: typingAnimation 1.2s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @@keyframes typingAnimation {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+
+            30% {
+                transform: translateY(-6px);
+                opacity: 1;
+            }
+        }
+
+        /* KHUNG NHẬP */
+        .chat-widget-footer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            border-top: 1px solid #eee;
+            background: white;
+            flex-shrink: 0;
+        }
+
+        .chat-widget-footer input {
+            border-radius: 20px;
+            font-size: 13px;
+            height: 40px;
+            padding-left: 15px;
+        }
+
+        .chat-widget-footer input:focus {
+            border-color: #a77c64;
+            box-shadow: 0 0 0 0.15rem rgba(92, 61, 46, 0.15);
+        }
+
+        .chat-send {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            border: none;
+            border-radius: 50%;
+            background: #5c3d2e;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .chat-send:hover {
+            background: #79513d;
+        }
+
+        .chat-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* MOBILE */
+        @@media (max-width: 480px) {
+            .chat-widget {
+                right: 10px;
+                bottom: 85px;
+                width: calc(100% - 20px);
+                height: 450px;
+            }
+
+            .chat-toggle {
+                right: 15px;
+                bottom: 15px;
+            }
+        }
+
+    </style>
+
+
 </head>
 <body>
 
@@ -137,7 +465,7 @@
                 </div>
                 <div class="col-12 col-lg-6 d-none d-lg-block">
                     <img src="~/Assets/gioithieu.jpg" class="img-fluid rounded-4 shadow-sm" alt="Giới thiệu LumiTea">
-                    
+
                 </div>
             </div>
         </div>
@@ -199,7 +527,7 @@
                     <div class="product-card h-100">
                         <div class="product-img-box">
                             <img src="~/Assets/banner3.jpg" alt="Matcha">
-                           
+
                         </div>
                         <h6 class="fw-bold text-dark">Matcha Đậu Đỏ</h6>
                         <div class="d-flex justify-content-center gap-3 mt-2 fw-bold" style="color: var(--lumitea-primary);">
@@ -321,6 +649,303 @@
         </div>
     </section>
 
-    
+    @if (userRole == "R03")
+    {
+        <!-- NÚT CHATBOT -->
+        <button type="button" id="chatToggle" class="chat-toggle">
+            <i class="fa-solid fa-comments"></i>
+            <span class="chat-notify"></span>
+        </button>
+
+        <!-- KHUNG CHAT -->
+        <div id="chatWidget" class="chat-widget">
+
+            <!-- HEADER -->
+            <div class="chat-widget-header">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="chat-avatar">
+                        <i class="fa-solid fa-mug-hot"></i>
+                    </div>
+
+                    <div>
+                        <div class="fw-bold">LumiTea AI</div>
+                        <small>
+                            <i class="fa-solid fa-circle text-success me-1"></i>
+                            Đang hoạt động
+                        </small>
+                    </div>
+                </div>
+
+                <button type="button" id="chatClose" class="chat-close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- KHUNG HIỂN THỊ TIN NHẮN -->
+            <div class="chat-widget-body" id="chatBox">
+
+                <!-- TIN NHẮN CHÀO -->
+                <div class="welcome-message">
+                    <div class="bot-message-content">
+                        <div class="bot-small-avatar">
+                            <i class="fa-solid fa-mug-hot"></i>
+                        </div>
+
+                        <div class="bubble bubble-bot">
+                            Xin chào! Em là trợ lý ảo LumiTea. Em có thể giúp bạn tìm món theo khẩu vị, tra cứu giá và tình trạng món, kiểm tra tình trạng đơn hàng. Bạn cần em hỗ trợ gì nào?
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Ô NHẬP TIN NHẮN -->
+            <div class="chat-widget-footer">
+                <input type="text"
+                       id="userMessage"
+                       class="form-control"
+                       placeholder="Nhập câu hỏi của bạn..." />
+
+                <button type="button" id="sendBtn" class="chat-send">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+
+        </div>
+    }
+
+
+    @if (userRole == "R03")
+    {
+        <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const chatToggle = document.getElementById("chatToggle");
+            const chatWidget = document.getElementById("chatWidget");
+            const chatClose = document.getElementById("chatClose");
+            const chatBox = document.getElementById("chatBox");
+            const userMessage = document.getElementById("userMessage");
+            const sendBtn = document.getElementById("sendBtn");
+
+            // MỞ KHUNG CHAT
+            chatToggle.addEventListener("click", function () {
+                chatWidget.classList.toggle("active");
+
+                if (chatWidget.classList.contains("active")) {
+                    userMessage.focus();
+                }
+            });
+
+            // ĐÓNG KHUNG CHAT
+            chatClose.addEventListener("click", function () {
+                chatWidget.classList.remove("active");
+            });
+
+            // CUỘN XUỐNG TIN NHẮN CUỐI
+            function scrollBottom() {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+
+            function renderBotText(bubble, message) {
+                const lines = message.split(/\r?\n/);
+
+                lines.forEach((line, index) => {
+                    if (index > 0) {
+                        bubble.appendChild(document.createElement("br"));
+                    }
+
+                    const linkMatch = line.match(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/);
+
+                    if (linkMatch) {
+                        const before = line.substring(0, linkMatch.index);
+                        const after = line.substring(linkMatch.index + linkMatch[0].length);
+
+                        bubble.appendChild(document.createTextNode(before));
+
+                        const link = document.createElement("a");
+                        link.href = linkMatch[2];
+                        link.textContent = linkMatch[1];
+                        link.className = "chat-menu-link";
+
+                        bubble.appendChild(link);
+                        bubble.appendChild(document.createTextNode(after));
+                    } else {
+                        bubble.appendChild(document.createTextNode(line));
+                    }
+                });
+            }
+
+            function addMessage(message, isUser) {
+
+                const messageDiv = document.createElement("div");
+                messageDiv.className = isUser ? "msg-user" : "msg-bot";
+
+                if (isUser) {
+
+                    const bubble = document.createElement("div");
+                    bubble.className = "bubble bubble-bot";
+
+                    renderBotText(bubble, message);
+
+                    messageDiv.appendChild(bubble);
+
+                } else {
+
+                    const content = document.createElement("div");
+                    content.className = "bot-message-content";
+
+                    const avatar = document.createElement("div");
+                    avatar.className = "bot-small-avatar";
+                    avatar.innerHTML = '<i class="fa-solid fa-mug-hot"></i>';
+
+                    const bubble = document.createElement("div");
+                    bubble.className = "bubble bubble-bot";
+
+                    // Tách đường dẫn và tạo liên kết có thể nhấn
+                    const parts = message.split("/Menu/Index");
+
+                    parts.forEach((part, index) => {
+
+                        bubble.appendChild(document.createTextNode(part));
+
+                        if (index < parts.length - 1) {
+
+                            const link = document.createElement("a");
+                            link.href = '@Url.Action("Index", "Menu")';
+                            link.textContent = "Xem thực đơn";
+                            link.className = "chat-menu-link";
+
+                            bubble.appendChild(link);
+                        }
+                    });
+
+                    content.appendChild(avatar);
+                    content.appendChild(bubble);
+
+                    messageDiv.appendChild(content);
+                }
+
+                chatBox.appendChild(messageDiv);
+                scrollBottom();
+            }
+
+            // HIỂN THỊ 3 DẤU CHẤM ĐANG NHẬP
+            function showTyping() {
+
+                const typingDiv = document.createElement("div");
+                typingDiv.className = "msg-bot";
+                typingDiv.id = "typingIndicator";
+
+                typingDiv.innerHTML = `
+                    <div class="bot-message-content">
+                        <div class="bot-small-avatar">
+                            <i class="fa-solid fa-mug-hot"></i>
+                        </div>
+
+                        <div class="typing-bubble">
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                        </div>
+                    </div>
+                `;
+
+                chatBox.appendChild(typingDiv);
+                scrollBottom();
+            }
+
+            // ẨN 3 DẤU CHẤM
+            function hideTyping() {
+                const typing = document.getElementById("typingIndicator");
+
+                if (typing) {
+                    typing.remove();
+                }
+            }
+
+            // GỬI TIN NHẮN
+            async function sendMsg() {
+
+                const msg = userMessage.value.trim();
+
+                if (!msg || sendBtn.disabled) {
+                    return;
+                }
+
+                // Hiển thị tin nhắn khách hàng
+                addMessage(msg, true);
+
+                userMessage.value = "";
+                sendBtn.disabled = true;
+
+                // Hiện 3 dấu chấm
+                showTyping();
+
+                try {
+
+                    const formData = new URLSearchParams();
+                    formData.append("userMessage", msg);
+
+                    const response = await fetch('@Url.Action("Ask", "ChatBot")', {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("HTTP Error: " + response.status);
+                    }
+
+                    const res = await response.json();
+
+                    // Ẩn dấu chấm khi AI trả lời xong
+                    hideTyping();
+
+                    addMessage(
+                        res.reply || "Em chưa thể xử lý câu hỏi này.",
+                        false
+                    );
+
+                }
+                catch (error) {
+
+                    console.error("Chatbot error:", error);
+
+                    hideTyping();
+
+                    addMessage(
+                        "Xin lỗi! Hiện tại em chưa thể kết nối đến hệ thống. Bạn thử lại sau nhé!",
+                        false
+                    );
+
+                }
+                finally {
+
+                    sendBtn.disabled = false;
+                    userMessage.focus();
+
+                }
+            }
+
+            // CLICK NÚT GỬI
+            sendBtn.addEventListener("click", sendMsg);
+
+            // NHẤN ENTER ĐỂ GỬI
+            userMessage.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    sendMsg();
+                }
+            });
+
+        });
+        </script>
+    }
+
 </body>
 </html>
+
+

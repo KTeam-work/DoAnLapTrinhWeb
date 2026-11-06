@@ -1,0 +1,121 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Chatbot Trà Sữa AI</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <style>
+        .chat-container {
+            max-width: 500px;
+            margin: 40px auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #5c3d2e;
+            color: white;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .chat-box {
+            height: 380px;
+            overflow-y: auto;
+            padding: 15px;
+            background: #fdfaf6;
+        }
+
+        .chat-input {
+            padding: 10px;
+            background: #fff;
+            border-top: 1px solid #ddd;
+        }
+
+        .msg-user {
+            text-align: right;
+            margin: 8px 0;
+            color: #333;
+        }
+
+        .msg-bot {
+            text-align: left;
+            margin: 8px 0;
+            color: #5c3d2e;
+        }
+
+        .bubble {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 12px;
+            max-width: 80%;
+        }
+
+        .bubble-user {
+            background: #d1e7dd;
+        }
+
+        .bubble-bot {
+            background: #f8d7da;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">Trợ Lý Ảo Quán Trà Sữa 🧋</div>
+        <div class="chat-box" id="chatBox">
+            <div class="msg-bot">
+                <span class="bubble bubble-bot">Xin chào! Em có thể giúp gì cho bạn? Bạn có thể hỏi gu vị (thanh mát, béo ngậy), hỏi giá món hoặc kiểm tra mã đơn hàng nhé!</span>
+            </div>
+        </div>
+        <div class="chat-input">
+            <div class="input-group">
+                <input type="text" id="userMessage" class="form-control" placeholder="Nhập câu hỏi... (ví dụ: món nào thanh nhiệt, giá trà đào)" />
+                <span class="input-group-btn">
+                    <button id="sendBtn" class="btn btn-warning" onclick="sendMsg()">Gửi</button>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function sendMsg() {
+            var msg = $("#userMessage").val().trim();
+            if (!msg) return;
+
+            $("#chatBox").append("<div class='msg-user'><span class='bubble bubble-user'><b>Bạn:</b> " + msg + "</span></div>");
+            $("#userMessage").val("");
+            scrollBottom();
+
+            $.ajax({
+                url: '/ChatBot/Ask',
+                type: 'POST',
+                data: { userMessage: msg },
+                success: function (res) {
+                    $("#chatBox").append("<div class='msg-bot'><span class='bubble bubble-bot'><b>Bot:</b> " + res.reply + "</span></div>");
+                    scrollBottom();
+                },
+                error: function () {
+                    $("#chatBox").append("<div class='msg-bot'><span class='bubble bubble-bot' style='color:red;'>Lỗi: Không thể xử lý yêu cầu lúc này.</span></div>");
+                    scrollBottom();
+                }
+            });
+        }
+
+        function scrollBottom() {
+            var box = document.getElementById("chatBox");
+            box.scrollTop = box.scrollHeight;
+        }
+
+        $("#userMessage").on("keypress", function (e) {
+            if (e.which === 13) sendMsg();
+        });
+    </script>
+</body>
+</html>
