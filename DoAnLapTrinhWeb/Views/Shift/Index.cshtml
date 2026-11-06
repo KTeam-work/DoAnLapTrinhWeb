@@ -3,7 +3,9 @@
 @{
     ViewBag.Title = "Điểm Danh Ca Làm Việc";
     string userRole = (Session["UserRole"]?.ToString() ?? "").Trim();
-    if (userRole == "R01" || userRole.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+    bool isAdmin = userRole == "R01" || userRole.Equals("Admin", StringComparison.OrdinalIgnoreCase);
+
+    if (isAdmin)
     {
         Layout = "~/Views/Shared/_AdminLayout.cshtml";
     }
@@ -11,22 +13,18 @@
     {
         Layout = "~/Views/Shared/_StaffLayout.cshtml";
     }
-    var checkedInIds = ViewBag.CheckedInIds as List<string> ?? new List<string>();
+
+    var myShift = ViewBag.MyShiftToday as DoAnLapTrinhWeb.Models.StaffShift;
 }
 
-<!-- Fonts, FontAwesome, jQuery & Select2 -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <style>
     :root {
         --primary-color: #10b981;
-        --primary-dark: #059669;
         --banner-bg-start: #0f382c;
         --banner-bg-end: #165b46;
         --bg-main: #FCF9F2;
@@ -38,7 +36,7 @@
 
     body {
         background-color: var(--bg-main);
-        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-family: 'Plus Jakarta Sans', sans-serif;
         color: #334155;
     }
 
@@ -46,15 +44,6 @@
         font-size: 1.4rem;
         font-weight: 800;
         color: var(--text-dark);
-        letter-spacing: -0.02em;
-    }
-
-    .breadcrumb-custom {
-        font-size: 0.82rem;
-        color: var(--text-muted);
-        display: flex;
-        align-items: center;
-        gap: 6px;
     }
 
     .hero-banner {
@@ -63,26 +52,7 @@
         box-shadow: 0 10px 25px -5px rgba(15, 56, 44, 0.25);
     }
 
-    .hero-orb-1 {
-        width: 250px;
-        height: 250px;
-        background: rgba(52, 211, 153, 0.15);
-        filter: blur(50px);
-        top: -50px;
-        right: -50px;
-        border-radius: 50%;
-    }
-
-    .live-clock-card {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 16px;
-        padding: 16px 24px;
-        color: #fff;
-    }
-
-    .btn-checkin-glow {
+    .btn-action-in {
         background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
         color: #fff !important;
         border: none;
@@ -94,13 +64,21 @@
         align-items: center;
         gap: 10px;
         box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-        transition: all 0.2s ease;
     }
 
-        .btn-checkin-glow:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.55);
-        }
+    .btn-action-out {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+        color: #fff !important;
+        border: none;
+        font-weight: 700;
+        font-size: 1rem;
+        padding: 12px 28px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    }
 
     .app-card {
         background: var(--card-bg);
@@ -119,23 +97,22 @@
         .custom-table thead th {
             background-color: #f8fafc !important;
             color: #64748b;
-            font-size: 0.72rem;
+            font-size: 0.75rem;
             font-weight: 700;
-            letter-spacing: 0.8px;
             text-transform: uppercase;
-            padding: 16px 20px;
+            padding: 14px 16px;
             border: none;
         }
 
         .custom-table tbody td {
-            padding: 16px 20px;
+            padding: 14px 16px;
             vertical-align: middle;
             border-bottom: 1px solid var(--border-color);
             font-size: 0.88rem;
         }
 
     .status-badge {
-        padding: 5px 12px;
+        padding: 4px 10px;
         border-radius: 20px;
         font-size: 0.78rem;
         font-weight: 700;
@@ -149,50 +126,14 @@
         color: #15803d;
     }
 
+    .status-completed {
+        background-color: #e0f2fe;
+        color: #0369a1;
+    }
+
     .status-pending {
         background-color: #fef3c7;
         color: #b45309;
-    }
-
-    .pin-input {
-        width: 50px;
-        height: 55px;
-        text-align: center;
-        font-size: 1.5rem;
-        font-weight: 800;
-        border-radius: 12px;
-        border: 2px solid #cbd5e1;
-        background-color: #f8fafc;
-        transition: all 0.2s;
-    }
-
-        .pin-input:focus {
-            border-color: #10b981;
-            background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
-            outline: none;
-        }
-
-    .select2-container--default .select2-selection--single {
-        height: 48px !important;
-        border-radius: 12px !important;
-        border: 1px solid #cbd5e1 !important;
-        display: flex !important;
-        align-items: center !important;
-        background-color: #f8fafc !important;
-    }
-
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: #1e293b !important;
-            font-weight: 600 !important;
-            padding-left: 14px !important;
-        }
-
-    .select2-dropdown {
-        border-radius: 12px !important;
-        border: 1px solid #e2e8f0 !important;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
-        z-index: 1060 !important;
     }
 </style>
 
@@ -214,17 +155,11 @@
         </div>
     }
 
-    <!-- 1. Header Navigation -->
+    <!-- 1. Tiêu đề trang -->
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
         <div>
-            <h1 class="page-title mb-1">Trạm Điểm Danh Ca Làm Việc</h1>
-            <div class="breadcrumb-custom">
-                <i class="fa-solid fa-house"></i>
-                <span>/</span>
-                <span>Vận hành</span>
-                <span>/</span>
-                <span class="text-dark fw-semibold">Điểm danh ca</span>
-            </div>
+            <h1 class="page-title mb-1">Trạm Chấm Công - Điểm Danh</h1>
+            <div class="text-muted small">Quản lý và ghi nhận giờ vào ca, ra ca thực tế</div>
         </div>
         <div class="d-flex gap-2">
             <a href="@Url.Action("Schedule", "Shift")" class="btn btn-outline-success fw-bold px-3 py-2 text-decoration-none" style="border-radius: 12px;">
@@ -233,50 +168,82 @@
         </div>
     </div>
 
-    <!-- 2. Hero Banner - Quick Check-in -->
+    <!-- 2. Hero Banner: Khu vực chấm công của nhân viên đang đăng nhập -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="p-4 p-md-5 hero-banner position-relative overflow-hidden">
-                <div class="position-absolute hero-orb-1"></div>
-
-                <div class="row align-items-center position-relative z-1 g-4">
-                    <div class="col-lg-7">
-                        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white bg-opacity-25 mb-3 text-white fs-7 border border-white border-opacity-25 shadow-sm">
-                            <span class="d-inline-block rounded-circle bg-success" style="width: 8px; height: 8px;"></span>
-                            Trạm Điểm Danh LumiTea POS
+            <div class="p-4 p-md-5 hero-banner position-relative overflow-hidden text-white">
+                <div class="row align-items-center g-4">
+                    <div class="col-lg-8">
+                        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white bg-opacity-25 mb-3 fs-7">
+                            <span class="rounded-circle bg-success" style="width: 8px; height: 8px;"></span>
+                            Phiên làm việc: @(Session["UserName"] ?? "Nhân viên") (#@(Session["UserId"] ?? ""))
                         </div>
-                        <h2 class="fw-extrabold text-white mb-2">Chấm Công Vào Ca Trực Nhanh</h2>
-                        <p class="text-white mb-4 fs-6" style="opacity: 0.85;">Chọn nhân viên có lịch trực hôm nay và nhập mã PIN 4 số để ghi nhận có mặt.</p>
 
-                        <button class="btn-checkin-glow" data-bs-toggle="modal" data-bs-target="#quickCheckInModal">
-                            <i class="fa-solid fa-fingerprint fs-4"></i> ĐIỂM DANH VÀO CA TRỰC
-                        </button>
+                        @if (myShift != null)
+                        {
+                            <h2 class="fw-bold mb-2">Hôm nay bạn có ca: @(myShift.Shift != null ? myShift.Shift.shift_name : "")</h2>
+                            <p class="mb-4 opacity-75">
+                                Khung giờ quy định: <b>@(myShift.Shift != null ? myShift.Shift.start_time.ToString(@"hh\:mm") + " - " + myShift.Shift.end_time.ToString(@"hh\:mm") : "")</b>
+                            </p>
+
+                            if (myShift.check_in == null)
+                            {
+                                using (Html.BeginForm("CheckIn", "Shift", FormMethod.Post, new { @class = "d-inline" }))
+                                {
+                                    <input type="hidden" name="staffShiftId" value="@myShift.staff_shift_id" />
+                                    <button type="submit" class="btn-action-in">
+                                        <i class="fa-solid fa-right-to-bracket fs-5"></i> BẤM VÀO CA
+                                    </button>
+                                }
+                            }
+                            else if (myShift.check_out == null)
+                            {
+                                <div class="d-flex align-items-center gap-3 flex-wrap">
+                                    <div class="bg-white bg-opacity-20 px-3 py-2 rounded-3">
+                                        <i class="fa-regular fa-clock me-1"></i> Giờ vào ca: <b>@myShift.check_in.Value.ToString("HH:mm:ss")</b>
+                                    </div>
+                                    <button type="button" class="btn-action-out" onclick="handleCheckOut('@myShift.staff_shift_id')">
+                                        <i class="fa-solid fa-right-from-bracket fs-5"></i> BẤM RA CA
+                                    </button>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-light text-dark fw-bold d-inline-flex align-items-center gap-2 mb-0 rounded-3">
+                                    <i class="fa-solid fa-circle-check text-success fs-5"></i>
+                                    Bạn đã hoàn thành ca làm việc hôm nay! (Tổng: @myShift.total_hours giờ)
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <h3 class="fw-bold mb-2">Hôm nay bạn không có lịch phân ca</h3>
+                            <p class="mb-0 opacity-75">Nếu cần đăng ký bổ sung, vui lòng liên hệ quản lý để được xếp ca.</p>
+                        }
                     </div>
 
-                    <div class="col-lg-5 d-flex justify-content-lg-end">
-                        <div class="live-clock-card text-center text-lg-start">
-                            <div class="text-white-50 text-uppercase fw-bold fs-7 mb-1"><i class="fa-regular fa-clock me-1"></i> Thời Gian Hiện Tại</div>
-                            <div id="liveClock" class="fw-bold display-5 text-white my-1" style="font-family: monospace;">00:00:00</div>
-                            <div id="liveDate" class="text-white fw-medium fs-6" style="opacity: 0.9;">Đang tải...</div>
+                    <div class="col-lg-4 d-flex justify-content-lg-end">
+                        <div class="text-center text-lg-end">
+                            <div class="opacity-75 small text-uppercase fw-bold"><i class="fa-regular fa-clock me-1"></i> Đồng hồ hệ thống</div>
+                            <div id="liveClock" class="fw-bold display-5 my-1" style="font-family: monospace;">00:00:00</div>
+                            <div id="liveDate" class="small opacity-75">Đang cập nhật...</div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
-    <!-- 3. Bảng Trạng Thái Ca Làm Việc Hôm Nay -->
+    <!-- 3. Bảng danh sách ca trực hôm nay (Giám sát) -->
     <div class="app-card">
         <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
             <div>
                 <h5 class="fw-bold text-dark mb-1">Danh Sách Ca Làm Hôm Nay (@(Model?.Count() ?? 0) Nhân viên)</h5>
-                <p class="text-muted small mb-0">Theo dõi trạng thái điểm danh thực tế của nhân viên trong ngày</p>
+                <p class="text-muted small mb-0">Theo dõi giờ vào, giờ ra và tổng thời gian làm việc thực tế</p>
             </div>
-
-            <div class="d-flex align-items-center gap-2">
-                <input type="text" id="searchTableInput" class="form-control bg-light border-0 small" style="border-radius: 10px; padding: 9px 14px;" placeholder="Lọc nhanh danh sách...">
-                <input type="date" class="form-control border-0 bg-light text-muted fw-semibold shadow-sm" style="border-radius: 10px; font-size: 0.88rem; padding: 9px 14px;" value="@ViewBag.SelectedDate" readonly>
+            <div class="d-flex gap-2">
+                <input type="text" id="searchTableInput" class="form-control bg-light border-0 small" style="border-radius: 10px;" placeholder="Tìm nhân viên...">
+                <input type="date" class="form-control bg-light border-0" style="border-radius: 10px;" value="@ViewBag.SelectedDate" readonly />
             </div>
         </div>
 
@@ -286,11 +253,14 @@
                     <tr>
                         <th>NHÂN VIÊN</th>
                         <th>CA ĐĂNG KÝ</th>
-                        <th>GIỜ BẮT ĐẦU</th>
-                        <th>GIỜ KẾT THÚC</th>
-                        <th>TỔNG GIỜ</th>
+                        <th>GIỜ VÀO THỰC TẾ</th>
+                        <th>GIỜ RA THỰC TẾ</th>
+                        <th>TỔNG GIỜ LÀM</th>
                         <th>TRẠNG THÁI</th>
-                        <th class="text-end">THAO TÁC</th>
+                        @if (isAdmin)
+                        {
+                            <th class="text-end">THAO TÁC</th>
+                        }
                     </tr>
                 </thead>
                 <tbody>
@@ -298,49 +268,62 @@
                     {
                         foreach (var item in Model)
                         {
-                            var start = item.Shift != null ? item.Shift.start_time : TimeSpan.Zero;
-                            var end = item.Shift != null ? item.Shift.end_time : TimeSpan.Zero;
-                            var totalHours = Math.Round((end - start).TotalHours, 1);
-                            var isCheckedIn = checkedInIds.Contains(item.user_id.Trim());
+                            bool hasCheckedIn = item.check_in != null;
+                            bool hasCheckedOut = item.check_out != null;
 
                             <tr>
                                 <td>
                                     <div class="fw-bold text-dark">@(item.User != null ? item.User.full_name : "N/A")</div>
-                                    <div class="text-muted small font-monospace">Mã: #@item.user_id.Trim() • @(item.User?.Role != null ? item.User.Role.role_name : "")</div>
+                                    <div class="text-muted small">Mã NV: #@item.user_id.Trim()</div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-light text-dark border fw-bold px-2 py-1">
+                                    <span class="badge bg-light text-dark border">
                                         @(item.Shift != null ? item.Shift.shift_name : "N/A")
                                     </span>
                                 </td>
-                                <td class="fw-semibold text-dark">@start.ToString(@"hh\:mm")</td>
-                                <td class="fw-semibold text-muted">@end.ToString(@"hh\:mm")</td>
-                                <td class="fw-bold text-success">@(totalHours > 0 ? $"{totalHours}h" : "--")</td>
                                 <td>
-                                    @if (isCheckedIn)
+                                    @(hasCheckedIn ? item.check_in.Value.ToString("HH:mm:ss") : "--:--")
+                                </td>
+                                <td>
+                                    @(hasCheckedOut ? item.check_out.Value.ToString("HH:mm:ss") : "--:--")
+                                </td>
+                                <td class="fw-bold text-success">
+                                    @(hasCheckedOut && item.total_hours != null ? $"{item.total_hours}h" : "--")
+                                </td>
+                                <td>
+                                    @if (!hasCheckedIn)
+                                    {
+                                        <span class="status-badge status-pending">
+                                            <i class="fa-regular fa-clock"></i> Chưa vào ca
+                                        </span>
+                                    }
+                                    else if (!hasCheckedOut)
                                     {
                                         <span class="status-badge status-working">
-                                            <i class="fa-solid fa-circle-check"></i> Đang trực (Đã điểm danh)
+                                            <i class="fa-solid fa-spinner fa-spin"></i> Đang làm việc
                                         </span>
                                     }
                                     else
                                     {
-                                        <span class="status-badge status-pending">
-                                            <i class="fa-regular fa-clock"></i> Chưa điểm danh
+                                        <span class="status-badge status-completed">
+                                            <i class="fa-solid fa-circle-check"></i> Đã hoàn thành
                                         </span>
                                     }
                                 </td>
-                                <td class="text-end">
-                                    @if (isCheckedIn)
-                                    {
-                                        <button class="btn btn-sm btn-outline-danger fw-semibold me-1" onclick="checkOutStaff('@item.user_id.Trim()')" title="Xác nhận ra ca">
-                                            <i class="fa-solid fa-right-from-bracket me-1"></i> Ra ca
+                                @if (isAdmin)
+                                {
+                                    <td class="text-end">
+                                        @if (hasCheckedIn && !hasCheckedOut)
+                                        {
+                                            <button class="btn btn-sm btn-outline-danger me-1" onclick="handleCheckOut('@item.staff_shift_id')" title="Ra ca hộ nhân viên">
+                                                <i class="fa-solid fa-right-from-bracket"></i> Ra ca
+                                            </button>
+                                        }
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="deleteShift('@item.staff_shift_id')" title="Hủy ca trực">
+                                            <i class="fa-solid fa-trash-can"></i>
                                         </button>
-                                    }
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="deleteShift('@item.staff_shift_id.Trim()')" title="Hủy ca trực">
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </td>
+                                    </td>
+                                }
                             </tr>
                         }
                     }
@@ -348,81 +331,12 @@
                     {
                         <tr>
                             <td colspan="7" class="text-center py-4 text-muted">
-                                <i class="fa-solid fa-calendar-xmark me-1"></i> Hôm nay chưa có nhân viên nào được phân ca. Vui lòng sang tab <b>"Bảng Phân Ca Tuần"</b> để xếp ca trước!
+                                Không có ca làm việc nào được phân công hôm nay.
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
-        </div>
-    </div>
-</div>
-
-<!-- MODAL ĐIỂM DANH: CHỈ LỌC NHÂN VIÊN ĐƯỢC PHÂN CA HÔM NAY -->
-<div class="modal fade" id="quickCheckInModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 20px; border: none; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
-            <div class="modal-header px-4 pt-4 border-0 text-center d-block position-relative">
-                <button type="button" class="btn-close position-absolute top-0 end-0 m-4" data-bs-dismiss="modal"></button>
-                <div class="mx-auto rounded-circle d-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px; background-color: #d1fae5; color: #059669;">
-                    <i class="fa-solid fa-fingerprint fs-2"></i>
-                </div>
-                <h4 class="fw-bold text-dark mb-1">Điểm Danh Vào Ca Trực</h4>
-                <p class="text-muted small mb-0">Chỉ nhân viên có lịch trực hôm nay mới được phép điểm danh</p>
-            </div>
-
-            <form action="@Url.Action("CheckIn", "Shift")" method="post">
-                <div class="modal-body px-4 py-3">
-
-                    <!-- DROPDOWN CHỈ LẤY NHÂN VIÊN CÓ CA HÔM NAY -->
-                    <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold">CHỌN NHÂN VIÊN VÀO CA HÔM NAY <span class="text-danger">*</span></label>
-                        <select id="selectEmpCheckIn" name="EmployeeCode" class="form-select select2-employee" style="width: 100%;" required>
-                            <option value="" disabled selected>-- Chọn nhân viên có ca trực hôm nay --</option>
-                            @if (Model != null && Model.Any())
-                            {
-                                foreach (var item in Model)
-                                {
-                                    var isChecked = checkedInIds.Contains(item.user_id.Trim());
-                                    var sh = item.Shift;
-                                    var u = item.User;
-                                    if (u != null)
-                                    {
-                                        <option value="@u.user_id.Trim()" @(isChecked ? "disabled" : "")>
-                                            @u.user_id.Trim() - @u.full_name [Ca: @(sh != null ? sh.shift_name : "N/A") (@(sh != null ? sh.start_time.ToString(@"hh\:mm") + " - " + sh.end_time.ToString(@"hh\:mm") : ""))] @(isChecked ? " - (ĐÃ ĐIỂM DANH)" : "")
-                                        </option>
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                <option value="" disabled>Hôm nay chưa có nhân viên nào được phân ca!</option>
-                            }
-                        </select>
-                        <small class="text-muted d-block mt-1">
-                            <i class="fa-solid fa-circle-info text-primary me-1"></i> Hệ thống tự động lọc danh sách theo lịch trực hôm nay.
-                        </small>
-                    </div>
-
-                    <!-- MÃ PIN 4 SỐ -->
-                    <div class="mb-4 text-center mt-3">
-                        <label class="form-label text-muted small fw-bold d-block mb-1">MÃ PIN XÁC NHẬN (4 SỐ) <span class="text-danger">*</span></label>
-                        <span class="text-muted small d-block mb-2" style="font-size: 0.75rem;">(Mặc định: <b>1234</b> hoặc 4 số cuối SĐT nhân viên)</span>
-                        <div class="d-flex justify-content-center gap-2">
-                            <input type="password" maxlength="1" class="pin-input" required onkeyup="moveNext(this, 1)">
-                            <input type="password" maxlength="1" class="pin-input" required onkeyup="moveNext(this, 2)">
-                            <input type="password" maxlength="1" class="pin-input" required onkeyup="moveNext(this, 3)">
-                            <input type="password" maxlength="1" class="pin-input" required onkeyup="moveNext(this, 4)">
-                        </div>
-                        <input type="hidden" id="fullPin" name="PinCode" />
-                    </div>
-                </div>
-                <div class="modal-footer px-4 pb-4 border-0">
-                    <button type="submit" class="btn-checkin-glow w-100 justify-content-center" onclick="combinePin()">
-                        XÁC NHẬN ĐIỂM DANH
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
@@ -436,21 +350,9 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    function moveNext(elem, index) {
-        if (elem.value.length === 1 && index < 4) {
-            document.querySelectorAll('.pin-input')[index].focus();
-        }
-    }
-
-    function combinePin() {
-        let pin = '';
-        document.querySelectorAll('.pin-input').forEach(input => pin += input.value);
-        document.getElementById('fullPin').value = pin;
-    }
-
-    function checkOutStaff(code) {
-        if (!confirm("Xác nhận cho nhân viên #" + code + " kết thúc ca trực (Ra ca)?")) return;
-        $.post('@Url.Action("CheckOut", "Shift")', { employeeCode: code }, function (res) {
+    function handleCheckOut(staffShiftId) {
+        if (!confirm("Xác nhận bạn muốn kết thúc ca làm việc (Ra ca)?")) return;
+        $.post('@Url.Action("CheckOut", "Shift")', { staffShiftId: staffShiftId }, function (res) {
             if (res.success) {
                 alert(res.message);
                 location.reload();
@@ -464,7 +366,6 @@
         if (!confirm("Bạn có chắc chắn muốn hủy ca trực này?")) return;
         $.post('@Url.Action("DeleteShift", "Shift")', { id: id }, function (res) {
             if (res.success) {
-                alert(res.message);
                 location.reload();
             } else {
                 alert(res.message);
@@ -473,16 +374,10 @@
     }
 
     $(document).ready(function () {
-        $('.select2-employee').select2({
-            dropdownParent: $('#quickCheckInModal'),
-            placeholder: "-- Chọn nhân viên có ca trực hôm nay --",
-            allowClear: true
-        });
-
         $("#searchTableInput").on("keyup", function () {
             var value = $(this).val().toLowerCase();
             $("#shiftTable tbody tr").filter(function () {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
             });
         });
     });

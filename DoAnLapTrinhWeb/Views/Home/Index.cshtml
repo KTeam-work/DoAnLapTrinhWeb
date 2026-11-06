@@ -1,15 +1,15 @@
 ﻿@{
     ViewBag.Title = "Trang Chủ - LumiTea";
+
     string userRole = (Session["UserRole"]?.ToString() ?? "").Trim();
+
     if (userRole == "R02")
     {
         Layout = "~/Views/Shared/_StaffLayout.cshtml";
     }
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -25,7 +25,7 @@
     <link href="~/Css/StyleHomeIndex.css" rel="stylesheet" />
     <style>
 
-   
+
 
         /* NÚT CHAT TRÒN */
         .chat-toggle {
@@ -65,9 +65,10 @@
             cursor: pointer;
         }
 
-        .chat-menu-link:hover {
-           color: #5c3d2e;
-        }
+            .chat-menu-link:hover {
+                color: #5c3d2e;
+            }
+
         .chat-notify {
             position: absolute;
             width: 12px;
@@ -96,10 +97,10 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        .chat-widget.active {
-            display: flex;
-            animation: chatAppear 0.25s ease;
-        }
+            .chat-widget.active {
+                display: flex;
+                animation: chatAppear 0.25s ease;
+            }
 
         @@keyframes chatAppear {
             from {
@@ -124,10 +125,10 @@
             flex-shrink: 0;
         }
 
-        .chat-widget-header small {
-            font-size: 11px;
-            color: #eee;
-        }
+            .chat-widget-header small {
+                font-size: 11px;
+                color: #eee;
+            }
 
         .chat-avatar {
             width: 40px;
@@ -149,9 +150,9 @@
             cursor: pointer;
         }
 
-        .chat-close:hover {
-            color: #ffd8b5;
-        }
+            .chat-close:hover {
+                color: #ffd8b5;
+            }
 
         /* NỘI DUNG CHAT */
         .chat-widget-body {
@@ -163,14 +164,14 @@
             flex-direction: column;
         }
 
-        .chat-widget-body::-webkit-scrollbar {
-            width: 5px;
-        }
+            .chat-widget-body::-webkit-scrollbar {
+                width: 5px;
+            }
 
-        .chat-widget-body::-webkit-scrollbar-thumb {
-            background: #d8c5b9;
-            border-radius: 10px;
-        }
+            .chat-widget-body::-webkit-scrollbar-thumb {
+                background: #d8c5b9;
+                border-radius: 10px;
+            }
 
         /* TIN NHẮN */
         .msg-user {
@@ -244,9 +245,9 @@
             margin: 8px 0;
         }
 
-        .welcome-message .bubble {
-            max-width: 100%;
-        }
+            .welcome-message .bubble {
+                max-width: 100%;
+            }
 
         /* HIỆU ỨNG 3 DẤU CHẤM */
         .typing-bubble {
@@ -269,13 +270,13 @@
             animation: typingAnimation 1.2s infinite ease-in-out;
         }
 
-        .typing-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
+            .typing-dot:nth-child(2) {
+                animation-delay: 0.2s;
+            }
 
-        .typing-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
+            .typing-dot:nth-child(3) {
+                animation-delay: 0.4s;
+            }
 
         @@keyframes typingAnimation {
             0%, 60%, 100% {
@@ -300,17 +301,17 @@
             flex-shrink: 0;
         }
 
-        .chat-widget-footer input {
-            border-radius: 20px;
-            font-size: 13px;
-            height: 40px;
-            padding-left: 15px;
-        }
+            .chat-widget-footer input {
+                border-radius: 20px;
+                font-size: 13px;
+                height: 40px;
+                padding-left: 15px;
+            }
 
-        .chat-widget-footer input:focus {
-            border-color: #a77c64;
-            box-shadow: 0 0 0 0.15rem rgba(92, 61, 46, 0.15);
-        }
+                .chat-widget-footer input:focus {
+                    border-color: #a77c64;
+                    box-shadow: 0 0 0 0.15rem rgba(92, 61, 46, 0.15);
+                }
 
         .chat-send {
             width: 40px;
@@ -324,14 +325,14 @@
             transition: 0.2s;
         }
 
-        .chat-send:hover {
-            background: #79513d;
-        }
+            .chat-send:hover {
+                background: #79513d;
+            }
 
-        .chat-send:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+            .chat-send:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
 
         /* MOBILE */
         @@media (max-width: 480px) {
@@ -347,19 +348,17 @@
                 bottom: 15px;
             }
         }
-
     </style>
 
 
-</head>
-<body>
+
 
     <!-- KHỐI 1: CAROUSEL ĐỘNG -->
     <div class="carousel-container" id="mainCarousel">
         <div class="list">
 
             <!-- Slide 1 (Dành cho banner5.jpg - Trà trái cây) -->
-            <div class="item">
+            <div class="item" style="color: #FFFDF5 ">
                 <img src="~/Assets/banner5.jpg" alt="Trà Trái Cây Giải Nhiệt">
                 <div class="content">
                     <div class="author">LUMI TEA VN</div>
@@ -374,7 +373,7 @@
             </div>
 
             <!-- Slide 2 (Dành cho banner4.jpg - Hello Summer) -->
-            <div class="item">
+            <div class="item" style="color: #FFFDF5 ">
                 <img src="~/Assets/banner4.jpg" alt="Bộ sưu tập Hello Summer">
                 <div class="content">
                     <div class="author">LUMI TEA VN</div>
@@ -389,7 +388,7 @@
             </div>
 
             <!-- Slide 3 (Dành cho banner2.jpg - Sinh tố bơ) -->
-            <div class="item">
+            <div class="item" style="color: #FFFDF5 ">
                 <img src="~/Assets/banner2.jpg" alt="Sinh tố bơ Delicious Avocado">
                 <div class="content">
                     <div class="author">LUMI TEA VN</div>
@@ -404,7 +403,7 @@
             </div>
 
             <!-- Slide 4 (Dành cho banner1.jpg - Healthy Menu) -->
-            <div class="item">
+            <div class="item" style="color: #FFFDF5 ">
                 <img src="~/Assets/banner1.jpg" alt="Healthy Menu">
                 <div class="content">
                     <div class="author">LUMI TEA VN</div>
@@ -945,7 +944,5 @@
         </script>
     }
 
-</body>
-</html>
 
 
