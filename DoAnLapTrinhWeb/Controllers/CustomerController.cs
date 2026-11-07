@@ -83,7 +83,7 @@ namespace DoAnLapTrinhWeb.Controllers
 
         // 4. THÊM KHÁCH HÀNG MỚI (MODAL TRANG INDEX)
         [HttpPost]
-        public JsonResult AddCustomer(string name, string phone, string email, string rank)
+        public JsonResult AddCustomer(string name, string phone, string email, DateTime? birthday, string rank)
         {
             try
             {
@@ -111,6 +111,7 @@ namespace DoAnLapTrinhWeb.Controllers
                     full_name = name.Trim(),
                     phone = phone,
                     email = !string.IsNullOrWhiteSpace(email) ? email.Trim() : null,
+                    birthday = birthday, // <--- BỔ SUNG GÁN NGÀY SINH TẠI ĐÂY
                     loyalty_point = initialPoints,
                     created_at = DateTime.Now
                 };
@@ -120,9 +121,16 @@ namespace DoAnLapTrinhWeb.Controllers
 
                 return Json(new { success = true, message = "Thêm khách hàng thành công!" });
             }
+            catch (System.Data.Entity.Validation.DbEntityValidationException ex)
+            {
+                var errorMessages = ex.EntityValidationErrors
+                    .SelectMany(x => x.ValidationErrors)
+                    .Select(x => x.ErrorMessage);
+                return Json(new { success = false, message = "Lỗi dữ liệu: " + string.Join("; ", errorMessages) });
+            }
             catch (Exception ex)
             {
-                var inner = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                var inner = ex.InnerException?.InnerException?.Message ?? ex.InnerException?.Message ?? ex.Message;
                 return Json(new { success = false, message = "Lỗi khi thêm: " + inner });
             }
         }

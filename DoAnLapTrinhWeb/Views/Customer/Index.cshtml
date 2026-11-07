@@ -300,6 +300,13 @@
                         <label class="form-label text-muted small fw-semibold">Email</label>
                         <input type="email" id="addEmail" class="form-control form-saas" placeholder="khachhang@gmail.com">
                     </div>
+
+    
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-semibold">Ngày sinh (Ưu đãi sinh nhật)</label>
+                        <input type="date" id="addBirthday" class="form-control form-saas">
+                    </div>
+
                     <div class="mb-3">
                         <label class="form-label text-muted small fw-semibold">Hạng thành viên khởi tạo</label>
                         <select id="addRank" class="form-select form-saas">
@@ -403,26 +410,33 @@
     }
 
     function handleAddCustomer() {
-        const name = document.getElementById('addName').value.trim();
-        const phone = document.getElementById('addPhone').value.trim();
-        const email = document.getElementById('addEmail').value.trim();
-        const rank = document.getElementById('addRank').value;
+    const name = document.getElementById('addName').value.trim();
+    const phone = document.getElementById('addPhone').value.trim();
+    const email = document.getElementById('addEmail').value.trim();
+    const birthday = document.getElementById('addBirthday').value; // <--- LẤY GIÁ TRỊ NGÀY SINH
+    const rank = document.getElementById('addRank').value;
 
-        $.ajax({
-            url: '@Url.Action("AddCustomer", "Customer")',
-            type: 'POST',
-            data: { name: name, phone: phone, email: email, rank: rank },
-            success: function (res) {
-                if (res.success) {
-                    alert(res.message);
-                    location.reload();
-                } else {
-                    alert(res.message);
-                }
-            },
-            error: function () {
-                alert("Lỗi kết nối máy chủ!");
+    $.ajax({
+        url: '@Url.Action("AddCustomer", "Customer")',
+        type: 'POST',
+        data: {
+            name: name,
+            phone: phone,
+            email: email,
+            birthday: birthday, // <--- TRUYỀN THÊM VÀO AJAX
+            rank: rank
+        },
+        success: function (res) {
+            if (res.success) {
+                alert(res.message);
+                location.reload();
+            } else {
+                alert(res.message);
             }
-        });
-    }
+        },
+        error: function () {
+            alert("Lỗi kết nối máy chủ!");
+        }
+    });
+}
 </script>
