@@ -103,9 +103,21 @@
         <div class="col-md-5 col-lg-4 cart-section">
             <div class="p-3 border-bottom bg-light">
                 <div class="row g-2 mb-2">
-                    <div class="col-12">
-                        <input type="text" id="posPhone" class="form-control form-control-sm" placeholder="SĐT Khách (Tích điểm)">
+                    <div class="col-12 position-relative">
+                        <input type="text" id="posPhone" class="form-control form-control-sm" placeholder="SĐT Khách (Tra cứu & Tích điểm)" maxlength="10">
                         <span id="phoneError" class="text-danger small fw-bold" style="display: none;"></span>
+
+                        <!-- KHUNG HIỂN THỊ ĐIỂM -->
+                        <div id="loyaltySection" class="mt-2 p-2 border rounded bg-white shadow-sm" style="display: none;">
+                            <div class="small fw-bold text-success mb-1" id="loyaltyCusName">Khách: ...</div>
+                            <div class="small text-muted mb-2">Đang có: <strong id="loyaltyCusPoints" class="text-primary">0</strong> điểm</div>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light" style="font-size: 0.75rem;">Dùng</span>
+                                <input type="number" id="posUsePoints" class="form-control" placeholder="0" min="0">
+                                <span class="input-group-text bg-light" style="font-size: 0.75rem;">điểm</span>
+                            </div>
+                            <div id="pointError" class="text-danger small fw-bold mt-1" style="display: none;"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="input-group input-group-sm">
@@ -152,7 +164,6 @@
                 <input type="hidden" id="modalBasePrice">
                 <input type="hidden" id="modalFinalPrice">
 
-                <!-- CHỌN SIZE (Chỉ hiện Size của đúng món đang chọn) -->
                 <h6 class="fw-bold text-success mt-2 border-bottom pb-1">Kích cỡ (Size)</h6>
                 <div class="row g-2 mb-3" id="sizeOptionsContainer">
                     @if (sizes != null && sizes.Any())
@@ -169,13 +180,8 @@
                             </div>
                         }
                     }
-                    else
-                    {
-                        <div class="text-danger small">Vui lòng thêm Size trong quản trị!</div>
-                    }
                 </div>
 
-                <!-- CHỌN TOPPING -->
                 <h6 class="fw-bold text-success mt-2 border-bottom pb-1">Topping (Thêm hạt)</h6>
                 <div class="row g-2 mb-3" style="max-height: 150px; overflow-y: auto;">
                     @if (toppings != null && toppings.Any())
@@ -193,13 +199,8 @@
                             </div>
                         }
                     }
-                    else
-                    {
-                        <div class="text-muted small">Không có topping khả dụng.</div>
-                    }
                 </div>
 
-                <!-- GHI CHÚ MÓN (Ít đá, ít ngọt...) -->
                 <h6 class="fw-bold text-success mt-2 border-bottom pb-1">Ghi chú món</h6>
                 <input type="text" id="modalItemNote" class="form-control form-control-sm" placeholder="VD: Ít đá, 50% đường, để đá riêng...">
 
@@ -213,8 +214,10 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     let posCart = [];
+    let maxCusPoints = 0;
 
     // 1. Mở Modal và lọc đúng Size của sản phẩm được chọn
     function openProductModal(id, name, basePrice) {
@@ -224,17 +227,13 @@
         $('#modalBasePrice').val(basePrice);
         $('#modalItemNote').val('');
 
-        // Ẩn toàn bộ size, chỉ hiện những size thuộc về product_id này
         $('.size-option-item').hide();
         $('.size-radio').prop('checked', false);
 
         let matchingSizes = $(`.size-option-item[data-product-id="${cleanId}"]`);
         matchingSizes.show();
-
-        // Tự động chọn Size đầu tiên của món đó (thường là Size M)
         matchingSizes.first().find('.size-radio').prop('checked', true);
 
-        // Bỏ chọn toàn bộ topping cũ
         $('.topping-checkbox').prop('checked', false);
 
         calculateModalPrice();
@@ -279,7 +278,6 @@
             arrTopNames.push($(this).data('name'));
         });
 
-        // Cùng món + Cùng Size + Cùng Topping + Cùng Ghi chú => Gộp số lượng. Khác ghi chú => Tách dòng.
         let topKey = arrTopIds.slice().sort().join('_');
         let cartKey = pId + "_" + sId + "_" + topKey + "_" + itemNote.toLowerCase();
 
@@ -320,7 +318,7 @@
         }
     }
 
-    // 5. Vẽ lại giỏ hàng
+    // 5. Vẽ lại giỏ hàng (Chỉ hiển thị, tiền trừ sẽ tính toán lúc gửi lên server)
     function renderCart() {
         let html = '';
         let total = 0;
@@ -351,24 +349,32 @@
             });
         }
         $('#cartContainer').html(html || $('#emptyCartMsg')[0].outerHTML);
-        $('#posTotalAmount').text(total.toLocaleString() + ' đ');
+
+        // Lấy số điểm hiện tại đang nhập trong ô Input
+        let currentPointsToUse = parseInt($('#posUsePoints').val()) || 0;
+
+        // TÍNH LẠI TỔNG TIỀN TRÊN GIAO DIỆN CÓ TRỪ ĐIỂM
+        let discount = currentPointsToUse * 1000;
+        let finalTotal = total - discount;
+        if (finalTotal < 0) finalTotal = 0;
+
+        $('#posTotalAmount').html(`
+            ${discount > 0 ? `<del class="text-muted fs-6 d-block">${total.toLocaleString()} đ</del>` : ''}
+            ${finalTotal.toLocaleString()} đ
+        `);
     }
 
     // 6. Gửi dữ liệu thanh toán
     function checkoutPOS() {
-        // Reset lại thông báo lỗi ẩn đi mỗi khi bấm nút
         $('#phoneError').hide().text('');
-
         let phone = ($('#posPhone').val() || "").trim();
         let isValid = true;
 
-        // 1. KIỂM TRA GIỎ HÀNG
         if (posCart.length === 0) {
             alert("Vui lòng chọn món trước khi thanh toán!");
             return;
         }
 
-        // 2. KIỂM TRA SỐ ĐIỆN THOẠI (Nếu có nhập)
         if (phone !== "") {
             let isnum = /^\d+$/.test(phone);
             if (phone.length !== 10) {
@@ -383,22 +389,22 @@
             }
         }
 
-        // Nếu có lỗi thì dừng lại ngay
-        if (!isValid) {
-            return;
-        }
+        if (!isValid) return;
 
-        // 3. GOM DỮ LIỆU
+        // Lấy chính xác số điểm nhân viên vừa nhập trước khi gửi Ajax
+        let finalPointsToUse = parseInt($('#posUsePoints').val()) || 0;
+        let rawTotalAmount = posCart.reduce((sum, item) => sum + item.TotalPrice, 0);
+
         let requestData = {
             CustomerPhone: phone,
             CustomerName: "",
             PagerNumber: $('#posPager').val() ? parseInt($('#posPager').val()) : null,
             PaymentMethod: $('#posPaymentMethod').val(),
-            TotalAmount: posCart.reduce((sum, item) => sum + item.TotalPrice, 0),
+            TotalAmount: rawTotalAmount, // Vẫn gửi Tổng Gốc, Server (OrderController) sẽ tự trừ tiền giảm giá
+            UsedPoints: finalPointsToUse, // Đẩy số điểm dùng lên Controller
             CartItems: posCart
         };
 
-        // 4. CHẠY AJAX
         $.ajax({
             url: '@Url.Action("CreatePosOrder", "Order")',
             type: 'POST',
@@ -407,8 +413,12 @@
             success: function (res) {
                 if (res.success) {
                     alert(res.message + "\nMã Hóa Đơn: " + res.orderId);
+
+                    // Reset sạch sẽ giao diện sau khi thanh toán
                     posCart = [];
-                    $('#posPhone, #posPager').val('');
+                    $('#posPhone, #posPager, #posUsePoints').val('');
+                    $('#loyaltySection').slideUp();
+                    maxCusPoints = 0;
                     renderCart();
                 } else {
                     if (res.message && res.message.includes("chưa đăng ký")) {
@@ -423,4 +433,48 @@
             }
         });
     }
+
+    $(document).ready(function () {
+        // Tự động tìm khách khi gõ đủ 10 số
+        $('#posPhone').on('input', function () {
+            let p = $(this).val().trim();
+            if (p.length === 10) {
+                $.ajax({
+                    url: '/Order/GetCustomerInfo?phone=' + p,
+                    type: 'GET',
+                    success: function (res) {
+                        if (res.success) {
+                            maxCusPoints = res.points;
+                            $('#loyaltyCusName').text('Khách: ' + res.name);
+                            $('#loyaltyCusPoints').text(res.points);
+                            $('#loyaltySection').slideDown();
+                        } else {
+                            $('#loyaltySection').slideUp();
+                            maxCusPoints = 0;
+                            $('#posUsePoints').val('');
+                        }
+                        renderCart();
+                    }
+                });
+            } else {
+                $('#loyaltySection').slideUp();
+                maxCusPoints = 0;
+                $('#posUsePoints').val('');
+                renderCart();
+            }
+        });
+
+        // Bắt lỗi khi nhập điểm muốn đổi
+        $('#posUsePoints').on('input', function () {
+            let val = parseInt($(this).val()) || 0;
+
+            if (val > maxCusPoints) {
+                $('#pointError').text('Không đủ điểm!').show();
+            } else {
+                $('#pointError').hide();
+            }
+            // Gọi lại renderCart() để cập nhật giá tiền gạch ngang tức thì trên UI
+            renderCart();
+        });
+    });
 </script>

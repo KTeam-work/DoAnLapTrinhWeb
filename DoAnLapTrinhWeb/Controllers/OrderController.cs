@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 
@@ -17,6 +18,9 @@ namespace DoAnLapTrinhWeb.Controllers
             public decimal TotalAmount { get; set; }
             public decimal DiscountAmount { get; set; }
             public decimal FinalAmount { get; set; }
+
+            // Điểm tích lũy hiện có của khách (để đổi điểm khi thanh toán online)
+            public int LoyaltyPoints { get; set; }
 
             // Thông tin khách hàng 
             public string CustomerId { get; set; }
@@ -94,6 +98,7 @@ namespace DoAnLapTrinhWeb.Controllers
             public int? PagerNumber { get; set; }
             public string PaymentMethod { get; set; }
             public decimal TotalAmount { get; set; }
+            public int UsedPoints { get; set; }
             public List<PosCartItem> CartItems { get; set; }
         }
         // =========================================================
@@ -131,6 +136,20 @@ namespace DoAnLapTrinhWeb.Controllers
 
             return View(orders);
         }
+        // Lấy hồ sơ Customer của tài khoản đang đăng nhập (dùng cho đổi điểm online)
+        private Customer GetCurrentCustomer()
+        {
+            string cleanUserId = (Session["UserId"]?.ToString() ?? "").Trim();
+            if (string.IsNullOrEmpty(cleanUserId)) return null;
+
+            var user = db.Users.FirstOrDefault(u => u.user_id.Trim() == cleanUserId);
+            string userPhone = user != null && user.phone != null ? user.phone.Trim() : "";
+
+            return db.Customers.FirstOrDefault(c =>
+                (c.user_id != null && c.user_id.Trim() == cleanUserId) ||
+                (!string.IsNullOrEmpty(userPhone) && c.phone.Trim() == userPhone));
+        }
+
         // GET: Order/Checkout
         [HttpGet]
         public ActionResult Checkout()
@@ -163,7 +182,8 @@ namespace DoAnLapTrinhWeb.Controllers
                 FullName = currentUser?.full_name ?? Session["FullName"]?.ToString(),
                 Phone = currentUser?.phone ?? "",
                 Email = currentUser?.email ?? "",
-                Address = ""
+                Address = "",
+                LoyaltyPoints = GetCurrentCustomer()?.loyalty_point ?? 0
             };
             return View(viewModel);
         }
@@ -383,7 +403,7 @@ namespace DoAnLapTrinhWeb.Controllers
         // =========================================================
         [HttpPost]
         public ActionResult Create(string FullName, string Phone, string Email, string Address, string OrderNote,
-                                   string DeliveryType, string PaymentMethod, string VoucherId, decimal DiscountAmount = 0)
+                                   string DeliveryType, string PaymentMethod, string VoucherId, decimal DiscountAmount = 0, int UsedPoints = 0)
         {
             // 1. Kiểm tra đăng nhập 
             if (Session["UserId"] == null)
@@ -391,9 +411,14 @@ namespace DoAnLapTrinhWeb.Controllers
                 return RedirectToAction("Login", "Account");
             }
             string currentUserId = Session["UserId"].ToString();
-
+            string cleanUserId = currentUserId.Trim();
+            var currentUser = db.Users.FirstOrDefault(u => u.user_id.Trim() == cleanUserId);
+            string userPhone = currentUser != null && currentUser.phone != null ? currentUser.phone.Trim() : "";
+            var customer = db.Customers.FirstOrDefault(c =>
+                (c.user_id != null && c.user_id.Trim() == cleanUserId) ||
+                (!string.IsNullOrEmpty(userPhone) && c.phone.Trim() == userPhone));
+            string customerIdToSave = customer != null ? customer.customer_id : null;
             var cart = cartService.GetCart();
-
             // Nếu giỏ hàng trống thì không cho đặt
             if (cart == null || !cart.Any())
             {
@@ -408,9 +433,44 @@ namespace DoAnLapTrinhWeb.Controllers
                     string orderId = "OD" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper();
 
 
-                    // Tính tổng tiền
-                    decimal totalAmount = cartService.GetTotalAmount() + (DeliveryType == "Delivery" ? 15000 : 0) - DiscountAmount;
+                    // Tính tổng tiền (tiền hàng + ship - voucher)
+                    decimal voucherDiscount = DiscountAmount < 0 ? 0 : DiscountAmount;
+                    decimal payable = cartService.GetTotalAmount() + (DeliveryType == "Delivery" ? 15000 : 0) - voucherDiscount;
+                    if (payable < 0) payable = 0;
+
+                    // ĐỔI ĐIỂM (1 điểm = 1.000đ) - luôn kiểm tra lại ở server, không tin số liệu từ client
+                    int pointsToUse = 0;
+                    decimal pointsDiscount = 0;
+                    if (UsedPoints > 0)
+                    {
+                        if (customer == null)
+                        {
+                            TempData["ErrorMessage"] = "Tài khoản của bạn chưa có hồ sơ thành viên nên chưa thể đổi điểm.";
+                            return RedirectToAction("Checkout");
+                        }
+                        if (customer.loyalty_point < UsedPoints)
+                        {
+                            TempData["ErrorMessage"] = "Số điểm của bạn không đủ để quy đổi!";
+                            return RedirectToAction("Checkout");
+                        }
+
+                        // Không cho đổi quá số tiền cần thanh toán
+                        int maxByAmount = (int)Math.Floor(payable / 1000m);
+                        pointsToUse = Math.Min(UsedPoints, maxByAmount);
+                        pointsDiscount = pointsToUse * 1000m;
+
+                        customer.loyalty_point -= pointsToUse; // Trừ điểm (lưu cùng transaction)
+                    }
+
+                    decimal totalAmount = payable - pointsDiscount;
                     if (totalAmount < 0) totalAmount = 0;
+
+                    // Ghi chú đơn: loại bỏ chuỗi "Đã dùng ... điểm" do khách tự gõ để tránh giả mạo khi hoàn điểm
+                    string finalNote = Regex.Replace(OrderNote ?? "", @"Đã dùng\s+\d+\s+điểm", "", RegexOptions.IgnoreCase).Trim();
+                    if (pointsToUse > 0)
+                    {
+                        finalNote = (finalNote.Length > 0 ? finalNote + " | " : "") + "Đã dùng " + pointsToUse + " điểm";
+                    }
 
                     string validVoucherId = (!string.IsNullOrEmpty(VoucherId) && db.Vouchers.Any(v => v.voucher_id == VoucherId)) ? VoucherId : null;
 
@@ -418,16 +478,16 @@ namespace DoAnLapTrinhWeb.Controllers
                     var newOrder = new Order
                     {
                         order_id = orderId,
-                        customer_id = null,
+                        customer_id = customerIdToSave,
                         user_id = currentUserId,
                         source = "Online",
                         delivery_type = string.IsNullOrEmpty(DeliveryType) ? "Delivery" : DeliveryType,
                         voucher_id = validVoucherId,
-                        discount_amount = DiscountAmount,
+                        discount_amount = voucherDiscount + pointsDiscount,
                         total_amount = totalAmount,
                         status = "Pending",
                         delivery_address = (DeliveryType == "Delivery") ? Address : "Nhận tại cửa hàng",
-                        note = OrderNote,
+                        note = finalNote,
                         created_at = DateTime.Now
                     };
 
@@ -493,20 +553,22 @@ namespace DoAnLapTrinhWeb.Controllers
                         order_id = orderId,
                         payment_method = string.IsNullOrEmpty(PaymentMethod) ? "Cash" : PaymentMethod,
                         amount = totalAmount,
-                        payment_status = "Pending",
+                        payment_status = totalAmount == 0 ? "Paid" : "Pending", // Đơn 0đ (đổi điểm hết) coi như đã thanh toán
                         transaction_code = tempTransactionCode,
-                        paid_at = null
+                        paid_at = totalAmount == 0 ? (DateTime?)DateTime.Now : null
                     };
                     db.Payments.Add(newPayment);
 
 
+                    db.Configuration.ValidateOnSaveEnabled = false; // giống ConfirmReceived: tránh lỗi validate khi lưu Customer
                     db.SaveChanges();
                     transaction.Commit();
+                    db.Configuration.ValidateOnSaveEnabled = true;
 
                     // 6. XÓA SẠCH GIỎ HÀNG VÀ CHUYỂN HƯỚNG
                     cartService.ClearCart();
 
-                    if (PaymentMethod == "Cash")
+                    if (PaymentMethod == "Cash" || totalAmount == 0)
                     {
                         return RedirectToAction("Tracking", "Order", new { id = orderId });
                     }
@@ -518,6 +580,7 @@ namespace DoAnLapTrinhWeb.Controllers
                 catch (Exception ex)
                 {
                     transaction.Rollback();
+                    db.Configuration.ValidateOnSaveEnabled = true;
                     string realError = ex.Message;
                     Exception inner = ex.InnerException;
                     while (inner != null)
@@ -692,31 +755,52 @@ namespace DoAnLapTrinhWeb.Controllers
             return View(histories);
         }
 
-        // =========================================================
-        // POST: Order/ConfirmReceived - Khách xác nhận đã nhận hàng
-        // =========================================================
         [HttpPost]
         public ActionResult ConfirmReceived(string OrderId)
         {
-            var order = db.Orders.FirstOrDefault(o => o.order_id == OrderId);
-            if (order != null && order.status == "Delivering")
+            if (string.IsNullOrEmpty(OrderId)) return RedirectToAction("History");
+            string cleanOrderId = OrderId.Trim();
+
+            var order = db.Orders.FirstOrDefault(o => o.order_id.Trim() == cleanOrderId);
+            if (order != null && (order.status == "Delivering" || order.status == "Ready"))
             {
+                string oldStatus = order.status;
                 order.status = "Completed";
 
-                // THÊM MỚI: TỰ ĐỘNG CHUYỂN TRẠNG THÁI THANH TOÁN NẾU LÀ TIỀN MẶT
-                var payment = db.Payments.FirstOrDefault(p => p.order_id == OrderId);
+                // 1. CHUYỂN TRẠNG THÁI THANH TOÁN NẾU LÀ TIỀN MẶT
+                var payment = db.Payments.FirstOrDefault(p => p.order_id.Trim() == cleanOrderId);
                 if (payment != null && payment.payment_method == "Cash" && payment.payment_status == "Pending")
                 {
                     payment.payment_status = "Paid";
                     payment.paid_at = DateTime.Now;
                 }
 
-                // Ghi log
+                // 2. CỘNG ĐIỂM TÍCH LŨY (Tìm theo customer_id HOẶC user_id của đơn hàng)
+                string cleanCusId = (order.customer_id ?? "").Trim();
+                string cleanUsrId = (order.user_id ?? "").Trim();
+
+                var customerData = db.Customers.FirstOrDefault(c =>
+                    (!string.IsNullOrEmpty(cleanCusId) && c.customer_id.Trim() == cleanCusId) ||
+                    (!string.IsNullOrEmpty(cleanUsrId) && c.user_id != null && c.user_id.Trim() == cleanUsrId));
+
+                if (customerData != null)
+                {
+                    // Nếu đơn hàng chưa gắn customer_id thì gắn bổ sung luôn
+                    if (string.IsNullOrEmpty(order.customer_id))
+                    {
+                        order.customer_id = customerData.customer_id;
+                    }
+
+                    int pointsEarned = (int)(order.total_amount / 10000m);
+                    customerData.loyalty_point += pointsEarned;
+                }
+
+                // 3. GHI LOG
                 var history = new OrderStatusHistory
                 {
                     history_id = "HS" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper(),
-                    order_id = OrderId,
-                    old_status = "Delivering",
+                    order_id = order.order_id,
+                    old_status = oldStatus,
                     new_status = "Completed",
                     changed_by = Session["UserId"]?.ToString(),
                     changed_at = DateTime.Now
@@ -771,7 +855,6 @@ namespace DoAnLapTrinhWeb.Controllers
                 try
                 {
                     // 1. KIỂM TRA RÀNG BUỘC THẺ RUNG
-                    // 1. KIỂM TRA RÀNG BUỘC THẺ RUNG (Dùng trực tiếp cột pager_number)
                     if (request.PagerNumber.HasValue)
                     {
                         bool isPagerBusy = db.Orders.Any(o => o.pager_number == request.PagerNumber.Value &&
@@ -780,10 +863,9 @@ namespace DoAnLapTrinhWeb.Controllers
                         if (isPagerBusy) return Json(new { success = false, message = $"Thẻ rung số {request.PagerNumber.Value} đang bận!" });
                     }
 
-                    // 2. XỬ LÝ KHÁCH HÀNG
+                    // 2. XỬ LÝ KHÁCH HÀNG & TRỪ ĐIỂM
                     string customerId = null;
                     string userIdForOrder = null;
-                    string optAlert = "";
 
                     if (!string.IsNullOrEmpty(request.CustomerPhone))
                     {
@@ -792,17 +874,33 @@ namespace DoAnLapTrinhWeb.Controllers
                         {
                             customerId = existingCustomer.customer_id;
                             userIdForOrder = existingCustomer.user_id;
-                            // Cộng điểm
-                            existingCustomer.loyalty_point += (int)(request.TotalAmount / 10000);
+
+                            // KIỂM TRA VÀ TRỪ ĐIỂM NGAY LÚC NÀY
+                            if (request.UsedPoints > 0)
+                            {
+                                if (existingCustomer.loyalty_point < request.UsedPoints)
+                                {
+                                    return Json(new { success = false, message = "Khách hàng không đủ điểm để quy đổi!" });
+                                }
+
+                                // Trừ điểm trong CSDL
+                                existingCustomer.loyalty_point -= request.UsedPoints;
+
+                                // Trừ tiền vào tổng hóa đơn (1 điểm = 1.000đ)
+                                decimal discountFromPoints = request.UsedPoints * 1000m;
+                                request.TotalAmount -= discountFromPoints;
+
+                                // Đảm bảo tổng tiền không bị âm
+                                if (request.TotalAmount < 0) request.TotalAmount = 0;
+                            }
                         }
                         else
                         {
-                            // NẾU KHÁCH HÀNG CHƯA ĐĂNG KÝ, BÁO LỖI VÀ CHẶN LẠI
                             return Json(new { success = false, message = "Số điện thoại chưa đăng ký thành viên! Vui lòng xóa SĐT hoặc đăng ký tài khoản trên Website." });
                         }
                     }
 
-                    // 3. TẠO ĐƠN HÀNG (TRẠNG THÁI TỰ ĐỘNG)
+                    // 3. TẠO ĐƠN HÀNG
                     string orderId = "OD" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper();
                     string finalStatus = request.PagerNumber.HasValue ? "Preparing" : "Completed";
 
@@ -816,8 +914,8 @@ namespace DoAnLapTrinhWeb.Controllers
                         total_amount = request.TotalAmount,
                         status = finalStatus,
                         delivery_address = "Tại quầy",
-                        note = "", 
-                        pager_number = request.PagerNumber, 
+                        note = request.UsedPoints > 0 ? $"Đã dùng {request.UsedPoints} điểm" : "",
+                        pager_number = request.PagerNumber,
                         created_at = DateTime.Now
                     };
                     db.Orders.Add(newOrder);
@@ -829,12 +927,10 @@ namespace DoAnLapTrinhWeb.Controllers
                         string cleanProdId = (item.ProductId ?? "").Trim();
                         string cleanSizeId = (item.SizeId ?? "").Trim();
 
-                        // Kiểm tra chính xác cặp (product_id, size_id) trong bảng ProductSizes
                         var matchedSize = db.ProductSizes.FirstOrDefault(s =>
                             s.product_id.Trim() == cleanProdId &&
                             s.size_id.Trim() == cleanSizeId);
 
-                        // Nếu vì lý do gì đó không khớp, tự động lấy Size đầu tiên của đúng món đó
                         if (matchedSize == null)
                         {
                             matchedSize = db.ProductSizes.FirstOrDefault(s => s.product_id.Trim() == cleanProdId);
@@ -849,8 +945,8 @@ namespace DoAnLapTrinhWeb.Controllers
                         {
                             order_detail_id = orderDetailId,
                             order_id = orderId,
-                            product_id = matchedSize.product_id, // Lấy chuẩn NCHAR(10) từ DB
-                            size_id = matchedSize.size_id,       // Lấy chuẩn NCHAR(10) từ DB, khớp 100% FK_OrderDetails_ProductSize
+                            product_id = matchedSize.product_id,
+                            size_id = matchedSize.size_id,
                             quantity = item.Quantity,
                             unit_price_snapshot = item.UnitPrice,
                             total_price_snapshot = item.TotalPrice,
@@ -906,12 +1002,12 @@ namespace DoAnLapTrinhWeb.Controllers
                     db.SaveChanges();
                     transaction.Commit();
 
-                    return Json(new { success = true, orderId = orderId, message = "Thanh toán xong! " + optAlert });
+                    // ĐÃ FIX LỖI CS0103 Ở DÒNG NÀY (Đã xóa biến optAlert)
+                    return Json(new { success = true, orderId = orderId, message = "Thanh toán thành công!" });
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-
                     string realError = ex.Message;
                     Exception inner = ex.InnerException;
                     while (inner != null)
@@ -924,5 +1020,29 @@ namespace DoAnLapTrinhWeb.Controllers
                 }
             }
         }
+        // =========================================================
+        // GET: Order/GetCustomerInfo - Dùng cho POS tra cứu điểm
+        // =========================================================
+        [HttpGet]
+        public JsonResult GetCustomerInfo(string phone)
+        {
+            if (string.IsNullOrEmpty(phone)) return Json(new { success = false });
+
+            string cleanPhone = phone.Trim();
+            var customer = db.Customers.FirstOrDefault(c => c.phone != null && c.phone.Trim() == cleanPhone);
+
+            if (customer != null)
+            {
+                return Json(new
+                {
+                    success = true,
+                    name = customer.full_name,
+                    points = customer.loyalty_point
+                }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = false });
+        }
+
     }
+
 }

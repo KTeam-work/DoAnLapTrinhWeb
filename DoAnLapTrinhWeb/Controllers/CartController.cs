@@ -27,7 +27,7 @@ namespace DoAnLapTrinhWeb.Controllers
         {
             try
             {
-                
+
                 var product = db.Products.FirstOrDefault(p => p.product_id == ProductId);
                 if (product == null) return RedirectToAction("Index", "Menu");
 
@@ -35,7 +35,7 @@ namespace DoAnLapTrinhWeb.Controllers
                 string sizeName = size != null ? size.size_name : "S";
                 decimal sizePrice = size != null ? size.price_add : 0;
 
-                
+
                 var toppingList = new List<CartItemTopping>();
                 if (ToppingIds != null && ToppingIds.Any())
                 {
@@ -80,6 +80,24 @@ namespace DoAnLapTrinhWeb.Controllers
                 // Xử lý lỗi nếu có
                 return RedirectToAction("Index", "Menu");
             }
+        }
+
+        // POST: Cart/UpdateQuantity - Tăng/giảm số lượng 1 dòng trong giỏ
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateQuantity(int index, int quantity)
+        {
+            cartService.UpdateQuantity(index, quantity);
+            return RedirectToAction("Index");
+        }
+
+        // POST: Cart/Remove - Xóa 1 món khỏi giỏ
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Remove(int index)
+        {
+            cartService.RemoveItem(index);
+            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)
