@@ -1,0 +1,426 @@
+﻿@{
+    ViewBag.Title = "Bán Hàng Tại Quầy (POS)";
+    string userRole = (Session["UserRole"]?.ToString() ?? "").Trim();
+    if (userRole == "R01" || userRole.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_StaffLayout.cshtml";
+    }
+
+    var products = ViewBag.Products as List<DoAnLapTrinhWeb.Models.Product>;
+    var sizes = ViewBag.Sizes as List<DoAnLapTrinhWeb.Models.ProductSize>;
+    var toppings = ViewBag.Toppings as List<DoAnLapTrinhWeb.Models.Topping>;
+}
+
+<style>
+    .pos-container {
+        height: calc(100vh - 60px);
+        overflow: hidden;
+    }
+
+    .product-list {
+        height: 100%;
+        overflow-y: auto;
+        background-color: #f8f9fa;
+        padding: 15px;
+    }
+
+    .cart-section {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        border-left: 1px solid #dee2e6;
+    }
+
+    .cart-items {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 15px;
+    }
+
+    .cart-summary {
+        padding: 15px;
+        background: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .product-card {
+        cursor: pointer;
+        transition: 0.2s;
+        border: 1px solid #e0e0e0;
+    }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-color: #2e7d32;
+        }
+
+    .cart-item-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px dashed #ccc;
+        padding: 10px 0;
+    }
+
+    .btn-checkout {
+        font-size: 1.2rem;
+        font-weight: bold;
+        padding: 12px;
+    }
+</style>
+
+<div class="container-fluid p-0 pos-container">
+    <div class="row g-0 h-100">
+
+        <!-- BÊN TRÁI: DANH SÁCH SẢN PHẨM -->
+        <div class="col-md-7 col-lg-8 product-list">
+            <h4 class="mb-3 text-success fw-bold"><i class="bi bi-cup-straw"></i> Chọn Món</h4>
+            <div class="row g-3">
+                @if (products != null)
+                {
+                    foreach (var p in products)
+                    {
+                        <div class="col-6 col-md-4 col-xl-3">
+                            <div class="card h-100 product-card" onclick="openProductModal('@p.product_id.Trim()', '@HttpUtility.JavaScriptStringEncode(p.name)', @p.base_price)">
+                                <div class="card-body text-center p-3">
+                                    <div class="fw-bold mb-1 text-dark" style="font-size: 0.95rem;">@p.name</div>
+                                    <div class="text-success fw-semibold">@p.base_price.ToString("N0") đ</div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- BÊN PHẢI: GIỎ HÀNG & TÍNH TIỀN -->
+        <div class="col-md-5 col-lg-4 cart-section">
+            <div class="p-3 border-bottom bg-light">
+                <div class="row g-2 mb-2">
+                    <div class="col-12">
+                        <input type="text" id="posPhone" class="form-control form-control-sm" placeholder="SĐT Khách (Tích điểm)">
+                        <span id="phoneError" class="text-danger small fw-bold" style="display: none;"></span>
+                    </div>
+                </div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-warning text-dark"><i class="bi bi-broadcast"></i></span>
+                    <input type="number" id="posPager" class="form-control" placeholder="Số thẻ rung (Tùy chọn)" min="1" max="50">
+                </div>
+            </div>
+
+            <!-- Danh sách món đã chọn -->
+            <div class="cart-items" id="cartContainer">
+                <div class="text-center text-muted mt-5" id="emptyCartMsg">
+                    <i class="bi bi-cart-x fs-1"></i><br>Chưa chọn món nào
+                </div>
+            </div>
+
+            <!-- Tính tiền & Thanh toán -->
+            <div class="cart-summary">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="fw-bold">Tổng thanh toán:</span>
+                    <span class="fw-bold fs-5 text-danger" id="posTotalAmount">0 đ</span>
+                </div>
+                <select id="posPaymentMethod" class="form-select mb-3">
+                    <option value="Cash">Tiền mặt</option>
+                    <option value="Banking">Chuyển khoản / Quẹt thẻ</option>
+                </select>
+                <button class="btn btn-success w-100 btn-checkout" onclick="checkoutPOS()">THANH TOÁN</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================
+     POPUP MODAL CHỌN SIZE, TOPPING & GHI CHÚ
+=========================================== -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold" id="modalProductName">Tên Món</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modalProductId">
+                <input type="hidden" id="modalBasePrice">
+                <input type="hidden" id="modalFinalPrice">
+
+                <!-- CHỌN SIZE (Chỉ hiện Size của đúng món đang chọn) -->
+                <h6 class="fw-bold text-success mt-2 border-bottom pb-1">Kích cỡ (Size)</h6>
+                <div class="row g-2 mb-3" id="sizeOptionsContainer">
+                    @if (sizes != null && sizes.Any())
+                    {
+                        foreach (var s in sizes)
+                        {
+                            <div class="col-4 size-option-item" data-product-id="@s.product_id.Trim()">
+                                <input type="radio" class="btn-check size-radio" name="sizeOptions" id="size_@s.size_id.Trim()"
+                                       value="@s.size_id.Trim()" data-price="@s.price_add" data-name="@s.size_name" onchange="calculateModalPrice()">
+                                <label class="btn btn-outline-success w-100 p-1" for="size_@s.size_id.Trim()">
+                                    <span class="d-block fw-bold">@s.size_name</span>
+                                    <span class="small">+@s.price_add.ToString("N0")</span>
+                                </label>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-danger small">Vui lòng thêm Size trong quản trị!</div>
+                    }
+                </div>
+
+                <!-- CHỌN TOPPING -->
+                <h6 class="fw-bold text-success mt-2 border-bottom pb-1">Topping (Thêm hạt)</h6>
+                <div class="row g-2 mb-3" style="max-height: 150px; overflow-y: auto;">
+                    @if (toppings != null && toppings.Any())
+                    {
+                        foreach (var t in toppings)
+                        {
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input topping-checkbox" type="checkbox"
+                                           value="@t.topping_id.Trim()" id="topping_@t.topping_id.Trim()" data-price="@t.price" data-name="@t.name" onchange="calculateModalPrice()">
+                                    <label class="form-check-label small" for="topping_@t.topping_id.Trim()">
+                                        @t.name <span class="text-muted">(+@t.price.ToString("N0"))</span>
+                                    </label>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-muted small">Không có topping khả dụng.</div>
+                    }
+                </div>
+
+                <!-- GHI CHÚ MÓN (Ít đá, ít ngọt...) -->
+                <h6 class="fw-bold text-success mt-2 border-bottom pb-1">Ghi chú món</h6>
+                <input type="text" id="modalItemNote" class="form-control form-control-sm" placeholder="VD: Ít đá, 50% đường, để đá riêng...">
+
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <div class="fw-bold fs-5 text-danger" id="modalDisplayPrice">0 đ</div>
+                <button type="button" class="btn btn-success fw-bold px-4" onclick="confirmAddToCart()">THÊM VÀO GIỎ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    let posCart = [];
+
+    // 1. Mở Modal và lọc đúng Size của sản phẩm được chọn
+    function openProductModal(id, name, basePrice) {
+        let cleanId = id.trim();
+        $('#modalProductId').val(cleanId);
+        $('#modalProductName').text(name);
+        $('#modalBasePrice').val(basePrice);
+        $('#modalItemNote').val('');
+
+        // Ẩn toàn bộ size, chỉ hiện những size thuộc về product_id này
+        $('.size-option-item').hide();
+        $('.size-radio').prop('checked', false);
+
+        let matchingSizes = $(`.size-option-item[data-product-id="${cleanId}"]`);
+        matchingSizes.show();
+
+        // Tự động chọn Size đầu tiên của món đó (thường là Size M)
+        matchingSizes.first().find('.size-radio').prop('checked', true);
+
+        // Bỏ chọn toàn bộ topping cũ
+        $('.topping-checkbox').prop('checked', false);
+
+        calculateModalPrice();
+        $('#productModal').modal('show');
+    }
+
+    // 2. Tính tổng tiền trong Modal khi đổi Size/Topping
+    function calculateModalPrice() {
+        let base = parseFloat($('#modalBasePrice').val()) || 0;
+        let sizePrice = parseFloat($('.size-radio:checked').data('price')) || 0;
+
+        let toppingPrice = 0;
+        $('.topping-checkbox:checked').each(function () {
+            toppingPrice += parseFloat($(this).data('price')) || 0;
+        });
+
+        let finalPrice = base + sizePrice + toppingPrice;
+        $('#modalFinalPrice').val(finalPrice);
+        $('#modalDisplayPrice').text(finalPrice.toLocaleString() + ' đ');
+    }
+
+    // 3. Xác nhận Thêm món vào Giỏ hàng
+    function confirmAddToCart() {
+        let pId = $('#modalProductId').val();
+        let pName = $('#modalProductName').text();
+        let unitPrice = parseFloat($('#modalFinalPrice').val());
+        let itemNote = $('#modalItemNote').val().trim();
+
+        let selectedSize = $('.size-radio:checked');
+        if (selectedSize.length === 0) {
+            alert("Sản phẩm này chưa có Size khả dụng!");
+            return;
+        }
+
+        let sId = selectedSize.val();
+        let sName = selectedSize.data('name') || "";
+
+        let arrTopIds = [];
+        let arrTopNames = [];
+        $('.topping-checkbox:checked').each(function () {
+            arrTopIds.push($(this).val());
+            arrTopNames.push($(this).data('name'));
+        });
+
+        // Cùng món + Cùng Size + Cùng Topping + Cùng Ghi chú => Gộp số lượng. Khác ghi chú => Tách dòng.
+        let topKey = arrTopIds.slice().sort().join('_');
+        let cartKey = pId + "_" + sId + "_" + topKey + "_" + itemNote.toLowerCase();
+
+        let existing = posCart.find(x => x.CartKey === cartKey);
+        if (existing) {
+            existing.Quantity += 1;
+            existing.TotalPrice = existing.Quantity * existing.UnitPrice;
+        } else {
+            posCart.push({
+                CartKey: cartKey,
+                ProductId: pId,
+                ProductName: pName,
+                SizeId: sId,
+                SizeName: sName,
+                ToppingIds: arrTopIds,
+                ToppingNames: arrTopNames,
+                Quantity: 1,
+                UnitPrice: unitPrice,
+                TotalPrice: unitPrice,
+                Note: itemNote
+            });
+        }
+
+        $('#productModal').modal('hide');
+        renderCart();
+    }
+
+    // 4. Tăng/Giảm số lượng
+    function updateQty(index, change) {
+        if (posCart[index]) {
+            posCart[index].Quantity += change;
+            if (posCart[index].Quantity <= 0) {
+                posCart.splice(index, 1);
+            } else {
+                posCart[index].TotalPrice = posCart[index].Quantity * posCart[index].UnitPrice;
+            }
+            renderCart();
+        }
+    }
+
+    // 5. Vẽ lại giỏ hàng
+    function renderCart() {
+        let html = '';
+        let total = 0;
+
+        if (posCart.length === 0) {
+            $('#emptyCartMsg').show();
+        } else {
+            $('#emptyCartMsg').hide();
+            posCart.forEach((item, index) => {
+                total += item.TotalPrice;
+                let toppingStr = item.ToppingNames.length > 0 ? " + " + item.ToppingNames.join(', ') : "";
+                let noteHtml = item.Note ? `<div class="small text-danger fst-italic">Ghi chú: ${item.Note}</div>` : "";
+
+                html += `
+                    <div class="cart-item-row">
+                        <div style="width: 65%;">
+                            <div class="fw-bold" style="font-size: 0.9rem;">${item.ProductName}</div>
+                            <div class="small text-muted">Size: ${item.SizeName}${toppingStr}</div>
+                            ${noteHtml}
+                            <div class="text-success fw-semibold small mt-1">${item.UnitPrice.toLocaleString()} đ</div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-sm btn-outline-secondary px-2 py-0" onclick="updateQty(${index}, -1)">-</button>
+                            <span class="mx-2 fw-bold">${item.Quantity}</span>
+                            <button class="btn btn-sm btn-outline-success px-2 py-0" onclick="updateQty(${index}, 1)">+</button>
+                        </div>
+                    </div>`;
+            });
+        }
+        $('#cartContainer').html(html || $('#emptyCartMsg')[0].outerHTML);
+        $('#posTotalAmount').text(total.toLocaleString() + ' đ');
+    }
+
+    // 6. Gửi dữ liệu thanh toán
+    function checkoutPOS() {
+        // Reset lại thông báo lỗi ẩn đi mỗi khi bấm nút
+        $('#phoneError').hide().text('');
+
+        let phone = ($('#posPhone').val() || "").trim();
+        let isValid = true;
+
+        // 1. KIỂM TRA GIỎ HÀNG
+        if (posCart.length === 0) {
+            alert("Vui lòng chọn món trước khi thanh toán!");
+            return;
+        }
+
+        // 2. KIỂM TRA SỐ ĐIỆN THOẠI (Nếu có nhập)
+        if (phone !== "") {
+            let isnum = /^\d+$/.test(phone);
+            if (phone.length !== 10) {
+                $('#phoneError').text('SĐT phải có đúng 10 chữ số!').show();
+                isValid = false;
+            } else if (!isnum) {
+                $('#phoneError').text('SĐT chỉ được chứa chữ số!').show();
+                isValid = false;
+            } else if (!phone.startsWith('0')) {
+                $('#phoneError').text('SĐT phải bắt đầu bằng số 0!').show();
+                isValid = false;
+            }
+        }
+
+        // Nếu có lỗi thì dừng lại ngay
+        if (!isValid) {
+            return;
+        }
+
+        // 3. GOM DỮ LIỆU
+        let requestData = {
+            CustomerPhone: phone,
+            CustomerName: "",
+            PagerNumber: $('#posPager').val() ? parseInt($('#posPager').val()) : null,
+            PaymentMethod: $('#posPaymentMethod').val(),
+            TotalAmount: posCart.reduce((sum, item) => sum + item.TotalPrice, 0),
+            CartItems: posCart
+        };
+
+        // 4. CHẠY AJAX
+        $.ajax({
+            url: '@Url.Action("CreatePosOrder", "Order")',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(requestData),
+            success: function (res) {
+                if (res.success) {
+                    alert(res.message + "\nMã Hóa Đơn: " + res.orderId);
+                    posCart = [];
+                    $('#posPhone, #posPager').val('');
+                    renderCart();
+                } else {
+                    if (res.message && res.message.includes("chưa đăng ký")) {
+                        $('#phoneError').text(res.message).show();
+                    } else {
+                        alert("LỖI TỪ SERVER: " + res.message);
+                    }
+                }
+            },
+            error: function () {
+                alert("Mất kết nối với máy chủ!");
+            }
+        });
+    }
+</script>
