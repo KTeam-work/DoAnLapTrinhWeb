@@ -18,7 +18,7 @@
 
 <!-- Tận dụng lại CSS thiết kế đẹp từ trang Index của Danh Mục -->
 <link rel="stylesheet" href="~/Css/styleProduct_index.css" />
-<link href="~/Css/StyleOrderIndex.css" rel="stylesheet" />
+<link href="~/Css/StyleOrderIndex.css?v=@DateTime.Now.Ticks" rel="stylesheet" />
 
 <div class="product-page">
 
@@ -130,11 +130,13 @@
                         {
                             <tr>
                                 <td>
-                                    <span class="product-code">#@item.order_id</span>
+                                    <span class="product-code">#@item.order_id.Trim()</span>
                                 </td>
                                 <td>@item.created_at.ToString("dd/MM/yyyy HH:mm")</td>
                                 <td>
-                                    <span class="customer-info text-muted">@item.customer_id</span>
+                                    <span class="customer-info text-muted">
+                                        @(item.Customer != null ? item.Customer.full_name : (item.User != null ? item.User.full_name : "Khách vãng lai"))
+                                    </span>
                                 </td>
                                 <td>
                                     @if (item.delivery_type == "Delivery")
@@ -144,6 +146,10 @@
                                     else
                                     {
                                         <span class="text-success fw-medium"><i class="bi bi-shop me-1"></i> Nhận tại quán</span>
+                                        if (item.pager_number.HasValue)
+                                        {
+                                            <span class="badge bg-warning text-dark ms-1"><i class="bi bi-broadcast"></i> Thẻ #@item.pager_number</span>
+                                        }
                                     }
                                 </td>
                                 <td><strong class="text-danger">@item.total_amount.ToString("N0") đ</strong></td>
@@ -158,7 +164,7 @@
                                             case "Pending": badgeClass = "status-pending"; statusText = "Chờ xác nhận"; break;
                                             case "Confirmed": badgeClass = "status-confirmed"; statusText = "Đã nhận đơn"; break;
                                             case "Preparing": badgeClass = "status-preparing"; statusText = "Đang pha chế"; break;
-                                            case "Ready": badgeClass = "bg-info text-dark"; statusText = "Đã xong món"; break;
+                                            case "Ready": badgeClass = "bg-info text-dark"; statusText = "Chờ lấy nước"; break;
                                             case "Delivering": badgeClass = "status-delivering"; statusText = "Đang giao"; break;
                                             case "Completed": badgeClass = "status-completed"; statusText = "Hoàn thành"; break;
                                             case "Cancelled": badgeClass = "status-cancelled"; statusText = "Đã huỷ"; break;
@@ -168,30 +174,77 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
-                                        <!-- Nút Chi Tiết -->
+                                        <!-- NÚT XEM CHI TIẾT -->
                                         <a href="@Url.Action("Details", "Order", new { id = item.order_id.Trim() })"
                                            class="btn btn-sm btn-outline-dark action-btn" title="Xem chi tiết">
                                             <i class="bi bi-eye"></i>
                                         </a>
 
-                                        <!-- Các Nút Chuyển Trạng Thái Gọi API -->
-                                        @if (item.status == "Pending")
-                                        {
-                                           <button class="btn btn-sm btn-warning action-btn text-dark fw-bold" onclick="updateOrderStatus('@item.order_id.Trim()', 'Confirmed')" title="Nhận Đơn">
-                                               <i class="bi bi-check2-circle"></i> Nhận đơn
-                                           </button>
+                                        @{
+                                            string src = (item.source ?? "").Trim();
+                                            string stt = (item.status ?? "").Trim();
+                                            string deliv = (item.delivery_type ?? "").Trim();
                                         }
-                                        else if (item.status == "Confirmed")
+
+                                        <!-- PHÂN LUỒNG THAO TÁC DỰA VÀO NGUỒN ĐƠN (SOURCE) -->
+                                        @if (src.Equals("Online", StringComparison.OrdinalIgnoreCase) || src.Equals("App", StringComparison.OrdinalIgnoreCase))
                                         {
-                                            <button class="btn btn-sm btn-primary action-btn text-dark" onclick="updateOrderStatus('@item.order_id.Trim()', 'Preparing')" title="Bắt đầu pha chế">
-                                                <i class="bi bi-cup-straw"></i> Pha chế
-                                            </button>
+                                            // ==========================================
+                                            // LUỒNG 1: ĐƠN ONLINE / APP
+                                            // ==========================================
+                                            if (stt == "Pending")
+                                            {
+                                                <button class="btn btn-sm btn-warning action-btn text-dark fw-bold" style="color: #212529 !important; background-color: #fff8e6 !important; border: 1.5px solid #ffc107 !important;" onclick="updateOrderStatus('@item.order_id.Trim()', 'Confirmed')" title="Xác nhận nhận đơn Online">
+                                                    <i class="bi bi-check2-circle"></i> <span>Nhận đơn</span>
+                                                </button>
+                                            }
+                                            else if (stt == "Confirmed")
+                                            {
+                                                <button class="btn btn-sm btn-primary action-btn fw-bold" style="color: #0d6efd !important; background-color: #eef5ff !important; border: 1.5px solid #0d6efd !important;" onclick="updateOrderStatus('@item.order_id.Trim()', 'Preparing')" title="Bắt đầu pha chế">
+                                                    <i class="bi bi-cup-straw"></i> <span>Pha chế</span>
+                                                </button>
+                                            }
+                                            else if (stt == "Preparing")
+                                            {
+                                                if (deliv == "Delivery")
+                                                {
+                                                    <button class="btn btn-sm btn-info action-btn text-dark fw-bold" style="color: #055160 !important; background-color: #ebfbff !important; border: 1.5px solid #0dcaf0 !important;" onclick="updateOrderStatus('@item.order_id.Trim()', 'Delivering')" title="Giao cho Shipper">
+                                                        <i class="bi bi-truck"></i> <span>Giao hàng</span>
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <!-- NÚT RIÊNG CHO ONLINE - NHẬN TẠI QUÁN -->
+                                                    <button class="btn btn-sm btn-success action-btn fw-bold" style="color: #198754 !important; background-color: #eafaf1 !important; border: 1.5px solid #198754 !important;" onclick="updateOrderStatus('@item.order_id.Trim()', 'Ready')" title="Đã pha xong, chờ khách tới lấy">
+                                                        <i class="bi bi-bag-check"></i> <span>Xong món</span>
+                                                    </button>
+                                                }
+                                            }
+                                            else if (stt == "Delivering" || stt == "Ready")
+                                            {
+                                                <button class="btn btn-sm btn-dark action-btn fw-bold" style="color: #212529 !important; background-color: #f8f9fa !important; border: 1.5px solid #212529 !important;" onclick="updateOrderStatus('@item.order_id.Trim()', 'Completed')" title="Đã thu tiền / Hoàn tất">
+                                                    <i class="bi bi-check-all"></i> <span>Hoàn tất</span>
+                                                </button>
+                                            }
                                         }
-                                        else if (item.status == "Preparing")
+                                        else
                                         {
-                                            <button class="btn btn-sm btn-info action-btn text-dark" onclick="updateOrderStatus('@item.order_id.Trim()', 'Delivering')" title="Giao hàng">
-                                                <i class="bi bi-truck"></i> Giao hàng
-                                            </button>
+                                            // ==========================================
+                                            // LUỒNG 2: ĐƠN TẠI QUẦY (POS CÓ THẺ RUNG)
+                                            // ==========================================
+                                            if (stt == "Preparing")
+                                            {
+                                                <!-- NÚT RIÊNG CHO POS THẺ RUNG -->
+                                                <button class="btn btn-sm btn-success action-btn fw-bold" style="color: #198754 !important; background-color: #eafaf1 !important; border: 1.5px solid #198754 !important;" onclick="updateOrderStatus('@item.order_id.Trim()', 'Ready')" title="Báo rung gọi khách">
+                                                    <i class="bi bi-bell-fill"></i> <span>Gọi món</span>
+                                                </button>
+                                            }
+                                            else if (stt == "Ready")
+                                            {
+                                                <button class="btn btn-sm btn-dark action-btn fw-bold" style="color: #212529 !important; background-color: #f8f9fa !important; border: 1.5px solid #212529 !important;" onclick="updateOrderStatus('@item.order_id.Trim()', 'Completed')" title="Khách đã lấy nước & trả thẻ">
+                                                    <i class="bi bi-check-all"></i> <span>Hoàn tất</span>
+                                                </button>
+                                            }
                                         }
                                     </div>
                                 </td>

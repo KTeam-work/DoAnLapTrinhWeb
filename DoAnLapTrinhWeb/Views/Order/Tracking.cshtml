@@ -76,7 +76,7 @@
                         </a>
                     </div>
 
-                    @if (currentStatus == "Delivering")
+                    @if (currentStatus == "Delivering" || (currentStatus == "Ready" && ViewBag.DeliveryType == "Pickup"))
                     {
                         <hr class="text-muted opacity-25 my-4">
                         <form action="/Order/ConfirmReceived" method="POST">

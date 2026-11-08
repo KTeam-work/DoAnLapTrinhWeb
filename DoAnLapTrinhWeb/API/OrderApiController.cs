@@ -218,38 +218,64 @@ namespace DoAnLapTrinhWeb.API
                 return Json(new { success = false, message = "Trạng thái không được để trống", data = (object)null });
             }
 
-            try
+            using (var transaction = db.Database.BeginTransaction())
             {
-                var order = db.Orders.FirstOrDefault(o => o.order_id == id);
-                if (order == null)
+                try
                 {
-                    return Json(new { success = false, message = "Không tìm thấy đơn hàng", data = (object)null });
+                    var order = db.Orders.FirstOrDefault(o => o.order_id == id);
+                    if (order == null)
+                    {
+                        return Json(new { success = false, message = "Không tìm thấy đơn hàng", data = (object)null });
+                    }
+
+                    string oldStatus = order.status;
+                    order.status = newStatus;
+
+                    // Ghi nhận lịch sử đổi trạng thái
+                    var history = new OrderStatusHistory
+                    {
+                        history_id = "HS" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper(),
+                        order_id = order.order_id,
+                        old_status = oldStatus,
+                        new_status = newStatus,
+                        changed_by = string.IsNullOrEmpty(userId) ? null : userId,
+                        changed_at = DateTime.Now
+                    };
+                    db.OrderStatusHistories.Add(history);
+
+                    // ===============================================================
+                    // LOGIC TỰ ĐỘNG CHỐT THANH TOÁN (CỰC KỲ QUAN TRỌNG)
+                    // ===============================================================
+                    // Khi nhân viên bấm "Hoàn tất" (Completed) HOẶC khách lấy tại quầy
+                    if (newStatus == "Completed")
+                    {
+                        var payment = db.Payments.FirstOrDefault(p => p.order_id == id);
+
+                        // Nếu là đơn thanh toán bằng TIỀN MẶT và đang bị nợ (Pending)
+                        if (payment != null && payment.payment_method == "Cash" && payment.payment_status == "Pending")
+                        {
+                            // Đơn POS (Nhận tại quầy): Thu ngân đã thu tiền lúc order -> Chốt luôn Paid
+                            // Đơn Online (Nhận tại quán): Khách ra lấy mới trả tiền -> Chốt Paid
+                            // Đơn Online (Giao tận nơi): Khuyến khích dùng nút Xác nhận bên Tracking, 
+                            // nhưng nếu nhân viên Bếp/Quản lý bấm nút Hoàn tất thì cũng mặc định là Shipper đã mang tiền về nộp -> Chốt Paid
+
+                            payment.payment_status = "Paid";
+                            payment.paid_at = DateTime.Now;
+                        }
+                    }
+
+                    db.Configuration.ValidateOnSaveEnabled = false;
+                    db.SaveChanges();
+                    transaction.Commit();
+                    db.Configuration.ValidateOnSaveEnabled = true;
+
+                    return Json(new { success = true, message = "Cập nhật trạng thái thành công", data = new { OrderId = id, Status = newStatus } });
                 }
-
-                string oldStatus = order.status;
-                order.status = newStatus;
-
-                // Ghi nhận lịch sử đổi trạng thái
-                var history = new OrderStatusHistory
+                catch (Exception ex)
                 {
-                    history_id = "HS" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper(),
-                    order_id = order.order_id,
-                    old_status = oldStatus,
-                    new_status = newStatus,
-                    changed_by = string.IsNullOrEmpty(userId) ? null : userId,
-                    changed_at = DateTime.Now
-                };
-                db.OrderStatusHistories.Add(history);
-
-                db.Configuration.ValidateOnSaveEnabled = false;
-                db.SaveChanges();
-                db.Configuration.ValidateOnSaveEnabled = true;
-
-                return Json(new { success = true, message = "Cập nhật trạng thái thành công", data = new { OrderId = id, Status = newStatus } });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Lỗi cập nhật: " + ex.Message, data = (object)null });
+                    transaction.Rollback();
+                    return Json(new { success = false, message = "Lỗi cập nhật: " + ex.Message, data = (object)null });
+                }
             }
         }
 

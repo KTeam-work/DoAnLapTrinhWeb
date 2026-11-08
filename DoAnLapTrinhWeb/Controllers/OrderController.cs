@@ -25,7 +25,7 @@ namespace DoAnLapTrinhWeb.Controllers
             public string Email { get; set; }
             public string Address { get; set; }
         }
-       
+
         public class OrderHistoryViewModel
         {
             public string OrderId { get; set; }
@@ -67,10 +67,34 @@ namespace DoAnLapTrinhWeb.Controllers
             // Thông tin giao nhận
             public string CustomerName { get; set; }
             public string CustomerPhone { get; set; }
-           
+
 
             public List<OrderDetailItemViewModel> Items { get; set; }
             public List<OrderStatusHistory> StatusHistories { get; set; }
+        }
+        // =========================================================
+        // CÁC LỚP MODEL HỖ TRỢ CHO POS (Nhận dữ liệu JSON từ View)
+        // =========================================================
+        public class PosCartItem
+        {
+            public string ProductId { get; set; }
+            public string ProductName { get; set; }
+            public string SizeId { get; set; }
+            public int Quantity { get; set; }
+            public decimal UnitPrice { get; set; }
+            public decimal TotalPrice { get; set; }
+            public string Note { get; set; }
+            public List<string> ToppingIds { get; set; }
+        }
+
+        public class PosOrderRequest
+        {
+            public string CustomerPhone { get; set; }
+            public string CustomerName { get; set; }
+            public int? PagerNumber { get; set; }
+            public string PaymentMethod { get; set; }
+            public decimal TotalAmount { get; set; }
+            public List<PosCartItem> CartItems { get; set; }
         }
         // =========================================================
         // GET: Order/Index (Dành cho Admin và Nhân viên)
@@ -139,7 +163,7 @@ namespace DoAnLapTrinhWeb.Controllers
                 FullName = currentUser?.full_name ?? Session["FullName"]?.ToString(),
                 Phone = currentUser?.phone ?? "",
                 Email = currentUser?.email ?? "",
-                Address = "" 
+                Address = ""
             };
             return View(viewModel);
         }
@@ -202,18 +226,18 @@ namespace DoAnLapTrinhWeb.Controllers
                     {
                         order_id = newOrderId,
                         customer_id = null, // Cập nhật logic: Nếu bảng Customer tách biệt, phải có logic lấy customer_id. Ở đây lưu user_id
-                        user_id = currentUserId, 
+                        user_id = currentUserId,
                         source = "Online",
                         delivery_type = deliveryType ?? "Delivery",
                         voucher_id = null, // Tính năng voucher tách rời
                         discount_amount = 0,
                         total_amount = cartService.GetTotalAmount(), // Gọi qua cartService 
                         status = "Pending",
-                        note = note, 
+                        note = note,
                         created_at = DateTime.Now
                     };
 
-                 
+
                     if (newOrder.delivery_type == "Delivery")
                     {
                         newOrder.note += string.Format(" | Giao đến: {0}, SĐT: {1}, ĐC: {2}", receiverName, receiverPhone, deliveryAddress);
@@ -222,7 +246,7 @@ namespace DoAnLapTrinhWeb.Controllers
                     db.Orders.Add(newOrder);
 
                     // 4. Lưu chi tiết đơn hàng (OrderDetails)
-                    foreach (var item in cart) 
+                    foreach (var item in cart)
                     {
                         string orderDetailId = "DT" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper();
 
@@ -234,8 +258,8 @@ namespace DoAnLapTrinhWeb.Controllers
                             product_id = item.ProductId != null ? item.ProductId.Trim() : "",
                             size_id = item.SizeId != null ? item.SizeId.Trim() : "",
                             quantity = item.Quantity,
-                            unit_price_snapshot = item.BasePrice + item.SizePrice, 
-                            total_price_snapshot = item.TotalPrice,                
+                            unit_price_snapshot = item.BasePrice + item.SizePrice,
+                            total_price_snapshot = item.TotalPrice,
                             note = item.Note
                         };
                         db.OrderDetails.Add(detail);
@@ -260,16 +284,16 @@ namespace DoAnLapTrinhWeb.Controllers
                     }
 
                     // 5. Ghi Log trạng thái đơn hàng (OrderStatusHistory)
-                  
+
                     OrderStatusHistory history = new OrderStatusHistory
                     {
                         history_id = "HS" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper(),
                         order_id = newOrderId,
                         old_status = null,
-                        new_status = "Pending", 
+                        new_status = "Pending",
                         changed_by = currentUserId,
                         changed_at = DateTime.Now
-                        
+
                     };
                     db.OrderStatusHistories.Add(history);
 
@@ -380,9 +404,9 @@ namespace DoAnLapTrinhWeb.Controllers
             {
                 try
                 {
-                 
+
                     string orderId = "OD" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper();
-                  
+
 
                     // Tính tổng tiền
                     decimal totalAmount = cartService.GetTotalAmount() + (DeliveryType == "Delivery" ? 15000 : 0) - DiscountAmount;
@@ -403,7 +427,7 @@ namespace DoAnLapTrinhWeb.Controllers
                         total_amount = totalAmount,
                         status = "Pending",
                         delivery_address = (DeliveryType == "Delivery") ? Address : "Nhận tại cửa hàng",
-                        note = OrderNote, 
+                        note = OrderNote,
                         created_at = DateTime.Now
                     };
 
@@ -458,9 +482,9 @@ namespace DoAnLapTrinhWeb.Controllers
                     };
                     db.OrderStatusHistories.Add(history);
 
-                   
+
                     // 5. THÊM MỚI: LƯU PHƯƠNG THỨC THANH TOÁN VÀO BẢNG Payments
-                
+
                     string paymentId = "PAY" + Guid.NewGuid().ToString("N").Substring(0, 7).ToUpper();
                     string tempTransactionCode = "TXN_" + orderId + "_" + DateTime.Now.ToString("HHmmss");
                     var newPayment = new Payment
@@ -469,13 +493,13 @@ namespace DoAnLapTrinhWeb.Controllers
                         order_id = orderId,
                         payment_method = string.IsNullOrEmpty(PaymentMethod) ? "Cash" : PaymentMethod,
                         amount = totalAmount,
-                        payment_status = "Pending", 
+                        payment_status = "Pending",
                         transaction_code = tempTransactionCode,
                         paid_at = null
                     };
                     db.Payments.Add(newPayment);
 
-                    
+
                     db.SaveChanges();
                     transaction.Commit();
 
@@ -523,7 +547,7 @@ namespace DoAnLapTrinhWeb.Controllers
             string currentUserId = Session["UserId"].ToString();
 
             // 3. Lấy danh sách các đơn hàng của khách này, sắp xếp mới nhất lên đầu
-          
+
             var orders = db.Orders
                            .Where(o => o.user_id == currentUserId || o.customer_id == currentUserId)
                            .OrderByDescending(o => o.created_at)
@@ -632,7 +656,7 @@ namespace DoAnLapTrinhWeb.Controllers
                 TotalAmount = order.total_amount,
                 DiscountAmount = order.discount_amount,
                 DeliveryType = order.delivery_type,
-                PaymentMethod = displayPaymentMethod, 
+                PaymentMethod = displayPaymentMethod,
                 PaymentStatus = payment != null ? payment.payment_status : "Chưa thanh toán",
                 CustomerName = finalCustomerName,
                 CustomerPhone = finalCustomerPhone,
@@ -658,7 +682,7 @@ namespace DoAnLapTrinhWeb.Controllers
             // Truyền mã đơn và trạng thái hiện tại ra View
             ViewBag.OrderId = order.order_id;
             ViewBag.Status = order.status;
-
+            ViewBag.DeliveryType = order.delivery_type;
             // Lấy lịch sử để vẽ thanh Timeline
             var histories = db.OrderStatusHistories
                               .Where(h => h.order_id == id)
@@ -694,7 +718,7 @@ namespace DoAnLapTrinhWeb.Controllers
                     order_id = OrderId,
                     old_status = "Delivering",
                     new_status = "Completed",
-                    changed_by = Session["UserId"]?.ToString(), 
+                    changed_by = Session["UserId"]?.ToString(),
                     changed_at = DateTime.Now
                 };
                 db.OrderStatusHistories.Add(history);
@@ -705,6 +729,200 @@ namespace DoAnLapTrinhWeb.Controllers
             }
 
             return RedirectToAction("History");
+        }
+        // =========================================================
+        // GET: Order/POS - Màn hình Bán hàng tại quầy
+        // =========================================================
+        [HttpGet]
+        public ActionResult POS()
+        {
+            // 1. Chỉ cho phép Nhân viên (R02) và Admin (R01) truy cập
+            if (Session["UserId"] == null) return RedirectToAction("Login", "Account");
+            string roleId = (Session["UserRole"]?.ToString() ?? "").Trim();
+            if (roleId != "R01" && roleId != "R02") return RedirectToAction("History", "Order");
+
+            // 2. Load danh sách danh mục, sản phẩm, toàn bộ size theo từng món, và topping
+            ViewBag.Categories = db.Categories.Where(c => c.status == "Active").ToList();
+            ViewBag.Products = db.Products.Where(p => p.status == "Available").ToList();
+
+            // Lấy toàn bộ Size đang Active (KHÔNG dùng GroupBy nữa vì mỗi món có mã size_id và giá cộng thêm riêng)
+            ViewBag.Sizes = db.ProductSizes.Where(s => s.status == "Active").ToList();
+
+            // Sửa 'Available' thành 'Active' cho khớp với CHECK CONSTRAINT của bảng Toppings trong QLTS.sql
+            ViewBag.Toppings = db.Toppings.Where(t => t.status == "Active").ToList();
+
+            return View();
+        }
+
+        // =========================================================
+        // POST: Order/CreatePosOrder - API Xử lý tính tiền bằng AJAX
+        // =========================================================
+        [HttpPost]
+        public JsonResult CreatePosOrder(PosOrderRequest request)
+        {
+            if (Session["UserId"] == null) return Json(new { success = false, message = "Phiên làm việc hết hạn!" });
+            string currentUserId = Session["UserId"].ToString();
+
+            if (request.CartItems == null || !request.CartItems.Any())
+                return Json(new { success = false, message = "Giỏ hàng đang trống!" });
+
+            using (var transaction = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    // 1. KIỂM TRA RÀNG BUỘC THẺ RUNG
+                    // 1. KIỂM TRA RÀNG BUỘC THẺ RUNG (Dùng trực tiếp cột pager_number)
+                    if (request.PagerNumber.HasValue)
+                    {
+                        bool isPagerBusy = db.Orders.Any(o => o.pager_number == request.PagerNumber.Value &&
+                                          (o.status == "Pending" || o.status == "Confirmed" || o.status == "Preparing" || o.status == "Ready"));
+
+                        if (isPagerBusy) return Json(new { success = false, message = $"Thẻ rung số {request.PagerNumber.Value} đang bận!" });
+                    }
+
+                    // 2. XỬ LÝ KHÁCH HÀNG
+                    string customerId = null;
+                    string userIdForOrder = null;
+                    string optAlert = "";
+
+                    if (!string.IsNullOrEmpty(request.CustomerPhone))
+                    {
+                        var existingCustomer = db.Customers.FirstOrDefault(c => c.phone == request.CustomerPhone);
+                        if (existingCustomer != null)
+                        {
+                            customerId = existingCustomer.customer_id;
+                            userIdForOrder = existingCustomer.user_id;
+                            // Cộng điểm
+                            existingCustomer.loyalty_point += (int)(request.TotalAmount / 10000);
+                        }
+                        else
+                        {
+                            // NẾU KHÁCH HÀNG CHƯA ĐĂNG KÝ, BÁO LỖI VÀ CHẶN LẠI
+                            return Json(new { success = false, message = "Số điện thoại chưa đăng ký thành viên! Vui lòng xóa SĐT hoặc đăng ký tài khoản trên Website." });
+                        }
+                    }
+
+                    // 3. TẠO ĐƠN HÀNG (TRẠNG THÁI TỰ ĐỘNG)
+                    string orderId = "OD" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper();
+                    string finalStatus = request.PagerNumber.HasValue ? "Preparing" : "Completed";
+
+                    var newOrder = new Order
+                    {
+                        order_id = orderId,
+                        customer_id = customerId,
+                        user_id = userIdForOrder,
+                        source = "POS",
+                        delivery_type = "Pickup",
+                        total_amount = request.TotalAmount,
+                        status = finalStatus,
+                        delivery_address = "Tại quầy",
+                        note = "", 
+                        pager_number = request.PagerNumber, 
+                        created_at = DateTime.Now
+                    };
+                    db.Orders.Add(newOrder);
+
+                    // 4. LƯU CHI TIẾT
+                    foreach (var item in request.CartItems)
+                    {
+                        string orderDetailId = "DT" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper();
+                        string cleanProdId = (item.ProductId ?? "").Trim();
+                        string cleanSizeId = (item.SizeId ?? "").Trim();
+
+                        // Kiểm tra chính xác cặp (product_id, size_id) trong bảng ProductSizes
+                        var matchedSize = db.ProductSizes.FirstOrDefault(s =>
+                            s.product_id.Trim() == cleanProdId &&
+                            s.size_id.Trim() == cleanSizeId);
+
+                        // Nếu vì lý do gì đó không khớp, tự động lấy Size đầu tiên của đúng món đó
+                        if (matchedSize == null)
+                        {
+                            matchedSize = db.ProductSizes.FirstOrDefault(s => s.product_id.Trim() == cleanProdId);
+                        }
+
+                        if (matchedSize == null)
+                        {
+                            throw new Exception($"Món '{item.ProductName}' chưa được cấu hình Size trong bảng ProductSizes!");
+                        }
+
+                        var orderDetail = new OrderDetail
+                        {
+                            order_detail_id = orderDetailId,
+                            order_id = orderId,
+                            product_id = matchedSize.product_id, // Lấy chuẩn NCHAR(10) từ DB
+                            size_id = matchedSize.size_id,       // Lấy chuẩn NCHAR(10) từ DB, khớp 100% FK_OrderDetails_ProductSize
+                            quantity = item.Quantity,
+                            unit_price_snapshot = item.UnitPrice,
+                            total_price_snapshot = item.TotalPrice,
+                            note = item.Note
+                        };
+                        db.OrderDetails.Add(orderDetail);
+
+                        // LƯU TOPPING
+                        if (item.ToppingIds != null && item.ToppingIds.Any())
+                        {
+                            foreach (var topId in item.ToppingIds)
+                            {
+                                string cleanTopId = (topId ?? "").Trim();
+                                var toppingInfo = db.Toppings.FirstOrDefault(t => t.topping_id.Trim() == cleanTopId);
+                                if (toppingInfo != null)
+                                {
+                                    var detailTopping = new OrderDetailTopping
+                                    {
+                                        id = "TP" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper(),
+                                        order_detail_id = orderDetailId,
+                                        topping_id = toppingInfo.topping_id,
+                                        price_snapshot = toppingInfo.price,
+                                        quantity = item.Quantity
+                                    };
+                                    db.OrderDetailToppings.Add(detailTopping);
+                                }
+                            }
+                        }
+                    }
+
+                    // 5. GHI LOG TRẠNG THÁI
+                    db.OrderStatusHistories.Add(new OrderStatusHistory
+                    {
+                        history_id = "HS" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper(),
+                        order_id = orderId,
+                        new_status = finalStatus,
+                        changed_by = currentUserId,
+                        changed_at = DateTime.Now
+                    });
+
+                    // 6. THANH TOÁN 
+                    db.Payments.Add(new Payment
+                    {
+                        payment_id = "PAY" + Guid.NewGuid().ToString("N").Substring(0, 7).ToUpper(),
+                        order_id = orderId,
+                        payment_method = string.IsNullOrEmpty(request.PaymentMethod) ? "Cash" : request.PaymentMethod,
+                        amount = request.TotalAmount,
+                        payment_status = "Paid",
+                        transaction_code = "POS_" + orderId,
+                        paid_at = DateTime.Now
+                    });
+
+                    db.SaveChanges();
+                    transaction.Commit();
+
+                    return Json(new { success = true, orderId = orderId, message = "Thanh toán xong! " + optAlert });
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+
+                    string realError = ex.Message;
+                    Exception inner = ex.InnerException;
+                    while (inner != null)
+                    {
+                        realError += " --> " + inner.Message;
+                        inner = inner.InnerException;
+                    }
+
+                    return Json(new { success = false, message = "Lỗi: " + realError });
+                }
+            }
         }
     }
 }

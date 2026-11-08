@@ -37,27 +37,77 @@
 }
 
 .action-btn {
-    transition: transform .25s, box-shadow .25s;
+    transition: transform .25s, box-shadow .25s, background-color .25s, color .25s;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: auto !important; 
-    min-width: 36px !important; 
-    height: 36px !important; 
+    width: auto !important;
+    min-width: fit-content !important;
+    height: 36px !important;
     gap: 6px !important;
     padding: 6px 14px !important;
     white-space: nowrap !important;
     border-radius: 8px !important;
+    font-size: 0.85rem !important;
 }
 
     .action-btn:hover {
-        transform: translateY(-2px) scale(1.05);
+        transform: translateY(-2px) scale(1.03);
         box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
+
+    /* Ép màu rõ ràng cho từng loại nút để không bị styleProduct_index.css làm tàng hình chữ */
     .action-btn.btn-warning {
-        color: #212529 !important; /* Màu đen/xám đậm */
+        background-color: #fff8e6 !important;
+        border: 1.5px solid #ffc107 !important;
+        color: #212529 !important;
     }
-        .action-btn.btn-warning:hover,
-        .action-btn.btn-warning:focus {
-            color: #000000 !important; /* Màu đen tuyền khi di chuột qua */
+
+        .action-btn.btn-warning:hover {
+            background-color: #ffc107 !important;
+            color: #000000 !important;
+        }
+
+    .action-btn.btn-primary {
+        background-color: #eef5ff !important;
+        border: 1.5px solid #0d6efd !important;
+        color: #0d6efd !important;
+    }
+
+        .action-btn.btn-primary:hover {
+            background-color: #0d6efd !important;
+            color: #ffffff !important;
+        }
+
+    .action-btn.btn-info {
+        background-color: #ebfbff !important;
+        border: 1.5px solid #0dcaf0 !important;
+        color: #055160 !important;
+    }
+
+        .action-btn.btn-info:hover {
+            background-color: #0dcaf0 !important;
+            color: #000000 !important;
+        }
+
+    .action-btn.btn-success {
+        background-color: #eafaf1 !important;
+        border: 1.5px solid #198754 !important;
+        color: #198754 !important;
+    }
+
+        .action-btn.btn-success:hover {
+            background-color: #198754 !important;
+            color: #ffffff !important;
+        }
+
+    .action-btn.btn-dark {
+        background-color: #f8f9fa !important;
+        border: 1.5px solid #212529 !important;
+        color: #212529 !important;
+    }
+
+        .action-btn.btn-dark:hover {
+            background-color: #212529 !important;
+            color: #ffffff !important;
         }

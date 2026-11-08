@@ -37,6 +37,17 @@
           <Property Name="used_at" Type="datetime" />
           <Property Name="status" Type="varchar" MaxLength="20" Nullable="false" />
         </EntityType>
+        <EntityType Name="Ingredients">
+          <Key>
+            <PropertyRef Name="ingredient_id" />
+          </Key>
+          <Property Name="ingredient_id" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="unit" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="quantity_in_stock" Type="decimal" Precision="12" Scale="3" Nullable="false" />
+          <Property Name="min_threshold" Type="decimal" Precision="12" Scale="3" Nullable="false" />
+          <Property Name="status" Type="varchar" MaxLength="20" Nullable="false" />
+        </EntityType>
         <EntityType Name="InventoryTransactions">
           <Key>
             <PropertyRef Name="transaction_id" />
@@ -50,17 +61,6 @@
           <Property Name="reason" Type="nvarchar" MaxLength="255" />
           <Property Name="created_by" Type="nchar" MaxLength="10" />
           <Property Name="created_at" Type="datetime" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Ingredients">
-          <Key>
-            <PropertyRef Name="ingredient_id" />
-          </Key>
-          <Property Name="ingredient_id" Type="nchar" MaxLength="10" Nullable="false" />
-          <Property Name="name" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="unit" Type="varchar" MaxLength="20" Nullable="false" />
-          <Property Name="quantity_in_stock" Type="decimal" Precision="12" Scale="3" Nullable="false" />
-          <Property Name="min_threshold" Type="decimal" Precision="12" Scale="3" Nullable="false" />
-          <Property Name="status" Type="varchar" MaxLength="20" Nullable="false" />
         </EntityType>
         <EntityType Name="OrderDetails">
           <Key>
@@ -101,6 +101,7 @@
           <Property Name="note" Type="nvarchar" MaxLength="500" />
           <Property Name="created_at" Type="datetime" Nullable="false" />
           <Property Name="delivery_address" Type="nvarchar" MaxLength="255" />
+          <Property Name="pager_number" Type="int" />
         </EntityType>
         <EntityType Name="OrderStatusHistory">
           <Key>
@@ -229,7 +230,7 @@
           <Property Name="created_at" Type="datetime" Nullable="false" />
           <Property Name="check_in" Type="datetime" />
           <Property Name="check_out" Type="datetime" />
-          <Property Name="total_hours" Type="decimal" Precision="4" Scale="2" />
+          <Property Name="total_hours" Type="decimal" Precision="5" Scale="2" />
         </EntityType>
         <EntityType Name="Suppliers">
           <Key>
@@ -674,8 +675,8 @@ warning 6035: The relationship 'FK_Recipe_ProductSize' has columns that are not 
           <EntitySet Name="Categories" EntityType="Self.Categories" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Customers" EntityType="Self.Customers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CustomerVouchers" EntityType="Self.CustomerVouchers" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="InventoryTransactions" EntityType="Self.InventoryTransactions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Ingredients" EntityType="Self.Ingredients" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InventoryTransactions" EntityType="Self.InventoryTransactions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OrderDetails" EntityType="Self.OrderDetails" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OrderDetailToppings" EntityType="Self.OrderDetailToppings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Orders" EntityType="Self.Orders" Schema="dbo" store:Type="Tables" />
@@ -950,6 +951,7 @@ warning 6035: The relationship 'FK_Recipe_ProductSize' has columns that are not 
           <NavigationProperty Name="OrderStatusHistories" Relationship="Self.FK__OrderStat__order__4C6B5938" FromRole="Orders" ToRole="OrderStatusHistory" />
           <NavigationProperty Name="Payments" Relationship="Self.FK__Payments__order___45BE5BA9" FromRole="Orders" ToRole="Payments" />
           <Property Name="delivery_address" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="pager_number" Type="Int32" />
         </EntityType>
         <EntityType Name="OrderStatusHistory">
           <Key>
@@ -1104,7 +1106,7 @@ warning 6035: The relationship 'FK_Recipe_ProductSize' has columns that are not 
           <NavigationProperty Name="User" Relationship="Self.FK__StaffShif__user___47DBAE45" FromRole="StaffShifts" ToRole="Users" />
           <Property Name="check_in" Type="DateTime" Precision="3" />
           <Property Name="check_out" Type="DateTime" Precision="3" />
-          <Property Name="total_hours" Type="Decimal" Precision="4" Scale="2" />
+          <Property Name="total_hours" Type="Decimal" Precision="5" Scale="2" />
         </EntityType>
         <EntityType Name="Supplier">
           <Key>
@@ -1801,6 +1803,7 @@ warning 6035: The relationship 'FK_Recipe_ProductSize' has columns that are not 
           <EntitySetMapping Name="Orders">
             <EntityTypeMapping TypeName="QUANLYBANTRASUAModel.Order">
               <MappingFragment StoreEntitySet="Orders">
+                <ScalarProperty Name="pager_number" ColumnName="pager_number" />
                 <ScalarProperty Name="delivery_address" ColumnName="delivery_address" />
                 <ScalarProperty Name="order_id" ColumnName="order_id" />
                 <ScalarProperty Name="customer_id" ColumnName="customer_id" />
