@@ -26,26 +26,26 @@ namespace DoAnLapTrinhWeb.Models
         {
             var cart = GetCart();
 
-            
+
             var existingItem = cart.FirstOrDefault(c =>
                 c.ProductId == newItem.ProductId &&
                 c.SizeId == newItem.SizeId &&
                 AreToppingsEqual(c.Toppings, newItem.Toppings) &&
-                c.Note == newItem.Note 
+                c.Note == newItem.Note
             );
 
             if (existingItem != null)
             {
-                
+
                 existingItem.Quantity += newItem.Quantity;
             }
             else
             {
-               
+
                 cart.Add(newItem);
             }
 
-           
+
             HttpContext.Current.Session[CartSessionKey] = cart;
         }
 
@@ -66,6 +66,29 @@ namespace DoAnLapTrinhWeb.Models
         {
             var cart = GetCart();
             return cart.Sum(c => c.TotalPrice);
+        }
+
+        // Cập nhật số lượng của 1 dòng trong giỏ (theo vị trí)
+        public void UpdateQuantity(int index, int quantity)
+        {
+            var cart = GetCart();
+            if (index < 0 || index >= cart.Count) return;
+
+            if (quantity < 1) quantity = 1;
+            if (quantity > 99) quantity = 99;
+
+            cart[index].Quantity = quantity;
+            HttpContext.Current.Session[CartSessionKey] = cart;
+        }
+
+        // Xóa 1 dòng khỏi giỏ (theo vị trí)
+        public void RemoveItem(int index)
+        {
+            var cart = GetCart();
+            if (index < 0 || index >= cart.Count) return;
+
+            cart.RemoveAt(index);
+            HttpContext.Current.Session[CartSessionKey] = cart;
         }
 
         // 4. Xóa sạch giỏ hàng (Sau khi thanh toán xong)

@@ -39,6 +39,8 @@
             <!-- Lưu VoucherId và DiscountAmount để gửi lên Controller ở Bước 2 -->
             <input type="hidden" name="VoucherId" id="VoucherId" value="" />
             <input type="hidden" name="DiscountAmount" id="DiscountAmount" value="0" />
+            <!-- Số điểm khách muốn đổi (server sẽ kiểm tra lại) -->
+            <input type="hidden" name="UsedPoints" id="UsedPoints" value="0" />
 
             <div class="row g-4">
 
@@ -169,6 +171,28 @@
                         </div>
                         <div id="voucherMessage" class="small mb-3"></div>
 
+                        <!-- ĐỔI ĐIỂM TÍCH LŨY -->
+                        <input type="hidden" id="LoyaltyBalance" value="@Model.LoyaltyPoints" />
+                        <div class="p-3 bg-light rounded-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-center small mb-2">
+                                <span class="fw-semibold"><i class="fa-solid fa-star text-warning me-1"></i>Điểm tích lũy</span>
+                                <span>Bạn có <strong>@Model.LoyaltyPoints</strong> điểm <span class="text-muted">(1 điểm = 1.000đ)</span></span>
+                            </div>
+                            @if (Model.LoyaltyPoints > 0)
+                            {
+                                <div class="input-group">
+                                    <input type="number" min="0" step="1" class="form-control bg-white" id="pointsInput" placeholder="Nhập số điểm muốn đổi">
+                                    <button class="btn border bg-white fw-bold" style="color: var(--lumitea-primary);" type="button" id="btnApplyPoints">Áp dụng</button>
+                                    <button class="btn border bg-white small" type="button" id="btnMaxPoints">Tối đa</button>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="small text-muted">Bạn chưa có điểm để quy đổi.</div>
+                            }
+                            <div id="pointsMessage" class="small mt-2"></div>
+                        </div>
+
                         <hr class="text-muted opacity-25">
 
                         <!-- TÍNH TOÁN CHI PHÍ -->
@@ -185,6 +209,10 @@
                         <div class="d-flex justify-content-between mb-3 text-muted small">
                             <span>Giảm giá Voucher</span>
                             <span class="fw-semibold text-success" id="discountDisplay">- 0 đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 text-muted small">
+                            <span>Giảm giá đổi điểm</span>
+                            <span class="fw-semibold text-success" id="pointsDiscountDisplay">- 0 đ</span>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3 mb-4">
@@ -212,12 +240,78 @@
             var currentShippingFee = 15000;
             var currentDiscount = 0;
 
+            // ===== ĐỔI ĐIỂM (1 điểm = 1.000đ) =====
+            var POINT_VALUE = 1000;
+            var pointsBalance = parseInt($('#LoyaltyBalance').val()) || 0;
+            var appliedPoints = 0;
+
+            function getPayableBeforePoints() {
+                var p = totalAmountBase + currentShippingFee - currentDiscount;
+                return p < 0 ? 0 : p;
+            }
+
+            // Số điểm tối đa được dùng: không vượt số dư và không vượt số tiền cần trả
+            function maxUsablePoints() {
+                return Math.min(pointsBalance, Math.floor(getPayableBeforePoints() / POINT_VALUE));
+            }
+
             function updateFinalAmount() {
-                var finalTotal = totalAmountBase + currentShippingFee - currentDiscount;
+                var payable = getPayableBeforePoints();
+
+                // Tự điều chỉnh nếu đổi voucher/hình thức giao làm tổng tiền giảm xuống
+                var max = maxUsablePoints();
+                if (appliedPoints > max) {
+                    appliedPoints = max;
+                    $('#pointsInput').val(appliedPoints > 0 ? appliedPoints : '');
+                    $('#pointsMessage').html(appliedPoints > 0
+                        ? '<span class="text-warning">Đã điều chỉnh còn ' + appliedPoints + ' điểm cho phù hợp tổng tiền.</span>'
+                        : '');
+                }
+
+                var pointsDiscount = appliedPoints * POINT_VALUE;
+                $('#UsedPoints').val(appliedPoints);
+                $('#pointsDiscountDisplay').text('- ' + pointsDiscount.toLocaleString('vi-VN') + ' đ');
+
+                var finalTotal = payable - pointsDiscount;
                 if (finalTotal < 0) finalTotal = 0;
 
                 $('#finalAmountDisplay').html(finalTotal.toLocaleString('vi-VN') + ' <span class="fs-5 text-decoration-underline fw-normal">đ</span>');
             }
+
+            function applyPoints(requested) {
+                if (isNaN(requested) || requested < 0) {
+                    $('#pointsMessage').html('<span class="text-danger">Số điểm không hợp lệ!</span>');
+                    return;
+                }
+                if (requested > pointsBalance) {
+                    $('#pointsMessage').html('<span class="text-danger"><i class="fa-solid fa-circle-xmark me-1"></i>Bạn chỉ có ' + pointsBalance + ' điểm!</span>');
+                    return;
+                }
+                var max = maxUsablePoints();
+                if (requested > max) {
+                    requested = max;
+                    $('#pointsInput').val(requested);
+                }
+                appliedPoints = requested;
+                updateFinalAmount();
+
+                if (appliedPoints > 0) {
+                    $('#pointsMessage').html('<span class="text-success"><i class="fa-solid fa-check-circle me-1"></i>Đã dùng ' + appliedPoints + ' điểm, giảm ' + (appliedPoints * POINT_VALUE).toLocaleString('vi-VN') + ' đ</span>');
+                } else {
+                    $('#pointsMessage').html('');
+                }
+            }
+
+            $('#btnApplyPoints').click(function () {
+                var v = $('#pointsInput').val().trim();
+                applyPoints(v === '' ? 0 : parseInt(v));
+            });
+
+            $('#btnMaxPoints').click(function () {
+                var max = maxUsablePoints();
+                $('#pointsInput').val(max);
+                applyPoints(max);
+            });
 
             // XỬ LÝ ẨN/HIỆN PHÍ SHIP THEO HÌNH THỨC GIAO HÀNG
             $('input[name="DeliveryType"]').change(function () {

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web.Mvc;
 
 namespace DoAnLapTrinhWeb.API
@@ -205,10 +206,6 @@ namespace DoAnLapTrinhWeb.API
             }
         }
 
-        // =========================================================
-        // 4. PUT: /api/orders/{id}/status
-        // Cập nhật trạng thái đơn hàng (Dành cho App Shipper / Nhân viên)
-        // =========================================================
         [HttpPut]
         [Route("{id}/status")]
         public JsonResult UpdateStatus(string id, string newStatus, string userId = null)
@@ -244,28 +241,63 @@ namespace DoAnLapTrinhWeb.API
                     db.OrderStatusHistories.Add(history);
 
                     // ===============================================================
-                    // LOGIC TỰ ĐỘNG CHỐT THANH TOÁN (CỰC KỲ QUAN TRỌNG)
+                    // LOGIC TỰ ĐỘNG CHỐT THANH TOÁN & CỘNG ĐIỂM
                     // ===============================================================
-                    // Khi nhân viên bấm "Hoàn tất" (Completed) HOẶC khách lấy tại quầy
                     if (newStatus == "Completed")
                     {
-                        var payment = db.Payments.FirstOrDefault(p => p.order_id == id);
+                        string cleanOrderId = id.Trim();
 
-                        // Nếu là đơn thanh toán bằng TIỀN MẶT và đang bị nợ (Pending)
+                        // 1. Chốt thanh toán (CHỈ CHO TIỀN MẶT)
+                        var payment = db.Payments.FirstOrDefault(p => p.order_id.Trim() == cleanOrderId);
                         if (payment != null && payment.payment_method == "Cash" && payment.payment_status == "Pending")
                         {
-                            // Đơn POS (Nhận tại quầy): Thu ngân đã thu tiền lúc order -> Chốt luôn Paid
-                            // Đơn Online (Nhận tại quán): Khách ra lấy mới trả tiền -> Chốt Paid
-                            // Đơn Online (Giao tận nơi): Khuyến khích dùng nút Xác nhận bên Tracking, 
-                            // nhưng nếu nhân viên Bếp/Quản lý bấm nút Hoàn tất thì cũng mặc định là Shipper đã mang tiền về nộp -> Chốt Paid
-
                             payment.payment_status = "Paid";
                             payment.paid_at = DateTime.Now;
+                        }
+
+                        // 2. CỘNG ĐIỂM TÍCH LŨY (TẤT CẢ PHƯƠNG THỨC THANH TOÁN)
+                        if (oldStatus != "Completed")
+                        {
+                            string cleanCusId = (order.customer_id ?? "").Trim();
+                            string cleanUsrId = (order.user_id ?? "").Trim();
+
+                            var customerData = db.Customers.FirstOrDefault(c =>
+                                (!string.IsNullOrEmpty(cleanCusId) && c.customer_id.Trim() == cleanCusId) ||
+                                (!string.IsNullOrEmpty(cleanUsrId) && c.user_id != null && c.user_id.Trim() == cleanUsrId));
+
+                            if (customerData != null)
+                            {
+                                if (string.IsNullOrEmpty(order.customer_id))
+                                {
+                                    order.customer_id = customerData.customer_id;
+                                }
+
+                                // TÍNH ĐIỂM DỰA TRÊN TỔNG TIỀN ĐÃ TRỪ KHUYẾN MÃI/ĐIỂM (TotalAmount)
+                                int pointsEarned = (int)(order.total_amount / 10000m);
+                                customerData.loyalty_point += pointsEarned;
+                            }
+                        }
+                    }
+
+                    // ===============================================================
+                    // HOÀN ĐIỂM KHI HỦY ĐƠN (đơn online đã dùng điểm để đổi)
+                    // ===============================================================
+                    if (newStatus == "Cancelled" && oldStatus != "Cancelled" && oldStatus != "Completed")
+                    {
+                        var m = Regex.Match(order.note ?? "", @"Đã dùng\s+(\d+)\s+điểm");
+                        string cusId = (order.customer_id ?? "").Trim();
+                        if (m.Success && !string.IsNullOrEmpty(cusId))
+                        {
+                            var cus = db.Customers.FirstOrDefault(c => c.customer_id.Trim() == cusId);
+                            if (cus != null)
+                            {
+                                cus.loyalty_point += int.Parse(m.Groups[1].Value);
+                            }
                         }
                     }
 
                     db.Configuration.ValidateOnSaveEnabled = false;
-                    db.SaveChanges();
+                    db.SaveChanges(); // Lệnh này sẽ lưu MỌI thay đổi (Order, Payment, Customer)
                     transaction.Commit();
                     db.Configuration.ValidateOnSaveEnabled = true;
 
@@ -278,7 +310,6 @@ namespace DoAnLapTrinhWeb.API
                 }
             }
         }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)
