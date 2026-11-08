@@ -1,8 +1,12 @@
-using DoAnLapTrinhWeb.Models;
 using System;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
+using DoAnLapTrinhWeb.Models;
 
 namespace DoAnLapTrinhWeb.Controllers
 {
@@ -149,22 +153,75 @@ namespace DoAnLapTrinhWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ForgotPassword(string Email)
+        public async Task<ActionResult> ForgotPassword(string Email)
         {
-            if (string.IsNullOrEmpty(Email))
+            if (string.IsNullOrWhiteSpace(Email))
             {
                 ModelState.AddModelError("", "Vui lòng nhập email.");
                 return View();
             }
 
-            ViewBag.EmailSent = true;
-            return View();
-        }
+            string cleanEmail = Email.Trim();
+            var user = db.Users.FirstOrDefault(x => x.email == cleanEmail);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Không tìm thấy tài khoản nào khớp với email này.");
+                return View();
+            }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing) db.Dispose();
-            base.Dispose(disposing);
+            try
+            {
+                // 1. Tạo mật khẩu mới ngẫu nhiên
+                string randomCode = new Random().Next(100000, 999999).ToString();
+                string newTempPassword = "Pass@" + randomCode;
+
+                // 2. Cập nhật mật khẩu vào DB
+                user.password = newTempPassword;
+                db.SaveChanges();
+
+                // 3. Gọi REST API bên ngoài (Resend API)
+                string apiKey = "Your_API_KEY"; // Thay bằng API Key của bạn
+                string apiUrl = "https://api.resend.com/emails";
+
+                var payload = new
+                {
+                    from = "onboarding@resend.dev",
+                    to = new string[] { cleanEmail },
+                    subject = "Cấp lại mật khẩu tài khoản Quán Trà Sữa",
+                    html = $@"
+                        <h3>Xin chào {user.full_name},</h3>
+                        <p>Mật khẩu tạm thời cho tài khoản <b>{user.username}</b> của bạn là:</p>
+                        <h2 style='color: #8A4B29;'>{newTempPassword}</h2>
+                        <p>Vui lòng đăng nhập và đổi lại mật khẩu để bảo vệ tài khoản.</p>"
+                };
+
+                string jsonContent = new JavaScriptSerializer().Serialize(payload);
+
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiKey);
+                    var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                    var response = await client.PostAsync(apiUrl, httpContent);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        ViewBag.EmailSent = true;
+                        ViewBag.SuccessMessage = "Mật khẩu mới đã được gửi qua email!";
+                        return View();
+                    }
+                    else
+                    {
+                        string errorResponse = await response.Content.ReadAsStringAsync();
+                        ModelState.AddModelError("", "Lỗi từ API Email: " + errorResponse);
+                        return View();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Có lỗi xảy ra: " + ex.Message);
+                return View();
+            }
         }
     }
 }
