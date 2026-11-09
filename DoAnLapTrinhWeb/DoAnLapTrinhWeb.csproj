@@ -279,6 +279,18 @@
     <Compile Include="Services\TraSuaToolService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\ca_phe_caramel_macchiato_da_xay.jpg" />
+    <Content Include="Assets\chan_trau_hoang_kim.jpg" />
+    <Content Include="Assets\khoai_mon_sua_dua.jpg" />
+    <Content Include="Assets\matcha_dau_tay_latte.jpg" />
+    <Content Include="Assets\matcha_da_xay_kem_tuoi.jpg" />
+    <Content Include="Assets\matcha_latte_oreo.jpg" />
+    <Content Include="Assets\so_co_la_da_xay.jpg" />
+    <Content Include="Assets\so_co_la_macchiato.jpg" />
+    <Content Include="Assets\strawberry_latte.jpg" />
+    <Content Include="Assets\tra_sua_khoai_mon_chan_trau.jpg" />
+    <Content Include="Assets\tra_sua_matcha_tran_chau.jpg" />
+    <Content Include="Assets\tra_sua_tinh_than_tre.jpg" />
     <Content Include="bin\Antlr3.Runtime.dll" />
     <Content Include="bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll" />
     <Content Include="bin\Microsoft.Web.Infrastructure.dll" />
@@ -424,7 +436,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Assets\" />
     <Folder Include="bin\roslyn\" />
   </ItemGroup>
   <ItemGroup>

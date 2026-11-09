@@ -217,6 +217,10 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     let posCart = [];
+    const EMPTY_CART_HTML = `
+        <div class="text-center text-muted mt-5" id="emptyCartMsg">
+            <i class="bi bi-cart-x fs-1"></i><br>Chưa chọn món nào
+        </div>`;
     let maxCusPoints = 0;
 
     // 1. Mở Modal và lọc đúng Size của sản phẩm được chọn
@@ -318,15 +322,20 @@
         }
     }
 
+    // 4b. Xóa hẳn 1 món (khi nhân viên order nhầm)
+    function removeItem(index) {
+        if (posCart[index]) {
+            posCart.splice(index, 1);
+            renderCart();
+        }
+    }
+
     // 5. Vẽ lại giỏ hàng (Chỉ hiển thị, tiền trừ sẽ tính toán lúc gửi lên server)
     function renderCart() {
         let html = '';
         let total = 0;
 
-        if (posCart.length === 0) {
-            $('#emptyCartMsg').show();
-        } else {
-            $('#emptyCartMsg').hide();
+        if (posCart.length > 0) {
             posCart.forEach((item, index) => {
                 total += item.TotalPrice;
                 let toppingStr = item.ToppingNames.length > 0 ? " + " + item.ToppingNames.join(', ') : "";
@@ -344,11 +353,12 @@
                             <button class="btn btn-sm btn-outline-secondary px-2 py-0" onclick="updateQty(${index}, -1)">-</button>
                             <span class="mx-2 fw-bold">${item.Quantity}</span>
                             <button class="btn btn-sm btn-outline-success px-2 py-0" onclick="updateQty(${index}, 1)">+</button>
+                            <button class="btn btn-sm btn-outline-danger px-2 py-0 ms-2" title="Xóa món" onclick="removeItem(${index})"><i class="bi bi-trash"></i></button>
                         </div>
                     </div>`;
             });
         }
-        $('#cartContainer').html(html || $('#emptyCartMsg')[0].outerHTML);
+        $('#cartContainer').html(html || EMPTY_CART_HTML);
 
         // Lấy số điểm hiện tại đang nhập trong ô Input
         let currentPointsToUse = parseInt($('#posUsePoints').val()) || 0;
@@ -418,6 +428,8 @@
                     posCart = [];
                     $('#posPhone, #posPager, #posUsePoints').val('');
                     $('#loyaltySection').slideUp();
+                    $('#pointError, #phoneError').hide().text('');
+                    $('#posPaymentMethod').val('Cash');
                     maxCusPoints = 0;
                     renderCart();
                 } else {
