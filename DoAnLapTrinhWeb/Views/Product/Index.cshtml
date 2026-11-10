@@ -1,4 +1,5 @@
-﻿@model List<DoAnLapTrinhWeb.Models.Product>
+﻿
+@model List<DoAnLapTrinhWeb.Models.Product>
 
 @{
     ViewData["Title"] = "Quản lý sản phẩm";
@@ -11,15 +12,17 @@
     int activeProducts = ViewBag.ActiveProducts ?? 0;
     int inactiveProducts = ViewBag.InactiveProducts ?? 0;
     string nextProductId = ViewBag.NextProductId ?? "PRD01";
+
+    // Danh sách ảnh được Controller lấy từ thư mục Assets
+    var productImages = ViewBag.ProductImages as List<string>
+        ?? new List<string>();
 }
 
 <link rel="stylesheet" href="~/Css/styleProduct_index.css" />
 
 <div class="product-page">
 
-    <!-- =========================================================
-         HEADER
-         ========================================================= -->
+    <!-- HEADER -->
     <div class="product-heading">
         <div class="heading-left">
             <div class="heading-icon">
@@ -31,15 +34,12 @@
             </div>
         </div>
 
-        <!-- NÚT THÊM -->
         <button type="button" class="btn-tea" data-bs-toggle="modal" data-bs-target="#addProductModal">
             <i class="bi bi-plus-lg me-1"></i> Thêm sản phẩm
         </button>
     </div>
 
-    <!-- =========================================================
-         SUMMARY
-         ========================================================= -->
+    <!-- SUMMARY -->
     <div class="summary-grid">
         <div class="summary-card">
             <span class="summary-label">Tổng sản phẩm</span>
@@ -63,9 +63,7 @@
         </div>
     </div>
 
-    <!-- =========================================================
-         FILTER
-         ========================================================= -->
+    <!-- FILTER -->
     <div class="filter-card">
         <div class="filter-head">
             <i class="bi bi-funnel-fill"></i>
@@ -76,7 +74,6 @@
             <form method="get" action="@Url.Action("Index", "Product")">
                 <div class="row g-3 align-items-end">
 
-                    <!-- TÌM KIẾM -->
                     <div class="col-lg-5">
                         <label class="form-label">Tìm kiếm</label>
                         <div class="input-group">
@@ -85,7 +82,6 @@
                         </div>
                     </div>
 
-                    <!-- LOẠI -->
                     <div class="col-lg-3">
                         <label class="form-label">Loại sản phẩm</label>
                         <select name="category" class="form-select">
@@ -105,7 +101,6 @@
                         </select>
                     </div>
 
-                    <!-- TRẠNG THÁI -->
                     <div class="col-lg-2">
                         <label class="form-label">Trạng thái</label>
                         <select name="status" class="form-select">
@@ -115,7 +110,6 @@
                         </select>
                     </div>
 
-                    <!-- NÚT LỌC -->
                     <div class="col-lg-2 d-flex gap-2">
                         <button type="submit" class="btn-tea flex-grow-1">
                             <i class="bi bi-search me-1"></i> Lọc
@@ -130,9 +124,7 @@
         </div>
     </div>
 
-    <!-- =========================================================
-         TABLE
-         ========================================================= -->
+    <!-- TABLE -->
     <div class="product-table-card">
         <div class="table-top">
             <div>
@@ -154,6 +146,7 @@
                         <th class="text-center" style="width:100px;">Thao tác</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @if (Model.Any())
                     {
@@ -168,23 +161,42 @@
                                 <td>
                                     <span class="product-code">@pId</span>
                                 </td>
+
                                 <td>
                                     <div class="d-flex align-items-center gap-3">
-                                        <div class="product-image d-flex align-items-center justify-content-center">
-                                            <i class="bi bi-cup-straw" style="font-size:22px; color:#20584f;"></i>
+                                        <div class="product-image d-flex align-items-center justify-content-center"
+                                             style="overflow:hidden;">
+
+                                            @if (!string.IsNullOrWhiteSpace(product.image_url))
+                                            {
+                                                <img src="@Url.Content(product.image_url)"
+                                                     alt="@product.name"
+                                                     style="width:100%;height:100%;object-fit:cover;"
+                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+
+                                                <i class="bi bi-cup-straw"
+                                                   style="font-size:22px;color:#20584f;display:none;"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-cup-straw" style="font-size:22px;color:#20584f;"></i>
+                                            }
                                         </div>
+
                                         <div>
                                             <div class="product-name">@product.name</div>
                                             <div class="description mt-1">@product.description</div>
                                         </div>
                                     </div>
                                 </td>
+
                                 <td>
                                     <span class="category-badge">
                                         <i class="bi bi-tag-fill me-1"></i>
                                         @(product.Category != null ? product.Category.category_name : "Khác")
                                     </span>
                                 </td>
+
                                 <td>
                                     @if (sizes.Any())
                                     {
@@ -202,19 +214,21 @@
                                         <span class="text-muted">Chưa có giá</span>
                                     }
                                 </td>
+
                                 <td>
                                     @{
                                         int toppingCount = product.ProductToppings != null ? product.ProductToppings.Count : 0;
                                     }
                                     @if (toppingCount > 0)
                                     {
-                                        <span style="font-size:12px; color:#78837e;">@toppingCount topping</span>
+                                        <span style="font-size:12px;color:#78837e;">@toppingCount topping</span>
                                     }
                                     else
                                     {
-                                        <span style="font-size:12px; color:#a0aaa6;">Không có</span>
+                                        <span style="font-size:12px;color:#a0aaa6;">Không có</span>
                                     }
                                 </td>
+
                                 <td>
                                     @if (product.status == "Available")
                                     {
@@ -235,6 +249,7 @@
                                         </span>
                                     }
                                 </td>
+
                                 <td class="text-center">
                                     <a href="@Url.Action("Details", "Product", new { id = pId })" class="action-btn edit-btn" title="Xem chi tiết">
                                         <i class="bi bi-eye-fill"></i>
@@ -248,9 +263,9 @@
                         <tr>
                             <td colspan="7">
                                 <div class="text-center py-5">
-                                    <div style="font-size:42px; color:#b7c5bf;"><i class="bi bi-box-seam"></i></div>
-                                    <h5 class="mt-3" style="color:#20584f; font-weight:800;">Không tìm thấy sản phẩm</h5>
-                                    <p style="color:#78837e; font-size:13px;">Hãy thử thay đổi từ khóa hoặc bộ lọc.</p>
+                                    <div style="font-size:42px;color:#b7c5bf;"><i class="bi bi-box-seam"></i></div>
+                                    <h5 class="mt-3" style="color:#20584f;font-weight:800;">Không tìm thấy sản phẩm</h5>
+                                    <p style="color:#78837e;font-size:13px;">Hãy thử thay đổi từ khóa hoặc bộ lọc.</p>
                                 </div>
                             </td>
                         </tr>
@@ -266,9 +281,7 @@
     </div>
 </div>
 
-<!-- =============================================================
-     MODAL THÊM SẢN PHẨM
-     ============================================================= -->
+<!-- MODAL THÊM SẢN PHẨM -->
 <div class="modal fade product-page-modal" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -286,6 +299,7 @@
             <div class="modal-body">
                 <form id="addProductForm">
                     <div class="row g-4">
+
                         <div class="col-md-4">
                             <label class="modal-label">Mã sản phẩm</label>
                             <input type="text" id="newProductId" class="form-control" value="@nextProductId" readonly />
@@ -320,13 +334,98 @@
                             <label class="modal-label">Mô tả sản phẩm</label>
                             <textarea id="newProductDescription" class="form-control" rows="3" placeholder="Nhập mô tả sản phẩm..."></textarea>
                         </div>
+
+                        <!-- CHỌN ẢNH -->
+                        <div class="col-12">
+                            <label class="modal-label">Ảnh sản phẩm</label>
+
+                            <input type="hidden" id="newProductImage" />
+
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="product-image d-flex align-items-center justify-content-center"
+                                     style="width:100px;height:100px;overflow:hidden;flex-shrink:0;">
+
+                                    <img id="productImagePreview"
+                                         src=""
+                                         alt="Ảnh xem trước"
+                                         style="width:100%;height:100%;object-fit:cover;display:none;"
+                                         onerror="this.style.display='none';document.getElementById('productImageFallback').style.display='block';" />
+
+                                    <i id="productImageFallback"
+                                       class="bi bi-cup-straw"
+                                       style="font-size:30px;color:#20584f;"></i>
+                                </div>
+
+                                <div>
+                                    <button type="button" class="btn-filter"
+                                            onclick="toggleProductImageGallery()">
+                                        <i class="bi bi-images me-1"></i> Chọn ảnh
+                                    </button>
+
+                                    <div class="description mt-2">
+                                        Chọn ảnh có sẵn trong thư mục Assets.
+                                    </div>
+
+                                    <button type="button" class="btn btn-link btn-sm text-danger p-0 mt-1"
+                                            onclick="clearProductImage()">
+                                        Bỏ chọn ảnh
+                                    </button>
+                                    <!-- DANH SÁCH ẢNH -->
+                                    <div id="productImageGallery"
+                                         class="mt-3 p-3 border rounded"
+                                         style="display:none; background:#fff;">
+
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <strong style="color:#20584f;">Chọn ảnh sản phẩm</strong>
+
+                                            <button type="button"
+                                                    class="btn-close"
+                                                    onclick="toggleProductImageGallery()">
+                                            </button>
+                                        </div>
+
+                                        @if (productImages.Any())
+                                        {
+                                            <div class="row g-3">
+                                                @foreach (var image in productImages)
+                                                {
+                                                    <div class="col-6 col-md-4 col-lg-3">
+                                                        <button type="button"
+                                                                class="border rounded p-2 w-100 bg-white product-image-option"
+                                                                onclick="selectProductImage('@Url.Content("~/Assets/" + image)')">
+
+                                                            <img src="@Url.Content("~/Assets/" + image)"
+                                                                 alt="@image"
+                                                                 style="width:100%;height:110px;object-fit:cover;border-radius:8px;" />
+
+                                                            <div class="small text-truncate mt-2 text-dark">
+                                                                @image
+                                                            </div>
+                                                        </button>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="text-center py-4">
+                                                <i class="bi bi-image" style="font-size:35px;color:#b7c5bf;"></i>
+                                                <p class="mt-2">Chưa tìm thấy ảnh trong thư mục Assets.</p>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- GIÁ THEO SIZE -->
                     <div class="mt-4">
-                        <h5 style="color:#20584f; font-weight:800;">
+                        <h5 style="color:#20584f;font-weight:800;">
                             <i class="bi bi-cash-stack me-2"></i> Giá bán theo size
                         </h5>
+
                         <div class="row g-3 mt-1">
                             <div class="col-md-4">
                                 <label class="modal-label">Size S</label>
@@ -335,6 +434,7 @@
                                     <span class="input-group-text">đ</span>
                                 </div>
                             </div>
+
                             <div class="col-md-4">
                                 <label class="modal-label">Size M</label>
                                 <div class="input-group">
@@ -342,6 +442,7 @@
                                     <span class="input-group-text">đ</span>
                                 </div>
                             </div>
+
                             <div class="col-md-4">
                                 <label class="modal-label">Size L</label>
                                 <div class="input-group">
@@ -354,9 +455,10 @@
 
                     <!-- TOPPING -->
                     <div class="mt-4">
-                        <h5 style="color:#20584f; font-weight:800;">
+                        <h5 style="color:#20584f;font-weight:800;">
                             <i class="bi bi-stars me-2"></i> Topping đi kèm
                         </h5>
+
                         <div class="row g-3 mt-1">
                             <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" value="Trân châu đen" id="newTopping1" /><label class="form-check-label" for="newTopping1">Trân châu đen</label></div></div>
                             <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" value="Trân châu trắng" id="newTopping2" /><label class="form-check-label" for="newTopping2">Trân châu trắng</label></div></div>
@@ -366,6 +468,7 @@
                             <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" value="Kem cheese" id="newTopping6" /><label class="form-check-label" for="newTopping6">Kem cheese</label></div></div>
                         </div>
                     </div>
+
                 </form>
             </div>
 
@@ -380,10 +483,57 @@
     </div>
 </div>
 
-<!-- =============================================================
-     JAVASCRIPT KẾT NỐI DATABASE THẬT
-     ============================================================= -->
+
+
+<style>
+    .product-image-option {
+        border: 1px solid #e4ebe7 !important;
+        transition: .2s;
+    }
+
+        .product-image-option:hover {
+            border-color: #20584f !important;
+            box-shadow: 0 3px 12px rgba(32, 88, 79, .12);
+        }
+</style>
+
 <script>
+    // Hiện hoặc ẩn danh sách ảnh
+    function toggleProductImageGallery() {
+        var gallery = document.getElementById("productImageGallery");
+
+        if (gallery.style.display === "none") {
+            gallery.style.display = "block";
+        } else {
+            gallery.style.display = "none";
+        }
+    }
+
+    // Chọn ảnh từ danh sách
+    function selectProductImage(imagePath) {
+        document.getElementById("newProductImage").value = imagePath;
+
+        var preview = document.getElementById("productImagePreview");
+        var fallback = document.getElementById("productImageFallback");
+
+        preview.src = imagePath;
+        preview.style.display = "block";
+        fallback.style.display = "none";
+
+        // Thu gọn danh sách ảnh, KHÔNG đóng modal thêm sản phẩm
+        document.getElementById("productImageGallery").style.display = "none";
+    }
+
+    // Bỏ chọn ảnh
+    function clearProductImage() {
+        document.getElementById("newProductImage").value = "";
+
+        var preview = document.getElementById("productImagePreview");
+        preview.src = "";
+        preview.style.display = "none";
+
+        document.getElementById("productImageFallback").style.display = "block";
+    }
     async function saveProductDemo() {
         var productId = document.getElementById("newProductId").value.trim();
         var productName = document.getElementById("newProductName").value.trim();
@@ -391,13 +541,17 @@
         var status = document.getElementById("newProductStatus").value;
         var description = document.getElementById("newProductDescription").value.trim();
 
+        var imageUrl = document.getElementById("newProductImage").value;
+
         var priceS = document.getElementById("newPriceS").value.trim();
         var priceM = document.getElementById("newPriceM").value.trim();
         var priceL = document.getElementById("newPriceL").value.trim();
 
         var selectedToppings = [];
+
         for (var i = 1; i <= 6; i++) {
             var toppingEl = document.getElementById("newTopping" + i);
+
             if (toppingEl && toppingEl.checked) {
                 selectedToppings.push(toppingEl.value);
             }
@@ -422,16 +576,21 @@
         }
 
         var formData = new URLSearchParams();
+
         formData.append("product_id", productId);
         formData.append("name", productName);
         formData.append("category_name", category);
         formData.append("status", status);
         formData.append("description", description);
+        formData.append("image_url", imageUrl);
 
         if (priceS !== "") formData.append("priceS", priceS);
         if (priceM !== "") formData.append("priceM", priceM);
         if (priceL !== "") formData.append("priceL", priceL);
-        if (selectedToppings.length > 0) formData.append("toppings", selectedToppings.join(","));
+
+        if (selectedToppings.length > 0) {
+            formData.append("toppings", selectedToppings.join(","));
+        }
 
         try {
             let response = await fetch('@Url.Action("Create", "Product")', {
@@ -446,10 +605,15 @@
 
             if (result.success) {
                 alert("Thêm sản phẩm thành công vào CSDL!");
+
                 var modalElement = document.getElementById("addProductModal");
                 var modal = bootstrap.Modal.getInstance(modalElement);
+
                 if (modal) modal.hide();
+
                 document.getElementById("addProductForm").reset();
+                clearProductImage();
+
                 window.location.reload();
             } else {
                 alert(result.message || "Có lỗi xảy ra.");
