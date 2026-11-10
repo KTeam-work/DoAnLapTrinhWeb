@@ -7,14 +7,17 @@
     {
         Layout = "~/Views/Shared/_StaffLayout.cshtml";
     }
-    else
+    else if(role == "R01")
     {
         Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
     }
 
     string initials = string.IsNullOrWhiteSpace(Model.full_name)
-        ? "?"
-        : string.Join("", Model.full_name.Split(' ').Where(s => s.Length > 0).Select(s => s[0])).ToUpper();
+? "?"
+: string.Join("", Model.full_name.Split(' ').Where(s => s.Length > 0).Select(s => s[0])).ToUpper();
     if (initials.Length > 2) { initials = initials.Substring(initials.Length - 2); }
 }
 

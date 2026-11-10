@@ -272,6 +272,7 @@
     <Compile Include="Models\User.cs">
       <DependentUpon>QuanLyBanTraSua.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\VnPayLibrary.cs" />
     <Compile Include="Models\Voucher.cs">
       <DependentUpon>QuanLyBanTraSua.tt</DependentUpon>
     </Compile>

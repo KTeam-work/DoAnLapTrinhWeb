@@ -1,15 +1,7 @@
 ﻿@model DoAnLapTrinhWeb.Controllers.OrderController.OrderDetailViewModel
 @{
     ViewBag.Title = "Chi Tiết Đơn Hàng - LumiTea";
-    string userRole = (Session["UserRole"]?.ToString() ?? "").Trim();
-    if (userRole == "R01" || userRole.Equals("Admin", StringComparison.OrdinalIgnoreCase))
-    {
-        Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    }
-    else
-    {
-        Layout = "~/Views/Shared/_StaffLayout.cshtml";
-    }
+    Layout = "~/Views/Shared/_Layout.cshtml";
 
     // Giả định tính phí giao hàng
     decimal shippingFee = Model.DeliveryType == "Delivery" ? 15000 : 0;
