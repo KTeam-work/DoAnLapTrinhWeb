@@ -1,7 +1,15 @@
 ﻿@model DoAnLapTrinhWeb.Controllers.OrderController.CheckoutViewModel
 @{
     ViewBag.Title = "Thanh Toán - LumiTea";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    string userRole = (Session["UserRole"]?.ToString() ?? "").Trim();
+    if (userRole == "R01" || userRole.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_StaffLayout.cshtml";
+    }
 
     // Phí giao hàng giả định (nếu có thể thay đổi tùy logic)
     decimal shippingFee = 15000;
@@ -105,6 +113,7 @@
                     <div class="checkout-section">
                         <h5 class="section-title"><i class="fa-solid fa-wallet"></i> Phương thức thanh toán</h5>
                         <div class="d-flex flex-column gap-3">
+                            <!-- Tiền mặt COD -->
                             <label class="w-100 m-0 position-relative">
                                 <input type="radio" name="PaymentMethod" class="form-check-input" value="Cash" checked>
                                 <div class="method-card d-flex align-items-center gap-3">
@@ -117,6 +126,20 @@
                                 </div>
                             </label>
 
+                            <!-- THÊM LỰA CHỌN VNPAY Ở ĐÂY -->
+                            <label class="w-100 m-0 position-relative">
+                                <input type="radio" name="PaymentMethod" class="form-check-input" value="VNPay">
+                                <div class="method-card d-flex align-items-center gap-3">
+                                    <i class="fa-solid fa-credit-card fs-4 text-danger"></i>
+                                    <div>
+                                        <div class="fw-bold text-dark">Cổng thanh toán VNPay</div>
+                                        <div class="small text-muted">Thẻ ATM nội địa, QR Pay, Visa/Mastercard</div>
+                                    </div>
+                                    <i class="fa-solid fa-circle-check position-absolute top-50 end-0 translate-middle-y me-3 check-icon fs-5"></i>
+                                </div>
+                            </label>
+
+                            <!-- Chuyển khoản VietQR cũ -->
                             <label class="w-100 m-0 position-relative">
                                 <input type="radio" name="PaymentMethod" class="form-check-input" value="Banking">
                                 <div class="method-card d-flex align-items-center gap-3">

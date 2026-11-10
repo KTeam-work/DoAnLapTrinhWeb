@@ -403,7 +403,7 @@ namespace DoAnLapTrinhWeb.Controllers
         // =========================================================
         [HttpPost]
         public ActionResult Create(string FullName, string Phone, string Email, string Address, string OrderNote,
-                                   string DeliveryType, string PaymentMethod, string VoucherId, decimal DiscountAmount = 0, int UsedPoints = 0)
+                            string DeliveryType, string PaymentMethod, string VoucherId, decimal DiscountAmount = 0, int UsedPoints = 0)
         {
             // 1. Kiểm tra đăng nhập 
             if (Session["UserId"] == null)
@@ -429,9 +429,7 @@ namespace DoAnLapTrinhWeb.Controllers
             {
                 try
                 {
-
                     string orderId = "OD" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper();
-
 
                     // Tính tổng tiền (tiền hàng + ship - voucher)
                     decimal voucherDiscount = DiscountAmount < 0 ? 0 : DiscountAmount;
@@ -542,9 +540,7 @@ namespace DoAnLapTrinhWeb.Controllers
                     };
                     db.OrderStatusHistories.Add(history);
 
-
-                    // 5. THÊM MỚI: LƯU PHƯƠNG THỨC THANH TOÁN VÀO BẢNG Payments
-
+                    // 5. LƯU PHƯƠNG THỨC THANH TOÁN VÀO BẢNG Payments
                     string paymentId = "PAY" + Guid.NewGuid().ToString("N").Substring(0, 7).ToUpper();
                     string tempTransactionCode = "TXN_" + orderId + "_" + DateTime.Now.ToString("HHmmss");
                     var newPayment = new Payment
@@ -553,14 +549,13 @@ namespace DoAnLapTrinhWeb.Controllers
                         order_id = orderId,
                         payment_method = string.IsNullOrEmpty(PaymentMethod) ? "Cash" : PaymentMethod,
                         amount = totalAmount,
-                        payment_status = totalAmount == 0 ? "Paid" : "Pending", // Đơn 0đ (đổi điểm hết) coi như đã thanh toán
+                        payment_status = totalAmount == 0 ? "Paid" : "Pending", // Đơn 0đ coi như đã thanh toán
                         transaction_code = tempTransactionCode,
                         paid_at = totalAmount == 0 ? (DateTime?)DateTime.Now : null
                     };
                     db.Payments.Add(newPayment);
 
-
-                    db.Configuration.ValidateOnSaveEnabled = false; // giống ConfirmReceived: tránh lỗi validate khi lưu Customer
+                    db.Configuration.ValidateOnSaveEnabled = false;
                     db.SaveChanges();
                     transaction.Commit();
                     db.Configuration.ValidateOnSaveEnabled = true;
@@ -571,6 +566,10 @@ namespace DoAnLapTrinhWeb.Controllers
                     if (PaymentMethod == "Cash" || totalAmount == 0)
                     {
                         return RedirectToAction("Tracking", "Order", new { id = orderId });
+                    }
+                    else if (PaymentMethod == "VNPay")
+                    {
+                        return RedirectToAction("CreatePaymentUrl", "Payment", new { orderId = orderId, amount = totalAmount });
                     }
                     else
                     {
