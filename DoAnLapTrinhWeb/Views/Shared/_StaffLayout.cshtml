@@ -1,219 +1,892 @@
-﻿<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+﻿@model List<DoAnLapTrinhWeb.Models.Product>
 
-    <title>@ViewData["Title"] - LumiTea Nhân Viên</title>
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    var categories = ViewBag.Categories as List<DoAnLapTrinhWeb.Models.Category>
+        ?? new List<DoAnLapTrinhWeb.Models.Category>();
 
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    string nextProductId = ViewBag.NextProductId ?? "PRD01";
 
-    <!-- Google Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    // Mặc định chọn sản phẩm đầu tiên trong danh sách để hiển thị bên phải
+    var firstProduct = Model.FirstOrDefault();
+}
 
-    <!-- CSS riêng cho thanh Navbar -->
-    <link rel="stylesheet" href="~/Css/styleNavbar.css" />
-    <style>
-        /* Đảm bảo thanh navbar không cắt cụt menu thả xuống */
-        .admin-navbar, .navbar-inner, .navbar-right {
-            overflow: visible !important;
+<link rel="stylesheet" href="~/Css/styleProduct_index.css" />
+
+<style>
+    .pos-wrapper {
+        --tea-green: #20584f;
+        --tea-green-dark: #17463e;
+        --tea-green-light: #eaf3ef;
+        --tea-yellow: #f5c84b;
+        --tea-yellow-light: #fff7d7;
+        --tea-cream: #f8f5eb;
+        --tea-card-bg: #fffdf8;
+        --tea-text: #213430;
+        --tea-muted: #78837e;
+        --tea-border: #e6dcc2;
+        --tea-red: #c65b4a;
+        background-color: var(--tea-cream);
+        min-height: calc(100vh - 60px);
+        display: flex;
+        flex-direction: column;
+        color: var(--tea-text);
+    }
+
+    /* Top Header & Tabs */
+    .pos-topbar {
+        background: var(--tea-card-bg);
+        padding: 16px 24px 0 24px;
+        border-bottom: 1px solid var(--tea-border);
+    }
+
+    .pos-heading-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: var(--tea-green);
+        color: var(--tea-yellow);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        box-shadow: 0 4px 12px rgba(32, 88, 79, .15);
+    }
+
+    .pos-tabs {
+        display: flex;
+        gap: 24px;
+        margin-top: 14px;
+    }
+
+    .pos-tab-item {
+        padding-bottom: 10px;
+        font-weight: 700;
+        font-size: 13.5px;
+        color: var(--tea-muted);
+        text-decoration: none;
+        border-bottom: 2.5px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .pos-tab-item:hover {
+            color: var(--tea-green);
         }
 
-        /* Định vị cho khối account */
-        .account.dropdown {
-            position: relative;
+        .pos-tab-item.active {
+            color: var(--tea-green-dark);
+            border-bottom: 2.5px solid var(--tea-green);
         }
 
-            /* TẠO CẦU NỐI VÔ HÌNH: Tránh mất chuột khi rê từ nút xuống menu */
-            .account.dropdown::after {
-                content: "";
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                height: 12px; /* Lấp đầy khoảng trống giữa nút và menu */
-                display: block;
-            }
+    /* Main Workspace */
+    .pos-main {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+    }
 
-            /* Menu thả xuống cố định vị trí sát mép */
-            .account.dropdown .dropdown-menu {
-                margin-top: 0 !important;
-                top: 100% !important;
-                right: 0 !important;
-                left: auto !important;
-                z-index: 99999 !important;
-                min-width: 210px;
-            }
+    /* Cột 1: Danh sách bên trái */
+    .pos-sidebar {
+        width: 330px;
+        background: var(--tea-card-bg);
+        border-right: 1px solid var(--tea-border);
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 140px);
+    }
 
-                /* Hỗ trợ cả 2 cơ chế: Bấm click (.show) HOẶC Rê chuột (:hover) đều giữ chặt menu */
-                .account.dropdown:hover .dropdown-menu,
-                .account.dropdown .dropdown-menu.show {
-                    display: block !important;
-                    opacity: 1 !important;
-                    visibility: visible !important;
-                    transform: none !important;
-                    pointer-events: auto !important;
-                }
+    .pos-sidebar-header {
+        padding: 15px 16px;
+        border-bottom: 1px solid #eee8da;
+        background: #faf6eb;
+    }
 
-            /* Đảm bảo các item bên trong nhận sự kiện click chuột */
-            .account.dropdown .dropdown-item {
-                cursor: pointer;
-                pointer-events: auto !important;
-            }
+    .pos-product-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px;
+    }
 
-        #staffDropdownMenu {
-            cursor: pointer;
-            z-index: 10;
+    .pos-product-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-bottom: 8px;
+        border: 1px solid transparent;
+        background: #ffffff;
+    }
+
+        .pos-product-item:hover {
+            background-color: #fbf9f2;
+            border-color: var(--tea-border);
         }
-    </style>
-</head>
 
-<body>
+        .pos-product-item.active {
+            background-color: var(--tea-green-light);
+            border-color: #b9d1c8;
+            box-shadow: 0 3px 10px rgba(32, 88, 79, .06);
+        }
 
-    <!-- =====================================================
-         NAVBAR VẬN HÀNH CA TRỰC (DÀNH CHO NHÂN VIÊN)
-    ====================================================== -->
-    <nav class="admin-navbar">
-        <div class="navbar-inner">
+    .pos-item-thumb {
+        width: 46px;
+        height: 46px;
+        border-radius: 11px;
+        background: var(--tea-cream);
+        border: 1px solid var(--tea-border);
+        color: var(--tea-green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
 
-            <!-- ==================== MENU BÊN TRÁI ==================== -->
-            <div class="menu-side left">
-                <div class="main-menu">
+    .pos-product-item.active .pos-item-thumb {
+        background: #ffffff;
+    }
 
-                    <!-- VỀ TRANG BÁN HÀNG NGOÀI MENU -->
-                    <div class="menu-item">
-                        <a href="@Url.Action("Index", "Home")" class="menu-link">
-                            <i class="bi bi-house-door"></i>
-                            <span>Trang chủ</span>
-                        </a>
-                    </div>
+    /* Cột 2 & 3: Chi tiết bên phải */
+    .pos-content {
+        flex: 1;
+        padding: 22px 26px;
+        overflow-y: auto;
+        height: calc(100vh - 200px);
+    }
 
-                    <!-- TIẾP NHẬN & DUYỆT ĐƠN HÀNG (TRỌNG TÂM CỦA NHÂN VIÊN) -->
-                    <div class="menu-item">
-                        <a href="#" class="menu-link">
-                            <i class="bi bi-receipt"></i>
-                            <span>Đơn hàng</span>
-                            <i class="bi bi-chevron-down arrow"></i>
-                        </a>
-                        <div class="dropdown-menu-custom">
-                            <div class="dropdown-title">Xử lý đơn</div>
-                            <a href="@Url.Action("POS", "Order")" class="dropdown-link fw-bold text-success">
-                                <i class="bi bi-pc-display-horizontal"></i> Bán hàng tại quầy 
-                            </a>
-                            <a href="@Url.Action("Index", "Order")" class="dropdown-link">
-                                <i class="bi bi-clock-history"></i> Lịch sử đơn hàng
-                            </a>
-                        </div>
-                    </div>
+    .pos-card {
+        background: var(--tea-card-bg);
+        border-radius: 15px;
+        padding: 20px;
+        border: 1px solid var(--tea-border);
+        box-shadow: 0 6px 20px rgba(47, 67, 62, .05);
+        margin-bottom: 20px;
+    }
 
-                    <!-- TRA CỨU KHÁCH TÍCH ĐIỂM TẠI QUẦY -->
-                    <div class="menu-item">
-                        <a href="@Url.Action("Index", "Customer")" class="menu-link">
-                            <i class="bi bi-people"></i>
-                            <span>Khách hàng</span>
-                        </a>
-                    </div>
+    .pos-label {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #45534f;
+        margin-bottom: 6px;
+        letter-spacing: 0.4px;
+        display: block;
+    }
 
-                </div>
-            </div>
+    /* Input & Select đồng bộ viền kem */
+    .pos-wrapper .form-control,
+    .pos-wrapper .form-select {
+        border: 1px solid #ddd7c9;
+        border-radius: 9px;
+        font-size: 13px;
+        color: var(--tea-text);
+        background-color: #ffffff;
+    }
 
-            <!-- ==================== LOGO GIỮA ==================== -->
-            <a href="@Url.Action("Index", "Order")" class="brand">
-                <div class="brand-icon">
+        .pos-wrapper .form-control:focus,
+        .pos-wrapper .form-select:focus {
+            border-color: var(--tea-green);
+            box-shadow: 0 0 0 3px rgba(32, 88, 79, .1);
+        }
+
+    .pos-wrapper .input-group-text {
+        border-color: #ddd7c9;
+        background: var(--tea-green-light);
+        color: var(--tea-green);
+        font-weight: 700;
+    }
+
+    /* Toggle Status Button Group */
+    .status-toggle-group {
+        display: flex;
+        background: var(--tea-cream);
+        padding: 4px;
+        border-radius: 9px;
+        border: 1px solid #ddd7c9;
+    }
+
+    .status-toggle-btn {
+        flex: 1;
+        border: none;
+        background: transparent;
+        padding: 6px 12px;
+        font-size: 13px;
+        font-weight: 700;
+        border-radius: 7px;
+        color: var(--tea-muted);
+        transition: all 0.2s;
+    }
+
+        .status-toggle-btn.active-available {
+            background: var(--tea-green);
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(32, 88, 79, 0.2);
+        }
+
+        .status-toggle-btn.active-unavailable {
+            background: var(--tea-red);
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(198, 91, 74, 0.2);
+        }
+
+    /* Buttons theo tông Xanh Trà */
+    .btn-tea-primary {
+        background-color: var(--tea-green);
+        border: 1px solid var(--tea-green);
+        color: #ffffff;
+        font-weight: 700;
+        border-radius: 9px;
+        transition: all 0.2s;
+    }
+
+        .btn-tea-primary:hover {
+            background-color: var(--tea-green-dark);
+            border-color: var(--tea-green-dark);
+            color: #ffffff;
+        }
+
+    .btn-tea-outline {
+        background-color: #ffffff;
+        border: 1px solid var(--tea-green);
+        color: var(--tea-green);
+        font-weight: 700;
+        border-radius: 9px;
+        transition: all 0.2s;
+    }
+
+        .btn-tea-outline:hover {
+            background-color: var(--tea-green);
+            color: #ffffff;
+        }
+
+    /* Action list bên phải */
+    .pos-action-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 13px 16px;
+        border-bottom: 1px solid #eee8da;
+        color: var(--tea-text);
+        font-size: 13.5px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s;
+        background: none;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        width: 100%;
+        text-align: left;
+    }
+
+        .pos-action-item:last-child {
+            border-bottom: none;
+        }
+
+        .pos-action-item:hover {
+            background: var(--tea-cream);
+        }
+
+    /* Sticky Bottom Footer */
+    .pos-footer {
+        height: 62px;
+        background: var(--tea-card-bg);
+        border-top: 1px solid var(--tea-border);
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+</style>
+
+<div class="pos-wrapper">
+
+    <!-- =========================================================
+         1. TOP BAR & FILTER TABS
+         ========================================================= -->
+    <div class="pos-topbar">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="pos-heading-icon">
                     <i class="bi bi-cup-hot-fill"></i>
                 </div>
-                <div class="brand-text">
-                    <span class="brand-name">LumiTea</span>
-                    <span class="brand-sub">Nhân Viên</span>
-                </div>
-            </a>
-
-            <!-- ==================== MENU BÊN PHẢI ==================== -->
-            <div class="menu-side right">
-                <div class="main-menu">
-
-                    <!-- KIỂM KÊ KHO CA TRỰC -->
-                    <div class="menu-item">
-                        <!-- Đổi từ "Inventory" sang "Ingredient" -->
-                        <a href="@Url.Action("Index", "Ingredient")" class="menu-link">
-                            <i class="bi bi-box-seam"></i>
-                            <span>Tồn kho nguyên liệu</span>
-                        </a>
-                    </div>
-
-                    <!-- LỊCH CA LÀM VIỆC CỦA BẢN THÂN -->
-                    <div class="menu-item">
-                        <a href="@Url.Action("Index", "Shift")" class="menu-link">
-                            <i class="bi bi-calendar-week"></i>
-                            <span>Lịch làm việc</span>
-                        </a>
-                    </div>
-
-                    <!-- GÓC TÀI KHOẢN NHÂN VIÊN -->
-                    <div class="navbar-right">
-                        <div class="notification">
-                            <i class="bi bi-bell"></i>
-                            <span class="notification-badge">3</span>
-                        </div>
-
-                        <div class="account dropdown">
-                            <button class="btn border-0 p-0 d-flex align-items-center bg-transparent shadow-none"
-                                    type="button"
-                                    id="staffDropdownMenu"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                <div class="avatar" style="background-color: #2e7d32; color: #fff; font-weight: 700; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                    NV
-                                </div>
-                                <div class="account-info ms-2 text-start">
-                                    <div class="account-name text-white fw-semibold small">
-                                        @(Session["FullName"] ?? Session["Username"] ?? "Nhân viên")
-                                    </div>
-                                    <div class="account-role text-white-50" style="font-size: 0.75rem;">Nhân viên quầy</div>
-                                </div>
-                                <i class="bi bi-chevron-down account-arrow ms-2 text-white small"></i>
-                            </button>
-
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="staffDropdownMenu">
-                                <li>
-                                    <a class="dropdown-item py-2" href="@Url.Action("Index", "Profile")">
-                                        <i class="bi bi-person me-2"></i> Hồ sơ cá nhân
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item py-2" href="@Url.Action("ChangePassword", "Profile")">
-                                        <i class="bi bi-key me-2"></i> Đổi mật khẩu
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item py-2 text-danger" href="@Url.Action("Logout", "Account")">
-                                        <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
+                <div>
+                    <h1 style="font-size: 20px; font-weight: 800; color: #17463e; margin: 0;">
+                        Quản lý sản phẩm
+                    </h1>
+                    <span style="font-size: 12px; color: #78837e;">Danh sách sản phẩm, giá bán theo size & trạng thái</span>
                 </div>
             </div>
 
-        </div>
-    </nav>
+            <!-- Form Lọc nhanh trên thanh Topbar -->
+            <form method="get" action="@Url.Action("Index", "Product")" class="d-flex align-items-center flex-wrap gap-2">
+                <div class="input-group input-group-sm" style="width: 230px;">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="keyword" value="@ViewBag.Keyword" class="form-control" placeholder="Tìm tên hoặc mã SP..." />
+                </div>
 
-    <!-- =====================================================
-         NỘI DUNG CHÍNH CỦA CÁC TRANG CON
-    ====================================================== -->
-    <main class="p-0">
-        @RenderBody()
-    </main>
-    <!-- Bootstrap 5 Bundle JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+                <!-- Nới rộng width để hiển thị đủ chữ -->
+                <select name="category" class="form-select form-select-sm" style="width: 180px;" onchange="this.form.submit()">
+                    <option value="">Tất cả danh mục</option>
+                    @foreach (var cat in categories)
+                    {
+                        string catName = cat.category_name ?? "";
+                        <option value="@catName" @((string)ViewBag.Category == catName ? "selected" : "")>@catName</option>
+                    }
+                </select>
+
+                <!-- Sửa width từ 140px lên 185px để không bị mất chữ "trạng thái" -->
+                <select name="status" class="form-select form-select-sm" style="width: 185px;" onchange="this.form.submit()">
+                    <option value="" @(string.IsNullOrEmpty((string)ViewBag.Status) ? "selected" : "")>Tất cả trạng thái</option>
+                    <option value="Đang bán" @((string)ViewBag.Status == "Đang bán" ? "selected" : "")>Đang bán</option>
+                    <option value="Ngừng bán" @((string)ViewBag.Status == "Ngừng bán" ? "selected" : "")>Ngừng bán</option>
+                </select>
+
+                <a href="@Url.Action("Index", "Product")" class="btn btn-sm btn-tea-outline px-2" title="Đặt lại bộ lọc">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
+            </form>
+        </div>
+
+        <!-- Sub-navigation Tabs -->
+        <div class="pos-tabs">
+            <span class="pos-tab-item active">Danh sách sản phẩm (@Model.Count)</span>
+            <span class="pos-tab-item" data-bs-toggle="modal" data-bs-target="#addProductModal">+ Thêm sản phẩm mới</span>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         2. MAIN WORKSPACE (CHIA CỘT TRÁI - PHẢI)
+         ========================================================= -->
+    <div class="pos-main">
+
+        <!-- CỘT TRÁI: DANH SÁCH SẢN PHẨM -->
+        <div class="pos-sidebar">
+            <div class="pos-sidebar-header d-flex justify-content-between align-items-center">
+                <span style="font-size: 11.5px; font-weight: 800; color: #17463e; letter-spacing: 0.5px;">DANH SÁCH SẢN PHẨM</span>
+                <button type="button" class="btn btn-sm btn-tea-primary px-3" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                    <i class="bi bi-plus-lg me-1"></i> Thêm mới
+                </button>
+            </div>
+
+            <div class="pos-product-list">
+                @if (Model.Any())
+                {
+                    for (int i = 0; i < Model.Count; i++)
+                    {
+                        var product = Model[i];
+                        var sizes = product.ProductSizes ?? new List<DoAnLapTrinhWeb.Models.ProductSize>();
+                        decimal minPrice = sizes.Any() ? sizes.Min(x => x.price_add) : 0;
+                        string pId = product.product_id != null ? product.product_id.Trim() : "";
+
+                        // Lấy giá từng size S, M, L
+                        var sizeSObj = sizes.FirstOrDefault(s => s.size_name != null && (s.size_name.Trim() == "S" || s.size_name.Trim() == "Size S"));
+                        var sizeMObj = sizes.FirstOrDefault(s => s.size_name != null && (s.size_name.Trim() == "M" || s.size_name.Trim() == "Size M"));
+                        var sizeLObj = sizes.FirstOrDefault(s => s.size_name != null && (s.size_name.Trim() == "L" || s.size_name.Trim() == "Size L"));
+
+                        decimal valS = sizeSObj != null ? sizeSObj.price_add : 0;
+                        decimal valM = sizeMObj != null ? sizeMObj.price_add : 0;
+                        decimal valL = sizeLObj != null ? sizeLObj.price_add : 0;
+
+                        string catName = product.Category != null ? product.Category.category_name : "Khác";
+                        int toppingCount = product.ProductToppings != null ? product.ProductToppings.Count : 0;
+
+                        string toppingNames = product.ProductToppings != null && product.ProductToppings.Any()
+                            ? string.Join(", ", product.ProductToppings.Select(t => t.Topping != null ? t.Topping.name : "Topping"))
+                            : "Chưa có topping đi kèm";
+
+                        <div class="pos-product-item @(i == 0 ? "active" : "")"
+                             onclick="selectProduct(this)"
+                             data-id="@pId"
+                             data-name="@product.name"
+                             data-category="@catName"
+                             data-status="@product.status"
+                             data-description="@product.description"
+                             data-price-s="@valS"
+                             data-price-m="@valM"
+                             data-price-l="@valL"
+                             data-toppings="@toppingNames"
+                             data-topping-count="@toppingCount"
+                             data-review-count="@(product.ProductReviews != null ? product.ProductReviews.Count : 0)">
+
+                            <div class="pos-item-thumb">
+                                <i class="bi bi-cup-straw"></i>
+                            </div>
+
+                            <div class="flex-grow-1 overflow-hidden">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="fw-bold text-truncate" style="font-size: 13.5px; color: #17463e;">@product.name</div>
+                                </div>
+                                <div style="font-size: 11px; color: #78837e; font-family: Consolas, monospace;">Mã: @pId</div>
+                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                    <span style="font-size: 13px; font-weight: 800; color: #c65b4a;">@minPrice.ToString("N0") đ</span>
+                                    @if (product.status == "Available")
+                                    {
+                                        <span style="font-size: 11px; font-weight: 700; color: #237546;">● Đang bán</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="font-size: 11px; font-weight: 700; color: #c65b4a;">● Ngừng bán</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-box-seam fs-2" style="color: #b7c5bf;"></i>
+                        <p class="mt-2 small">Không tìm thấy sản phẩm nào</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- CỘT PHẢI: CHI TIẾT & CHỈNH SỬA SẢN PHẨM -->
+        <div class="pos-content">
+            @if (firstProduct != null)
+            {
+                var initSizes = firstProduct.ProductSizes ?? new List<DoAnLapTrinhWeb.Models.ProductSize>();
+                decimal initS = initSizes.FirstOrDefault(s => s.size_name != null && s.size_name.Contains("S"))?.price_add ?? 0;
+                decimal initM = initSizes.FirstOrDefault(s => s.size_name != null && s.size_name.Contains("M"))?.price_add ?? 0;
+                decimal initL = initSizes.FirstOrDefault(s => s.size_name != null && s.size_name.Contains("L"))?.price_add ?? 0;
+                string initCat = firstProduct.Category != null ? firstProduct.Category.category_name : "";
+                string initId = firstProduct.product_id?.Trim() ?? "";
+
+                <!-- Tiêu đề sản phẩm đang chọn -->
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <div>
+                        <h2 id="detailHeaderTitle" style="font-size: 20px; font-weight: 800; color: #17463e; margin: 0;">
+                            Cập nhật @firstProduct.name
+                        </h2>
+                        <span style="font-size: 12.5px; color: #78837e;">Chỉnh sửa thông tin chi tiết, bảng giá size và trạng thái kinh doanh</span>
+                    </div>
+                    <a id="btnFullDetails" href="@Url.Action("Details", "Product", new { id = initId })" class="btn btn-sm btn-tea-outline px-3">
+                        <i class="bi bi-chat-square-quote me-1"></i> Xem chi tiết & Đánh giá (<span id="detailReviewCount">@(firstProduct.ProductReviews?.Count ?? 0)</span>)
+                    </a>
+                </div>
+
+                <div class="row g-4">
+                    <!-- CỘT GIỮA: FORM THÔNG TIN & GIÁ SIZE -->
+                    <div class="col-lg-8">
+                        <!-- Card 1: Thông tin cơ bản -->
+                        <div class="pos-card">
+                            <div class="row g-3">
+                                <div class="col-md-7">
+                                    <label class="pos-label">Tên sản phẩm <span class="text-danger">*</span></label>
+                                    <input type="text" id="editProductName" class="form-control" value="@firstProduct.name" />
+                                </div>
+
+                                <div class="col-md-5">
+                                    <label class="pos-label">Mã sản phẩm</label>
+                                    <input type="text" id="editProductId" class="form-control" style="background-color: #f8f5eb; font-family: Consolas, monospace; font-weight: 700;" value="@initId" readonly />
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="pos-label">Danh mục</label>
+                                    <select id="editProductCategory" class="form-select">
+                                        @foreach (var cat in categories)
+                                        {
+                                            <option value="@cat.category_name" @(cat.category_name == initCat ? "selected" : "")>@cat.category_name</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="pos-label">Tình trạng kinh doanh</label>
+                                    <input type="hidden" id="editProductStatus" value="@firstProduct.status" />
+                                    <div class="status-toggle-group">
+                                        <button type="button" id="btnStatusAvailable"
+                                                class="status-toggle-btn @(firstProduct.status == "Available" ? "active-available" : "")"
+                                                onclick="setProductStatus('Available')">
+                                            Đang bán
+                                        </button>
+                                        <button type="button" id="btnStatusUnavailable"
+                                                class="status-toggle-btn @(firstProduct.status != "Available" ? "active-unavailable" : "")"
+                                                onclick="setProductStatus('Unavailable')">
+                                            Ngừng bán
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="pos-label">Miêu tả sản phẩm</label>
+                                    <textarea id="editProductDescription" class="form-control" rows="3">@firstProduct.description</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Giá bán theo Size -->
+                        <div class="pos-card">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="fw-bold" style="font-size: 14px; color: #17463e;">
+                                    <i class="bi bi-cash-stack me-2" style="color: #20584f;"></i>Cấu hình giá bán theo Size
+                                </div>
+                                <span style="background: #fff7d7; color: #8a6500; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800;">
+                                    Đơn vị: VNĐ
+                                </span>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="pos-label">Size S (Nhỏ)</label>
+                                    <div class="input-group">
+                                        <input type="number" id="editPriceS" class="form-control fw-bold" style="color: #c65b4a;" value="@(initS > 0 ? initS.ToString("0") : "")" placeholder="0" />
+                                        <span class="input-group-text">đ</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="pos-label">Size M (Vừa)</label>
+                                    <div class="input-group">
+                                        <input type="number" id="editPriceM" class="form-control fw-bold" style="color: #c65b4a;" value="@(initM > 0 ? initM.ToString("0") : "")" placeholder="0" />
+                                        <span class="input-group-text">đ</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="pos-label">Size L (Lớn)</label>
+                                    <div class="input-group">
+                                        <input type="number" id="editPriceL" class="form-control fw-bold" style="color: #c65b4a;" value="@(initL > 0 ? initL.ToString("0") : "")" placeholder="0" />
+                                        <span class="input-group-text">đ</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CỘT PHẢI: HÌNH ẢNH, TOPPING & THAO TÁC NHANH -->
+                    <div class="col-lg-4">
+                        <!-- Card Hình ảnh -->
+                        <div class="pos-card text-center">
+                            <div class="pos-label text-start">Hình ảnh đại diện</div>
+                            <div style="height: 150px; background: #eaf3ef; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px dashed #b9d1c8;">
+                                <i class="bi bi-cup-straw" style="font-size: 54px; color: #20584f;"></i>
+                                <span style="font-size: 12px; color: #45534f; margin-top: 6px; font-weight: 600;">Biểu tượng sản phẩm</span>
+                            </div>
+                        </div>
+
+                        <!-- Card Topping đi kèm -->
+                        <div class="pos-card">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="pos-label mb-0">Topping đi kèm</span>
+                                <span id="detailToppingBadge" style="background: #fff7d7; color: #8a6500; padding: 3px 9px; border-radius: 6px; font-size: 11px; font-weight: 800;">
+                                    @(firstProduct.ProductToppings?.Count ?? 0) loại
+                                </span>
+                            </div>
+                            <div id="detailToppingList" style="font-size: 13px; color: #45534f; line-height: 1.6;">
+                                @(firstProduct.ProductToppings != null && firstProduct.ProductToppings.Any()
+                                    ? string.Join(", ", firstProduct.ProductToppings.Select(t => t.Topping?.name ?? "Topping"))
+                                    : "Chưa có topping đi kèm")
+                            </div>
+                        </div>
+
+                        <!-- Card Thao tác nhanh -->
+                        <div class="pos-card p-0 overflow-hidden">
+                            <a id="linkViewFullDetails" href="@Url.Action("Details", "Product", new { id = initId })" class="pos-action-item text-decoration-none">
+                                <i class="bi bi-eye" style="color: #20584f;"></i> Xem trang chi tiết & Đánh giá
+                            </a>
+                            <button type="button" class="pos-action-item" style="color: #c65b4a;" onclick="deleteCurrentProduct()">
+                                <i class="bi bi-trash3"></i> Xóa sản phẩm này
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <h4 style="color: #17463e; font-weight: 800;">Chưa có dữ liệu sản phẩm</h4>
+                    <p class="text-muted">Nhấn nút "+ Thêm mới" bên góc trái để tạo sản phẩm đầu tiên.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- =========================================================
+         3. STICKY FOOTER (HỦY BỎ / HOÀN TẤT)
+         ========================================================= -->
+    @if (firstProduct != null)
+    {
+        <div class="pos-footer">
+            <button type="button" class="btn btn-tea-outline px-4" onclick="resetCurrentForm()">
+                Hủy bỏ
+            </button>
+
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-muted small d-none d-md-inline">Kiểm tra kỹ giá các size trước khi lưu</span>
+                <button type="button" class="btn btn-tea-primary px-4" onclick="saveProductEdit()">
+                    <i class="bi bi-check2-circle me-1"></i> Hoàn Tất
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- =============================================================
+     MODAL THÊM SẢN PHẨM MỚI
+     ============================================================= -->
+<div class="modal fade product-page-modal" id="addProductModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title"><i class="bi bi-plus-circle-fill me-2"></i> Thêm sản phẩm mới</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="modal-label">Mã sản phẩm</label>
+                            <input type="text" id="newProductId" class="form-control" value="@nextProductId" readonly />
+                        </div>
+                        <div class="col-md-8">
+                            <label class="modal-label">Tên sản phẩm <span class="text-danger">*</span></label>
+                            <input type="text" id="newProductName" class="form-control" placeholder="Ví dụ: Trà dâu kem cheese..." />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="modal-label">Loại sản phẩm <span class="text-danger">*</span></label>
+                            <select id="newProductCategory" class="form-select">
+                                <option value="">-- Chọn loại sản phẩm --</option>
+                                @foreach (var cat in categories)
+                                {
+                                    <option value="@cat.category_name">@cat.category_name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="modal-label">Trạng thái</label>
+                            <select id="newProductStatus" class="form-select">
+                                <option value="Available">Đang bán</option>
+                                <option value="Unavailable">Ngừng bán</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="modal-label">Mô tả sản phẩm</label>
+                            <textarea id="newProductDescription" class="form-control" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="modal-label">Giá bán theo size</label>
+                        <div class="row g-2">
+                            <div class="col-md-4"><input type="number" id="newPriceS" class="form-control" placeholder="Giá Size S" /></div>
+                            <div class="col-md-4"><input type="number" id="newPriceM" class="form-control" placeholder="Giá Size M" /></div>
+                            <div class="col-md-4"><input type="number" id="newPriceL" class="form-control" placeholder="Giá Size L" /></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="modal-label">Topping đi kèm</label>
+                        <div class="row g-2">
+                            <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" value="Trân châu đen" id="newTopping1" /><label class="form-check-label" for="newTopping1">Trân châu đen</label></div></div>
+                            <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" value="Trân châu trắng" id="newTopping2" /><label class="form-check-label" for="newTopping2">Trân châu trắng</label></div></div>
+                            <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" value="Pudding trứng" id="newTopping3" /><label class="form-check-label" for="newTopping3">Pudding trứng</label></div></div>
+                            <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" value="Thạch nha đam" id="newTopping4" /><label class="form-check-label" for="newTopping4">Thạch nha đam</label></div></div>
+                            <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" value="Thạch trái cây" id="newTopping5" /><label class="form-check-label" for="newTopping5">Thạch trái cây</label></div></div>
+                            <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" value="Kem cheese" id="newTopping6" /><label class="form-check-label" for="newTopping6">Kem cheese</label></div></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-filter px-3" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn-save" onclick="saveProductDemo()">Lưu sản phẩm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =============================================================
+     JAVASCRIPT ĐIỀU KHIỂN MASTER-DETAIL & AJAX CRUD
+     ============================================================= -->
+<script>
+    let currentSelectedElement = document.querySelector(".pos-product-item.active");
+
+    function selectProduct(element) {
+        document.querySelectorAll(".pos-product-item").forEach(el => el.classList.remove("active"));
+        element.classList.add("active");
+        currentSelectedElement = element;
+
+        const data = element.dataset;
+
+        document.getElementById("detailHeaderTitle").innerText = "Cập nhật " + (data.name || "");
+        document.getElementById("editProductId").value = data.id || "";
+        document.getElementById("editProductName").value = data.name || "";
+        document.getElementById("editProductCategory").value = data.category || "";
+        document.getElementById("editProductDescription").value = data.description || "";
+
+        document.getElementById("editPriceS").value = Number(data.priceS) > 0 ? data.priceS : "";
+        document.getElementById("editPriceM").value = Number(data.priceM) > 0 ? data.priceM : "";
+        document.getElementById("editPriceL").value = Number(data.priceL) > 0 ? data.priceL : "";
+
+        setProductStatus(data.status === "Available" ? "Available" : "Unavailable");
+
+        document.getElementById("detailToppingBadge").innerText = (data.toppingCount || 0) + " loại";
+        document.getElementById("detailToppingList").innerText = data.toppings || "Chưa có topping đi kèm";
+        document.getElementById("detailReviewCount").innerText = data.reviewCount || 0;
+
+        const detailUrl = '@Url.Action("Details", "Product")' + '?id=' + encodeURIComponent(data.id);
+        document.getElementById("btnFullDetails").href = detailUrl;
+        document.getElementById("linkViewFullDetails").href = detailUrl;
+    }
+
+    function setProductStatus(status) {
+        document.getElementById("editProductStatus").value = status;
+        const btnAvail = document.getElementById("btnStatusAvailable");
+        const btnUnavail = document.getElementById("btnStatusUnavailable");
+
+        if (status === "Available") {
+            btnAvail.className = "status-toggle-btn active-available";
+            btnUnavail.className = "status-toggle-btn";
+        } else {
+            btnAvail.className = "status-toggle-btn";
+            btnUnavail.className = "status-toggle-btn active-unavailable";
+        }
+    }
+
+    function resetCurrentForm() {
+        if (currentSelectedElement) {
+            selectProduct(currentSelectedElement);
+        }
+    }
+
+    async function saveProductEdit() {
+        var productId = document.getElementById("editProductId").value.trim();
+        var productName = document.getElementById("editProductName").value.trim();
+        var category = document.getElementById("editProductCategory").value;
+        var status = document.getElementById("editProductStatus").value;
+        var description = document.getElementById("editProductDescription").value.trim();
+
+        var priceS = document.getElementById("editPriceS").value.trim();
+        var priceM = document.getElementById("editPriceM").value.trim();
+        var priceL = document.getElementById("editPriceL").value.trim();
+
+        if (!productName) {
+            alert("Tên sản phẩm không được để trống.");
+            return;
+        }
+
+        var formData = new URLSearchParams();
+        formData.append("product_id", productId);
+        formData.append("name", productName);
+        formData.append("category_name", category);
+        formData.append("status", status);
+        formData.append("description", description);
+        if (priceS !== "") formData.append("priceS", priceS);
+        if (priceM !== "") formData.append("priceM", priceM);
+        if (priceL !== "") formData.append("priceL", priceL);
+
+        try {
+            let response = await fetch('@Url.Action("Edit", "Product")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString()
+            });
+
+            let result = await response.json();
+            if (result.success) {
+                alert(result.message);
+                window.location.reload();
+            } else {
+                alert(result.message);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Lỗi kết nối máy chủ.");
+        }
+    }
+
+    async function deleteCurrentProduct() {
+        var id = document.getElementById("editProductId").value.trim();
+        var name = document.getElementById("editProductName").value.trim();
+
+        if (!confirm("Bạn có chắc chắn muốn xóa sản phẩm '" + name + "' không?")) {
+            return;
+        }
+
+        var formData = new URLSearchParams();
+        formData.append("id", id);
+
+        try {
+            let response = await fetch('@Url.Action("Delete", "Product")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString()
+            });
+
+            let result = await response.json();
+            if (result.success) {
+                alert(result.message);
+                window.location.reload();
+            } else {
+                alert(result.message);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Lỗi kết nối máy chủ.");
+        }
+    }
+
+    async function saveProductDemo() {
+        var productId = document.getElementById("newProductId").value.trim();
+        var productName = document.getElementById("newProductName").value.trim();
+        var category = document.getElementById("newProductCategory").value;
+        var status = document.getElementById("newProductStatus").value;
+        var description = document.getElementById("newProductDescription").value.trim();
+
+        var priceS = document.getElementById("newPriceS").value.trim();
+        var priceM = document.getElementById("newPriceM").value.trim();
+        var priceL = document.getElementById("newPriceL").value.trim();
+
+        var selectedToppings = [];
+        for (var i = 1; i <= 6; i++) {
+            var toppingEl = document.getElementById("newTopping" + i);
+            if (toppingEl && toppingEl.checked) {
+                selectedToppings.push(toppingEl.value);
+            }
+        }
+
+        if (productName === "" || category === "") {
+            alert("Vui lòng nhập tên và chọn loại sản phẩm.");
+            return;
+        }
+
+        var formData = new URLSearchParams();
+        formData.append("product_id", productId);
+        formData.append("name", productName);
+        formData.append("category_name", category);
+        formData.append("status", status);
+        formData.append("description", description);
+        if (priceS !== "") formData.append("priceS", priceS);
+        if (priceM !== "") formData.append("priceM", priceM);
+        if (priceL !== "") formData.append("priceL", priceL);
+        if (selectedToppings.length > 0) formData.append("toppings", selectedToppings.join(","));
+
+        try {
+            let response = await fetch('@Url.Action("Create", "Product")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString()
+            });
+
+            let result = await response.json();
+            if (result.success) {
+                alert("Thêm sản phẩm thành công!");
+                window.location.reload();
+            } else {
+                alert(result.message || "Có lỗi xảy ra.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Không thể kết nối đến máy chủ.");
+        }
+    }
+</script>

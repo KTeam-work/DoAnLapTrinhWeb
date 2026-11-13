@@ -11,180 +11,438 @@
     {
         Layout = "~/Views/Shared/_StaffLayout.cshtml";
     }
+
+    int totalCount = Model?.Count() ?? 0;
+    int activeCount = Model?.Count(x => string.IsNullOrEmpty(x.status) || x.status == "Active") ?? 0;
+    int lowStockCount = Model?.Count(x => x.quantity_in_stock < x.min_threshold && (string.IsNullOrEmpty(x.status) || x.status == "Active")) ?? 0;
+    int inactiveCount = Model?.Count(x => x.status == "Inactive") ?? 0;
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LumiTea - Quản Lý Danh Mục Nguyên Liệu & Lô Hàng</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="~/Css/StyleIngredient.css?v=1.0" rel="stylesheet" />
-    <style>
-        .row-inactive {
-            background-color: #f8f9fa;
-            opacity: 0.75;
+<link href="~/Css/StyleIngredient.css?v=1.2" rel="stylesheet" />
+
+<style>
+    .onyx-ing-page {
+        background-color: #fbf9f4;
+        min-height: calc(100vh - 60px);
+        padding: 28px 32px 50px;
+        color: #1f2933;
+    }
+
+    .onyx-container {
+        max-width: 1380px;
+        margin: 0 auto;
+    }
+
+    /* 1. Header giống ảnh mẫu */
+    .onyx-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 22px;
+    }
+
+    .onyx-title {
+        font-size: 24px;
+        font-weight: 800;
+        color: #173f36;
+        margin: 0 0 4px 0;
+        letter-spacing: -0.3px;
+    }
+
+    .onyx-subtitle {
+        font-size: 13.5px;
+        color: #6c757d;
+        margin: 0;
+    }
+
+    .onyx-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-onyx-outline {
+        background: #ffffff;
+        border: 1px solid #dcd8ce;
+        color: #213430;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        transition: all 0.15s;
+    }
+
+        .btn-onyx-outline:hover {
+            background: #f4f1ea;
+            border-color: #c9c3b5;
+            color: #173f36;
         }
-    </style>
-</head>
-<body>
 
-    <main class="container-fluid px-4 py-4">
+    .btn-onyx-primary {
+        background: #21554A;
+        border: 1px solid #21554A;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        transition: all 0.15s;
+    }
 
-        <!-- BREADCRUMB & HEADER -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        .btn-onyx-primary:hover {
+            background: #194138;
+            color: #ffffff;
+        }
+
+    /* 2. Thanh Tab chia ngăn ngang giống ảnh mẫu */
+    .onyx-tabs-bar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        background: #f2efe7;
+        padding: 4px;
+        border-radius: 10px;
+        border: 1px solid #e2ded4;
+        margin-bottom: 16px;
+        gap: 4px;
+    }
+
+    .onyx-tab-btn {
+        border: none;
+        background: transparent;
+        padding: 9px 12px;
+        border-radius: 7px;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #616b68;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+        .onyx-tab-btn:hover {
+            color: #21554A;
+        }
+
+        .onyx-tab-btn.active {
+            background: #ffffff;
+            color: #173f36;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+
+    .onyx-tab-count {
+        background: #e5e1d6;
+        color: #495057;
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 1px 8px;
+        border-radius: 999px;
+    }
+
+    .onyx-tab-btn.active .onyx-tab-count {
+        background: #e6f0ed;
+        color: #21554A;
+    }
+
+    /* 3. Khung Card chứa Search + Bảng */
+    .onyx-card {
+        background: #ffffff;
+        border: 1px solid #e2ded4;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    }
+
+    .onyx-search-row {
+        padding: 14px 18px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        border-bottom: 1px solid #ece8df;
+        background: #ffffff;
+    }
+
+    .onyx-search-input {
+        flex: 1;
+        height: 38px;
+        border: 1px solid #dcd8ce;
+        border-radius: 8px;
+        padding: 0 14px;
+        font-size: 13.5px;
+        color: #213430;
+        background: #fdfcfa;
+    }
+
+        .onyx-search-input:focus {
+            outline: none;
+            background: #ffffff;
+            border-color: #21554A;
+        }
+
+    .onyx-unit-select {
+        width: 190px;
+        height: 38px;
+        border: 1px solid #dcd8ce;
+        border-radius: 8px;
+        padding: 0 12px;
+        font-size: 13.5px;
+        color: #213430;
+        background: #ffffff;
+    }
+
+        .onyx-unit-select:focus {
+            outline: none;
+            border-color: #21554A;
+        }
+
+    /* 4. Bảng tối giản giống ảnh mẫu */
+    .onyx-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+
+        .onyx-table thead th {
+            padding: 13px 20px;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #6c757d;
+            background: #fbfaf7;
+            border-bottom: 1px solid #ece8df;
+            white-space: nowrap;
+        }
+
+        .onyx-table tbody tr {
+            border-bottom: 1px solid #f0ede6;
+            transition: background 0.15s;
+        }
+
+            .onyx-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            .onyx-table tbody tr:hover {
+                background: #faf8f3;
+            }
+
+        .onyx-table tbody td {
+            padding: 15px 20px;
+            font-size: 13.5px;
+            vertical-align: middle;
+        }
+
+    .row-inactive {
+        background-color: #fafafa !important;
+        opacity: 0.68;
+    }
+
+    /* Pill Mã NL / Đơn vị giống cột Category trong ảnh */
+    .pill-tag {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        background: #f3f1eb;
+        color: #495057;
+        border: 1px solid #e5e1d6;
+    }
+
+    .pill-code {
+        font-family: Consolas, monospace;
+        color: #21554A;
+        background: #eef4f2;
+        border-color: #d4e3de;
+    }
+
+    /* Hiển thị Tồn kho + Tag "Sắp hết" bên dưới giống cột Stock trong ảnh */
+    .stock-cell {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .stock-val {
+        font-weight: 600;
+        color: #213430;
+    }
+
+        .stock-val.low {
+            color: #c26d1f;
+            font-weight: 700;
+        }
+
+    .low-badge-mini {
+        display: inline-block;
+        margin-top: 3px;
+        padding: 1px 8px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #b86214;
+        background: #fff8eb;
+        border: 1px solid #f3d6a4;
+        border-radius: 999px;
+        line-height: 1.4;
+    }
+
+    /* Nút thao tác dạng chữ gọn gàng giống cột Actions trong ảnh */
+    .action-text-group {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .action-link {
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        transition: opacity 0.15s;
+    }
+
+        .action-link:hover {
+            opacity: 0.75;
+            text-decoration: underline;
+        }
+
+    .action-edit {
+        color: #21554A;
+    }
+
+    .action-delete {
+        color: #d9534f;
+    }
+
+    @@media (max-width: 768px) {
+        .onyx-tabs-bar {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .onyx-search-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .onyx-unit-select {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="onyx-ing-page">
+    <div class="onyx-container">
+
+        <!-- 1. HEADER -->
+        <div class="onyx-header">
             <div>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-1 small text-muted">
-                        <li class="breadcrumb-item">Vận hành Kho</li>
-                        <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Danh mục Nguyên liệu</li>
-                    </ol>
-                </nav>
-                <h3 class="fw-bold mb-0 text-lumitea">
-                    <i class="bi bi-boxes me-2"></i>Quản Lý Danh Mục Nguyên Liệu
-                </h3>
+                <h1 class="onyx-title">Nguyên liệu & Vật tư</h1>
+                <p class="onyx-subtitle">
+                    @totalCount nguyên liệu
+                    @if (lowStockCount > 0)
+                    {
+                        <span>(@lowStockCount sắp hết tồn)</span>
+                    }
+                </p>
             </div>
-            <div class="d-flex gap-2">
-                <button class="btn btn-outline-secondary btn-sm fw-semibold bg-white">
-                    <i class="bi bi-arrow-repeat me-1"></i> Đồng bộ POS
+
+            <div class="onyx-header-actions">
+                <button type="button" class="btn-onyx-outline" onclick="alert('Mở màn hình Nhập kho')">
+                    <i class="bi bi-box-arrow-in-down"></i> Nhập kho
                 </button>
-                <button class="btn btn-outline-secondary btn-sm fw-semibold bg-white" onclick="alert('Mở màn hình Nhập')">
-                    <i class="bi bi-download me-1"></i> Nhập kho
-                </button>
-                <a href="@Url.Action("Create","Ingredient")" class="btn btn-primary btn-sm fw-semibold px-3 text-white">
-                    <i class="bi bi-plus-lg me-1"></i> Thêm nguyên liệu
+                <a href="@Url.Action("Create", "Ingredient")" class="btn-onyx-primary">
+                    <i class="bi bi-plus-lg"></i> Thêm nguyên liệu
                 </a>
-            </div>
-        </div>
-
-        <!-- STATS CARDS -->
-        <div class="row g-3 mb-4">
-            <div class="col-md-3">
-                <div class="card-custom p-3 h-100">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <div class="small fw-bold text-muted text-uppercase mb-1">Nguyên Liệu Hoạt Động</div>
-                            <div class="h3 fw-bold mb-0">
-                                @(Model?.Count(x => string.IsNullOrEmpty(x.status) || x.status == "Active") ?? 0)
-                                <span class="fs-6 text-muted fw-normal">/ @(Model?.Count() ?? 0) SKU</span>
-                            </div>
-                            <div class="small text-success mt-2"><i class="bi bi-check-circle me-1"></i>Đang áp dụng pha chế</div>
-                        </div>
-                        <div class="icon-box bg-light text-dark p-2 rounded-2">
-                            <i class="bi bi-box-seam fs-4"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card-custom p-3 h-100 border-danger-subtle">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <div class="small fw-bold text-danger text-uppercase mb-1">Sắp Hết Tồn / Cần Nhập</div>
-                            <div class="h3 fw-bold mb-0 text-danger">
-                                @(Model?.Count(x => x.quantity_in_stock < x.min_threshold && x.status == "Active") ?? 0)
-                                <span class="fs-6 text-muted fw-normal">loại chạm ngưỡng</span>
-                            </div>
-                            <div class="small text-muted mt-2">Cần lên đơn nhập thêm</div>
-                        </div>
-                        <div class="icon-box bg-danger-subtle text-danger p-2 rounded-2">
-                            <i class="bi bi-exclamation-triangle fs-4"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card-custom p-3 h-100">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <div class="small fw-bold text-muted text-uppercase mb-1">Tổng Số Lượng Tồn Kho</div>
-                            <div class="h3 fw-bold mb-0">
-                                @((Model?.Sum(x => (double?)x.quantity_in_stock) ?? 0).ToString("N0"))
-                            </div>
-                            <div class="small text-muted mt-2">Tổng số lượng định lượng tồn</div>
-                        </div>
-                        <div class="icon-box bg-primary-subtle text-primary p-2 rounded-2">
-                            <i class="bi bi-stack fs-4"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card-custom p-3 h-100">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <div class="small fw-bold text-muted text-uppercase mb-1">Tạm Ngừng Sử Dụng</div>
-                            <div class="h3 fw-bold mb-0">
-                                @(Model?.Count(x => x.status == "Inactive") ?? 0)
-                                <span class="fs-6 text-muted fw-normal">loại ngừng dùng</span>
-                            </div>
-                            <div class="small text-muted mt-2">Nguyên liệu đã xóa mềm / lưu trữ</div>
-                        </div>
-                        <div class="icon-box bg-light text-muted p-2 rounded-2">
-                            <i class="bi bi-slash-circle fs-4"></i>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
         <!-- THÔNG BÁO TỪ CONTROLLER (TEMPDATA) -->
         @if (TempData["SuccessMessage"] != null)
         {
-            <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+            <div class="alert alert-success alert-dismissible fade show rounded-3 py-2 px-3 small mb-3" role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         }
-
         @if (TempData["ErrorMessage"] != null)
         {
-            <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+            <div class="alert alert-danger alert-dismissible fade show rounded-3 py-2 px-3 small mb-3" role="alert">
                 <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         }
 
-        <!-- BẢNG FILTER & TÌM KIẾM -->
-        <div class="card-custom p-3 mb-4">
-            <div class="row g-2 align-items-center">
-                <div class="col-md-5">
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-                        <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Tìm kiếm theo mã hoặc tên nguyên liệu...">
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <select id="statusFilter" class="form-select form-select-sm">
-                        <option value="">-- Tất cả trạng thái --</option>
-                        <option value="Active">Đang hoạt động</option>
-                        <option value="Inactive">Tạm ngừng sử dụng</option>
-                    </select>
-                </div>
-            </div>
+        <!-- 2. SEGMENTED TABS (THAY THẾ CHO 4 Ô KPI CŨ) -->
+        <div class="onyx-tabs-bar">
+            <button type="button" class="onyx-tab-btn active" data-tab="all">
+                <span>Tất cả</span>
+                <span class="onyx-tab-count">@totalCount</span>
+            </button>
+            <button type="button" class="onyx-tab-btn" data-tab="active">
+                <i class="bi bi-check2-circle"></i>
+                <span>Đang hoạt động</span>
+                <span class="onyx-tab-count">@activeCount</span>
+            </button>
+            <button type="button" class="onyx-tab-btn" data-tab="low">
+                <i class="bi bi-exclamation-circle"></i>
+                <span>Sắp hết tồn</span>
+                <span class="onyx-tab-count">@lowStockCount</span>
+            </button>
+            <button type="button" class="onyx-tab-btn" data-tab="inactive">
+                <i class="bi bi-slash-circle"></i>
+                <span>Tạm ngừng</span>
+                <span class="onyx-tab-count">@inactiveCount</span>
+            </button>
         </div>
 
-        <!-- BẢNG DANH SÁCH NGUYÊN LIỆU -->
-        <div class="card-custom overflow-hidden mb-4 shadow-sm">
+        <!-- 3. KHUNG SEARCH + BẢNG DỮ LIỆU -->
+        <div class="onyx-card">
+            <!-- Thanh Search & Lọc ĐVT -->
+            <div class="onyx-search-row">
+                <input type="text"
+                       id="searchInput"
+                       class="onyx-search-input"
+                       placeholder="Tìm kiếm theo tên hoặc mã nguyên liệu..." />
+
+                <select id="unitFilter" class="onyx-unit-select">
+                    <option value="">Tất cả đơn vị tính</option>
+                    @if (Model != null)
+                    {
+                        foreach (var u in Model.Select(x => x.unit).Where(u => !string.IsNullOrEmpty(u)).Distinct())
+                        {
+                            <option value="@u">@u</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <!-- Bảng danh sách -->
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
+                <table class="table onyx-table">
+                    <thead>
                         <tr>
-                            <th style="width: 40px;" class="ps-3"><input type="checkbox" class="form-check-input"></th>
-                            <th>MÃ NL</th>
-                            <th>TÊN NGUYÊN LIỆU</th>
-                            <th>ĐVT</th>
-                            <th>TỔNG TỒN KHO HIỆN TẠI</th>
-                            <th>ĐỊNH MỨC TỐI THIỂU</th>
-                            <th class="text-center">TRẠNG THÁI</th>
-                            <th class="text-center" style="width: 120px;">THAO TÁC</th>
+                            <th>Mã NL</th>
+                            <th>Tên nguyên liệu</th>
+                            <th>Đơn vị tính</th>
+                            <th class="text-center">Tồn kho</th>
+                            <th class="text-end">Định mức tối thiểu</th>
+                            <th>Trạng thái</th>
+                            <th class="text-end">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody id="ingredientTableBody">
@@ -194,67 +452,64 @@
                             {
                                 var isLow = item.quantity_in_stock < item.min_threshold;
                                 var isActive = string.IsNullOrEmpty(item.status) || item.status == "Active";
+                                var idTrim = item.ingredient_id != null ? item.ingredient_id.Trim() : "";
 
-                                <tr class="@(isActive ? "" : "row-inactive")" data-status="@(isActive ? "Active" : "Inactive")">
-                                    <td class="ps-3"><input type="checkbox" class="form-check-input"></td>
-                                    <td class="fw-bold text-lumitea">@item.ingredient_id.Trim()</td>
-                                    <td>
-                                        <div class="fw-bold text-dark">@item.name</div>
-                                    </td>
-                                    <td><span class="badge bg-light text-dark border">@item.unit</span></td>
-                                    <td>
-                                        <div class="fw-bold @(isLow ? "text-danger" : "text-success") fs-6">
-                                            @item.quantity_in_stock.ToString("N3") @item.unit
-                                        </div>
-                                        @if (isLow)
-                                        {
-                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle small mt-1">SẮP HẾT</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-success-subtle text-success border border-success-subtle small mt-1">AN TOÀN</span>
-                                        }
-                                    </td>
-                                    <td class="fw-semibold text-muted">@item.min_threshold.ToString("N3") @item.unit</td>
+                                <tr class="@(isActive ? "" : "row-inactive")"
+                                    data-status="@(isActive ? "Active" : "Inactive")"
+                                    data-low="@(isLow && isActive ? "true" : "false")"
+                                    data-unit="@item.unit">
 
-                                    <!-- CỘT TRẠNG THÁI -->
+                                    <!-- Mã NL -->
+                                    <td><span class="pill-tag pill-code">@idTrim</span></td>
+
+                                    <!-- Tên nguyên liệu -->
+                                    <td class="fw-semibold text-dark">@item.name</td>
+
+
+                                    <!-- Đơn vị tính -->
+                                    <td><span class="pill-tag">@item.unit</span></td>
+
+                                    <!-- Tồn kho + Badge "Sắp hết" giống ảnh mẫu -->
                                     <td class="text-center">
+                                        <div class="stock-cell">
+                                            <span class="stock-val @(isLow && isActive ? "low" : "")">
+                                                @item.quantity_in_stock.ToString("N2") @item.unit
+                                            </span>
+                                            @if (isLow && isActive)
+                                            {
+                                                <span class="low-badge-mini">Sắp hết</span>
+                                            }
+                                        </div>
+                                    </td>
+
+                                    <!-- Định mức tối thiểu -->
+                                    <td class="text-end text-muted">
+                                        @item.min_threshold.ToString("N2") @item.unit
+                                    </td>
+
+                                    <!-- Trạng thái -->
+                                    <td>
                                         @if (isActive)
                                         {
-                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1">
-                                                <i class="bi bi-check-circle-fill me-1"></i> Hoạt động
-                                            </span>
+                                            <span style="color: #21554A; font-weight: 600; font-size: 13px;">Hoạt động</span>
                                         }
                                         else
                                         {
-                                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2 py-1">
-                                                <i class="bi bi-slash-circle me-1"></i> Tạm ngừng
-                                            </span>
+                                            <span style="color: #8c9396; font-size: 13px;">Tạm ngừng</span>
                                         }
                                     </td>
 
-                                    <!-- CỤM NÚT THAO TÁC -->
-                                    <td class="text-center">
-                                        <div class="d-inline-flex gap-2">
-                                            <!-- Nút Chỉnh sửa -->
-                                            <a href="@Url.Action("Edit", new { id = item.ingredient_id.Trim() })"
-                                               class="btn btn-sm btn-primary-subtle text-primary border border-primary-subtle rounded-2 btn-action"
-                                               data-bs-toggle="tooltip"
-                                               data-bs-placement="top"
-                                               title="Chỉnh sửa thông tin">
-                                                <i class="bi bi-pencil-square"></i>
+                                    <!-- Thao tác dạng chữ Sửa / Xóa giống ảnh mẫu -->
+                                    <td class="text-end">
+                                        <div class="action-text-group">
+                                            <a href="@Url.Action("Edit", new { id = idTrim })" class="action-link action-edit">
+                                                Sửa
                                             </a>
-
-                                            <!-- Nút Xóa (Kích hoạt Modal) -->
                                             <button type="button"
-                                                    class="btn btn-sm btn-danger-subtle text-danger border border-danger-subtle rounded-2 btn-action btn-trigger-delete"
-                                                    data-id="@item.ingredient_id.Trim()"
-                                                    data-name="@item.name"
-                                                    data-status="@(isActive ? "Active" : "Inactive")"
-                                                    data-bs-toggle="tooltip"
-                                                    data-bs-placement="top"
-                                                    title="@(isActive ? "Xóa / Tạm ngừng" : "Xóa nguyên liệu")">
-                                                <i class="bi bi-trash"></i>
+                                                    class="action-link action-delete btn-trigger-delete"
+                                                    data-id="@idTrim"
+                                                    data-name="@item.name">
+                                                Xóa
                                             </button>
                                         </div>
                                     </td>
@@ -264,7 +519,9 @@
                         else
                         {
                             <tr>
-                                <td colspan="8" class="text-center text-muted py-4">Chưa có dữ liệu nguyên liệu nào trong hệ thống.</td>
+                                <td colspan="7" class="text-center text-muted py-5">
+                                    Chưa có dữ liệu nguyên liệu nào trong hệ thống.
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -272,74 +529,89 @@
             </div>
         </div>
 
-        <!-- MODAL XÁC NHẬN XÓA NGUYÊN LIỆU -->
-        <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-sm">
-                <div class="modal-content border-0 shadow">
-                    <div class="modal-body text-center p-4">
-                        <div class="text-danger mb-3">
-                            <i class="bi bi-exclamation-circle display-4"></i>
-                        </div>
-                        <h5 class="fw-bold mb-2" id="deleteModalLabel">Xác nhận xóa?</h5>
-                        <p class="text-muted small mb-4">
-                            Bạn có chắc muốn xóa nguyên liệu <br><strong id="deleteTargetName" class="text-dark"></strong> không?<br>
-                            <span class="text-muted small d-block mt-2">Hệ thống sẽ xóa vĩnh viễn nếu chưa dùng, hoặc tự chuyển sang <b>Tạm ngừng</b> nếu đã có lịch sử kho/công thức.</span>
-                        </p>
-                        <div class="d-flex gap-2 justify-content-center">
-                            <button type="button" class="btn btn-light border btn-sm px-3 fw-semibold" data-bs-dismiss="modal">Hủy bỏ</button>
-                            <a id="btnConfirmDelete" href="#" class="btn btn-danger btn-sm px-3 fw-semibold">Đồng ý</a>
-                        </div>
-                    </div>
+    </div>
+</div>
+
+<!-- MODAL XÁC NHẬN XÓA NGUYÊN LIỆU (GIỮ NGUYÊN CHỨC NĂNG) -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center p-4">
+                <div class="text-danger mb-2">
+                    <i class="bi bi-exclamation-circle display-5"></i>
+                </div>
+                <h6 class="fw-bold mb-2">Xác nhận xóa?</h6>
+                <p class="text-muted small mb-4">
+                    Bạn có chắc muốn xóa nguyên liệu <br><strong id="deleteTargetName" class="text-dark"></strong> không?<br>
+                    <span class="text-muted small d-block mt-2">
+                        Hệ thống sẽ xóa vĩnh viễn nếu chưa dùng, hoặc chuyển sang <b>Tạm ngừng</b> nếu đã có lịch sử kho.
+                    </span>
+                </p>
+                <div class="d-flex gap-2 justify-content-center">
+                    <button type="button" class="btn btn-light border btn-sm px-3 fw-semibold" data-bs-dismiss="modal">Hủy bỏ</button>
+                    <a id="btnConfirmDelete" href="#" class="btn btn-danger btn-sm px-3 fw-semibold">Đồng ý</a>
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
-    </main>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let currentTab = "all";
+        const searchInput = document.getElementById("searchInput");
+        const unitFilter = document.getElementById("unitFilter");
+        const rows = document.querySelectorAll("#ingredientTableBody tr[data-status]");
+        const tabButtons = document.querySelectorAll(".onyx-tab-btn");
 
-    <!-- JQUERY & BOOTSTRAP 5 JS -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        function filterTable() {
+            const keyword = searchInput.value.trim().toLowerCase();
+            const selectedUnit = unitFilter.value;
 
-    <script>
-        $(document).ready(function () {
-            // 1. Bộ lọc tìm kiếm kết hợp Search text và Trạng thái
-            function filterTable() {
-                const searchVal = $('#searchInput').val().toLowerCase();
-                const selectedStatus = $('#statusFilter').val();
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const status = row.getAttribute("data-status");
+                const isLow = row.getAttribute("data-low") === "true";
+                const unit = row.getAttribute("data-unit");
 
-                $('#ingredientTableBody tr').filter(function () {
-                    const rowText = $(this).text().toLowerCase();
-                    const rowStatus = $(this).data('status');
+                const matchSearch = !keyword || text.includes(keyword);
+                const matchUnit = !selectedUnit || unit === selectedUnit;
 
-                    const matchesSearch = rowText.indexOf(searchVal) > -1;
-                    const matchesStatus = !selectedStatus || rowStatus === selectedStatus;
+                let matchTab = true;
+                if (currentTab === "active") matchTab = (status === "Active");
+                else if (currentTab === "low") matchTab = isLow;
+                else if (currentTab === "inactive") matchTab = (status === "Inactive");
 
-                    $(this).toggle(matchesSearch && matchesStatus);
-                });
-            }
-
-            $('#searchInput').on('keyup', filterTable);
-            $('#statusFilter').on('change', filterTable);
-
-            // 2. Khởi tạo Tooltip Bootstrap 5
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
+                row.style.display = (matchSearch && matchUnit && matchTab) ? "" : "none";
             });
+        }
 
-            // 3. Xử lý mở Modal xác nhận xóa
-            $('.btn-trigger-delete').on('click', function () {
-                const ingredientId = $(this).data('id');
-                const ingredientName = $(this).data('name');
-                const deleteUrl = '@Url.Action("Delete", "Ingredient")/' + encodeURIComponent(ingredientId);
-
-                $('#deleteTargetName').text(ingredientName + ' (' + ingredientId + ')');
-                $('#btnConfirmDelete').attr('href', deleteUrl);
-
-                const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
-                deleteModal.show();
+        // Sự kiện chuyển Tab
+        tabButtons.forEach(btn => {
+            btn.addEventListener("click", function () {
+                tabButtons.forEach(b => b.classList.remove("active"));
+                this.classList.add("active");
+                currentTab = this.getAttribute("data-tab");
+                filterTable();
             });
         });
-    </script>
-</body>
-</html>
+
+        searchInput.addEventListener("input", filterTable);
+        unitFilter.addEventListener("change", filterTable);
+
+        // Sự kiện mở Modal xác nhận xóa
+        document.querySelectorAll(".btn-trigger-delete").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const id = this.getAttribute("data-id");
+                const name = this.getAttribute("data-name");
+                const deleteUrl = '@Url.Action("Delete", "Ingredient")/' + encodeURIComponent(id);
+
+                document.getElementById("deleteTargetName").textContent = name + " (" + id + ")";
+                document.getElementById("btnConfirmDelete").setAttribute("href", deleteUrl);
+
+                const modal = new bootstrap.Modal(document.getElementById("deleteConfirmModal"));
+                modal.show();
+            });
+        });
+    });
+</script>

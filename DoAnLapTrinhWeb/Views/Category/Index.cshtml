@@ -9,7 +9,7 @@
     @@keyframes fadeUp {
         from {
             opacity: 0;
-            transform: translateY(24px);
+            transform: translateY(16px);
         }
 
         to {
@@ -18,20 +18,10 @@
         }
     }
 
-    @@keyframes floaty {
-        0%, 100% {
-            transform: translateY(0);
-        }
-
-        50% {
-            transform: translateY(-6px);
-        }
-    }
-
     @@keyframes rowIn {
         from {
             opacity: 0;
-            transform: translateX(-18px);
+            transform: translateX(-12px);
         }
 
         to {
@@ -42,21 +32,11 @@
 
     @@keyframes pulseDot {
         0% {
-            box-shadow: 0 0 0 0 rgba(25,135,84,.5);
+            box-shadow: 0 0 0 0 rgba(35, 117, 70, 0.5);
         }
 
         100% {
-            box-shadow: 0 0 0 10px rgba(25,135,84,0);
-        }
-    }
-
-    @@keyframes shimmer {
-        0% {
-            background-position: -200% 0;
-        }
-
-        100% {
-            background-position: 200% 0;
+            box-shadow: 0 0 0 8px rgba(35, 117, 70, 0);
         }
     }
 
@@ -67,392 +47,531 @@
         }
     }
 
-    /* ===== Vào trang ===== */
-    .product-heading {
-        animation: fadeUp .6s ease both;
+    /* Nền trang kem ấm theo style gốc */
+    .category-clean-page {
+        background-color: #f8f5eb;
+        min-height: calc(100vh - 60px);
+        padding: 28px 32px 50px;
     }
 
-    .summary-grid .summary-card {
-        animation: fadeUp .6s ease both;
+    .category-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        animation: fadeUp 0.5s ease both;
     }
 
-        .summary-grid .summary-card:nth-child(1) {
-            animation-delay: .08s;
-        }
-
-        .summary-grid .summary-card:nth-child(2) {
-            animation-delay: .16s;
-        }
-
-        .summary-grid .summary-card:nth-child(3) {
-            animation-delay: .24s;
-        }
-
-        .summary-grid .summary-card:nth-child(4) {
-            animation-delay: .32s;
-        }
-
-    .filter-card {
-        animation: fadeUp .6s ease .38s both;
+    /* Header tối giản giống ảnh mẫu */
+    .clean-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        gap: 16px;
     }
 
-    .product-table-card {
-        animation: fadeUp .6s ease .46s both;
+    .clean-title-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
 
-    .heading-icon {
-        animation: floaty 3s ease-in-out infinite;
+    .clean-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: #17463e;
+        margin: 0;
     }
 
-    /* ===== Thẻ thống kê ===== */
-    .summary-card {
-        transition: transform .3s, box-shadow .3s;
-        cursor: default;
+    .clean-subtitle {
+        font-size: 13px;
+        color: #78837e;
+        margin: 2px 0 0;
     }
 
-        .summary-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 16px 32px rgba(0,0,0,.12);
-        }
-
-        .summary-card .summary-icon {
-            transition: transform .4s;
-        }
-
-        .summary-card:hover .summary-icon {
-            transform: rotate(-12deg) scale(1.2);
-        }
-
-    /* ===== Nút ===== */
-    .btn-tea, .btn-filter {
+    /* Nút thêm danh mục */
+    .btn-tea-add {
         position: relative;
         overflow: hidden;
-        transition: transform .2s, box-shadow .2s;
+        background-color: #20584f;
+        border: 1px solid #20584f;
+        color: #ffffff;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-size: 13.5px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        box-shadow: 0 6px 16px rgba(32, 88, 79, 0.16);
+        transition: all 0.2s ease;
     }
 
-        .btn-tea:hover, .btn-filter:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 22px rgba(0,0,0,.15);
+        .btn-tea-add:hover {
+            background-color: #17463e;
+            color: #ffffff;
+            transform: translateY(-2px);
         }
 
-        .btn-tea:active, .btn-filter:active {
-            transform: scale(.96);
-        }
-
-    .btn .ripple {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(255,255,255,.5);
-        transform: scale(0);
-        animation: ripple .6s linear;
-        pointer-events: none;
+    /* Khung Card chính bọc cả Search, Filter, Table và Footer */
+    .main-unified-card {
+        background: #fffdf8;
+        border: 1px solid #e6dcc2;
+        border-radius: 16px;
+        box-shadow: 0 8px 26px rgba(47, 67, 62, 0.06);
+        overflow: hidden;
     }
+
+    /* Thanh Toolbar bên trong Card (Search bên trái - Filter bên phải giống ảnh mẫu) */
+    .card-toolbar {
+        padding: 18px 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #eee8da;
+        background: #ffffff;
+    }
+
+    .search-box-wrapper {
+        position: relative;
+        width: 320px;
+        max-width: 100%;
+    }
+
+        .search-box-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #78837e;
+            font-size: 14px;
+        }
+
+    .search-box-input {
+        width: 100%;
+        height: 40px;
+        padding: 8px 14px 8px 38px;
+        border: 1px solid #ddd7c9;
+        border-radius: 10px;
+        font-size: 13px;
+        color: #213430;
+        background-color: #fbfaf6;
+        transition: all 0.2s;
+    }
+
+        .search-box-input:focus {
+            outline: none;
+            background-color: #ffffff;
+            border-color: #20584f;
+            box-shadow: 0 0 0 3px rgba(32, 88, 79, 0.09);
+        }
+
+    /* Cụm nút lọc bên phải giống ảnh mẫu */
+    .filter-actions-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .filter-select-clean {
+        height: 40px;
+        min-width: 185px;
+        padding: 0 14px;
+        border: 1px solid #ddd7c9;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #213430;
+        background-color: #ffffff;
+        cursor: pointer;
+    }
+
+        .filter-select-clean:focus {
+            outline: none;
+            border-color: #20584f;
+        }
+
+    .btn-icon-square {
+        width: 40px;
+        height: 40px;
+        border: 1px solid #ddd7c9;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #20584f;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-icon-square:hover {
+            background: #eaf3ef;
+            border-color: #20584f;
+        }
+
+        .btn-icon-square i {
+            transition: transform 0.4s;
+        }
 
     #btnReset:hover i {
         transform: rotate(-180deg);
     }
 
-    #btnReset i {
+    /* Bảng dữ liệu tối giản */
+    .clean-table {
+        width: 100%;
+        margin-bottom: 0;
+        border-collapse: collapse;
+    }
+
+        .clean-table thead th {
+            padding: 14px 22px;
+            background-color: #f8f5eb;
+            color: #61706a;
+            font-size: 11.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e6dcc2;
+            white-space: nowrap;
+        }
+
+        .clean-table tbody tr {
+            background-color: #ffffff;
+            border-bottom: 1px solid #f2ede0;
+            animation: rowIn 0.4s ease both;
+            transition: background-color 0.2s;
+        }
+
+            .clean-table tbody tr:hover {
+                background-color: #faf7ef;
+            }
+
+        .clean-table tbody td {
+            padding: 14px 22px;
+            font-size: 13.5px;
+            color: #213430;
+            vertical-align: middle;
+        }
+
+    /* Icon & Tên danh mục */
+    .cat-thumb {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: #eaf3ef;
+        color: #20584f;
+        font-size: 17px;
+        margin-right: 12px;
+        flex-shrink: 0;
+        transition: transform 0.25s;
+    }
+
+    .clean-table tbody tr:hover .cat-thumb {
+        transform: scale(1.08);
+    }
+
+    .cat-name-text {
+        font-weight: 700;
+        color: #17463e;
+    }
+
+    .cat-code-badge {
         display: inline-block;
-        transition: transform .5s;
+        padding: 5px 10px;
+        border-radius: 7px;
+        background: #eaf3ef;
+        color: #20584f;
+        font-family: Consolas, monospace;
+        font-size: 12px;
+        font-weight: 700;
     }
 
-    /* ===== Ô tìm kiếm ===== */
-    .form-control, .form-select {
-        transition: box-shadow .25s, transform .25s, border-color .25s;
+    .cat-desc-text {
+        color: #78837e;
+        font-size: 13px;
+        max-width: 360px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
-        .form-control:focus, .form-select:focus {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,.08);
+    /* Badge trạng thái */
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 11px;
+        border-radius: 999px;
+        font-size: 11.5px;
+        font-weight: 700;
+    }
+
+        .status-pill.active {
+            background: #e7f5ec;
+            color: #237546;
         }
 
-    /* ===== Bảng ===== */
-    #categoryTableBody tr {
-        animation: rowIn .45s ease both;
-        transition: background .25s, transform .25s, box-shadow .25s;
-    }
+            .status-pill.active i {
+                animation: pulseDot 1.6s infinite;
+                border-radius: 50%;
+            }
 
-        #categoryTableBody tr:hover {
-            background: #f6fbf8;
-            transform: scale(1.012);
-            box-shadow: 0 6px 18px rgba(0,0,0,.07);
-            position: relative;
-            z-index: 1;
+        .status-pill.inactive {
+            background: #fbe9e6;
+            color: #a94435;
         }
 
-    .cat-icon {
-        display: inline-grid;
-        place-items: center;
-        width: 38px;
-        height: 38px;
-        margin-right: 10px;
-        border-radius: 12px;
-        background: #fff1f4;
-        font-size: 20px;
-        vertical-align: middle;
-        transition: transform .3s;
-    }
-
-    tr:hover .cat-icon {
-        transform: rotate(-10deg) scale(1.2);
-    }
-
-    .cat-icon.off {
-        background: #eef0f2;
-        filter: grayscale(1);
-        opacity: .75;
-    }
-
-    mark.hl {
-        background: #ffe8a3;
-        padding: 0 2px;
-        border-radius: 4px;
-    }
-
-    .status-badge.available i {
-        animation: pulseDot 1.6s infinite;
-        border-radius: 50%;
-    }
-
-    .action-btn {
-        transition: transform .25s, box-shadow .25s;
-    }
-
-        .action-btn:hover {
-            transform: translateY(-3px) rotate(-8deg) scale(1.12);
-            box-shadow: 0 8px 16px rgba(0,0,0,.18);
-        }
-
-    /* ===== Skeleton khi tải ===== */
-    .skeleton-row td {
-        padding: 18px 12px;
-    }
-
-    .skeleton-bar {
-        height: 14px;
+    /* Nút thao tác Edit giống ảnh mẫu */
+    .btn-action-icon {
+        width: 34px;
+        height: 34px;
         border-radius: 8px;
-        background: linear-gradient(90deg, #eee 25%, #f8f8f8 50%, #eee 75%);
-        background-size: 200% 100%;
-        animation: shimmer 1.2s infinite;
+        border: 1px solid #ddd7c9;
+        background: #ffffff;
+        color: #20584f;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.2s;
     }
 
-    #emptyState {
-        animation: fadeUp .4s ease both;
+        .btn-action-icon:hover {
+            background: #20584f;
+            border-color: #20584f;
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+    /* Footer phân trang bên dưới bảng giống ảnh mẫu */
+    .card-bottom-bar {
+        padding: 14px 22px;
+        background: #ffffff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        border-top: 1px solid #eee8da;
     }
 
-        #emptyState i {
-            display: inline-block;
-            animation: floaty 2.4s ease-in-out infinite;
+    .entries-info {
+        font-size: 12.5px;
+        color: #78837e;
+        font-weight: 600;
+    }
+
+    .clean-pagination {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+        .clean-pagination .page-btn {
+            min-width: 32px;
+            height: 32px;
+            padding: 0 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd7c9;
+            background: #ffffff;
+            color: #213430;
+            font-size: 12.5px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            cursor: pointer;
         }
 
-    @@media (prefers-reduced-motion: reduce) {
-        * {
-            animation: none !important;
-            transition: none !important;
-        }
+            .clean-pagination .page-btn.active {
+                background: #20584f;
+                border-color: #20584f;
+                color: #ffffff;
+            }
+
+            .clean-pagination .page-btn.disabled {
+                opacity: 0.45;
+                pointer-events: none;
+            }
+
+    .btn .ripple, .btn-tea-add .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.45);
+        transform: scale(0);
+        animation: ripple 0.6s linear;
+        pointer-events: none;
     }
 </style>
 
-<div class="product-page">
+<div class="category-clean-page">
+    <div class="category-container">
 
-    <!-- HEADER -->
-    <div class="product-heading">
-
-        <div class="heading-left">
-            <div class="heading-icon">
-                <i class="bi bi-grid-3x3-gap-fill"></i>
+        <!-- 1. HEADER TỐI GIẢN GIỐNG ẢNH MẪU -->
+        <div class="clean-header">
+            <div class="clean-title-group">
+                <div style="width: 44px; height: 44px; border-radius: 12px; background: #20584f; color: #f5c84b; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                    <i class="bi bi-grid-3x3-gap-fill"></i>
+                </div>
+                <div>
+                    <h1 class="clean-title">Danh mục sản phẩm</h1>
+                    <p class="clean-subtitle">Quản lý danh sách phân loại đồ uống của cửa hàng</p>
+                </div>
             </div>
-            <div>
-                <h1 class="page-title">Quản lý danh mục</h1>
-                <p class="page-subtitle">Quản lý các danh mục sản phẩm của cửa hàng</p>
-            </div>
+
+            <a href="@Url.Action("Create", "Category")" class="btn-tea-add">
+                <i class="bi bi-plus-lg"></i>
+                <span>Thêm danh mục</span>
+            </a>
         </div>
 
-        <a href="@Url.Action("Create", "Category")" class="btn btn-tea">
-            <i class="bi bi-plus-lg me-2"></i>
-            Thêm danh mục
-        </a>
+        <!-- 2. KHUNG CARD CHÍNH (SEARCH + FILTER + TABLE + PAGINATION) -->
+        <div class="main-unified-card">
 
-    </div>
+            <!-- Toolbar trên cùng của bảng -->
+            <div class="card-toolbar">
+                <!-- Ô tìm kiếm bên trái -->
+                <div class="search-box-wrapper">
+                    <i class="bi bi-search"></i>
+                    <input type="text"
+                           id="searchCategory"
+                           class="search-box-input"
+                           placeholder="Tìm kiếm mã hoặc tên danh mục..." />
+                </div>
 
-
-    <!-- SUMMARY -->
-    <div class="summary-grid">
-
-        <div class="summary-card">
-            <span class="summary-label">Tổng danh mục</span>
-            <strong class="summary-number" id="totalCategories">0</strong>
-            <div class="summary-icon"><i class="bi bi-grid"></i></div>
-        </div>
-
-        <div class="summary-card">
-            <span class="summary-label">Đang hoạt động</span>
-            <strong class="summary-number" id="activeCategories">0</strong>
-            <div class="summary-icon"><i class="bi bi-check-circle"></i></div>
-        </div>
-
-        <div class="summary-card">
-            <span class="summary-label">Ngừng hoạt động</span>
-            <strong class="summary-number" id="inactiveCategories">0</strong>
-            <div class="summary-icon"><i class="bi bi-pause-circle"></i></div>
-        </div>
-
-        <div class="summary-card">
-            <span class="summary-label">Kết quả hiển thị</span>
-            <strong class="summary-number" id="displayCategories">0</strong>
-            <div class="summary-icon"><i class="bi bi-list-check"></i></div>
-        </div>
-
-    </div>
-
-
-    <!-- FILTER -->
-    <div class="filter-card">
-
-        <div class="filter-head">
-            <i class="bi bi-funnel-fill"></i>
-            <span>Tìm kiếm & lọc danh mục</span>
-        </div>
-
-        <div class="filter-body">
-            <div class="row g-4 align-items-end">
-
-                <div class="col-lg-7">
-                    <label class="form-label">Từ khóa</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input type="text"
-                               id="searchCategory"
-                               class="form-control"
-                               placeholder="Nhập mã hoặc tên danh mục..." />
+                <!-- Bộ lọc trạng thái & nút Reset bên phải -->
+                <div class="filter-actions-group">
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="font-size: 12px; font-weight: 700; color: #78837e;" class="d-none d-sm-inline">
+                            <i class="bi bi-funnel me-1" style="color: #20584f;"></i>Lọc:
+                        </span>
+                        <select id="statusFilter" class="filter-select-clean">
+                            <option value="all">Tất cả trạng thái</option>
+                            <option value="active">Đang hoạt động</option>
+                            <option value="inactive">Ngừng hoạt động</option>
+                        </select>
                     </div>
-                </div>
 
-                <div class="col-lg-3">
-                    <label class="form-label">Trạng thái</label>
-                    <select id="statusFilter" class="form-select">
-                        <option value="all">Tất cả trạng thái</option>
-                        <option value="active">Đang hoạt động</option>
-                        <option value="inactive">Ngừng hoạt động</option>
-                    </select>
-                </div>
-
-                <div class="col-lg-2">
-                    <button type="button" id="btnReset" class="btn btn-filter w-100">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i>
-                        Đặt lại
+                    <button type="button" id="btnReset" class="btn-icon-square" title="Đặt lại bộ lọc">
+                        <i class="bi bi-arrow-counterclockwise"></i>
                     </button>
                 </div>
-
             </div>
-        </div>
 
-    </div>
+            <!-- Bảng dữ liệu -->
+            <div class="table-responsive">
+                <table class="clean-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 280px;">Tên danh mục</th>
+                            <th style="width: 160px;">Mã danh mục</th>
+                            <th>Mô tả</th>
+                            <th style="width: 180px;">Trạng thái</th>
+                            <th style="width: 110px;" class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoryTableBody">
+                        @foreach (var item in Model)
+                        {
+                            string cId = item.category_id != null ? item.category_id.Trim() : "";
+                            <tr>
+                                <!-- Cột 1: Tên danh mục kèm icon giống ảnh mẫu -->
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <span class="cat-thumb">
+                                            <i class="bi bi-cup-hot"></i>
+                                        </span>
+                                        <span class="cat-name-text product-name">@item.category_name</span>
+                                    </div>
+                                </td>
 
+                                <!-- Cột 2: Mã danh mục -->
+                                <td>
+                                    <span class="cat-code-badge product-code">@cId</span>
+                                </td>
 
-    <!-- TABLE -->
-    <div class="product-table-card">
+                                <!-- Cột 3: Mô tả -->
+                                <td>
+                                    <div class="cat-desc-text description" title="@item.description">
+                                        @(string.IsNullOrEmpty(item.description) ? "Chưa có mô tả" : item.description)
+                                    </div>
+                                </td>
 
-        <div class="table-top">
-            <div>
-                <h2 class="table-title">Danh sách danh mục</h2>
-                <span class="table-note">Các danh mục sản phẩm đang được quản lý</span>
+                                <!-- Cột 4: Trạng thái -->
+                                <td>
+                                    @if (item.status == "Active")
+                                    {
+                                        <span class="status-pill status-badge available">
+                                            <i class="bi bi-circle-fill" style="font-size: 7px;"></i> Đang hoạt động
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-pill status-badge unavailable">
+                                            <i class="bi bi-circle-fill" style="font-size: 7px;"></i> Ngừng hoạt động
+                                        </span>
+                                    }
+                                </td>
+
+                                <!-- Cột 5: Thao tác -->
+                                <td class="text-center">
+                                    <a href="@Url.Action("Edit", "Category", new { id = cId })"
+                                       class="btn-action-icon" title="Chỉnh sửa danh mục">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-            <span class="table-note" id="resultText">0 danh mục</span>
-        </div>
 
-        <div class="table-responsive">
-            <table class="table align-middle">
-                <thead>
-                    <tr>
-                        <th style="width: 160px;">Mã danh mục</th>
-                        <th style="width: 260px;">Tên danh mục</th>
-                        <th>Mô tả</th>
-                        <th style="width: 170px;">Trạng thái</th>
-                        <th style="width: 150px;" class="text-center">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody id="categoryTableBody">
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                <span class="product-code">@item.category_id.Trim()</span>
-            </td>
-            <td>
-                <span class="cat-icon">📁</span>
-                <span class="product-name">@item.category_name</span>
-            </td>
-            <td>
-                <div class="description">
-                    @(string.IsNullOrEmpty(item.description) ? "Chưa có mô tả" : item.description)
+            <!-- Trạng thái trống khi tìm không thấy -->
+            <div id="emptyState" class="text-center py-5 d-none" style="background: #ffffff;">
+                <div class="mb-2">
+                    <i class="bi bi-inbox" style="font-size: 40px; color: #b7c5bf;"></i>
                 </div>
-            </td>
-            <td>
-                @if (item.status == "Active")
-                {
-                    <span class="status-badge available">
-                        <i class="bi bi-check-circle-fill"></i> Đang hoạt động
-                    </span>
-                }
-                else
-                {
-                    <span class="status-badge unavailable">
-                        <i class="bi bi-pause-circle-fill"></i> Ngừng hoạt động
-                    </span>
-                }
-            </td>
-            <td class="text-center">
-                <a href="@Url.Action("Edit", "Category", new { id = item.category_id.Trim() })"
-                   class="action-btn edit-btn" title="Chỉnh sửa">
-                    <i class="bi bi-pencil-square"></i>
-                </a>
-            </td>
-        </tr>
-    }
-</tbody>
-            </table>
-        </div>
-
-        <!-- EMPTY -->
-        <div id="emptyState" class="text-center py-5 d-none">
-            <div class="mb-3">
-                <i class="bi bi-inbox" style="font-size: 42px; color: #78837e;"></i>
+                <h6 class="fw-bold mb-1" style="color:#17463e;">Không tìm thấy danh mục</h6>
+                <p class="mb-0" style="color:#78837e; font-size:13px;">
+                    Hãy thử thay đổi từ khóa tìm kiếm hoặc bộ lọc trạng thái.
+                </p>
             </div>
-            <h6 class="fw-bold mb-2" style="color:#17463e;">Không tìm thấy danh mục</h6>
-            <p class="mb-0" style="color:#78837e; font-size:13px;">
-                Hãy thử thay đổi từ khóa hoặc bộ lọc.
-            </p>
-        </div>
 
-        <!-- FOOTER -->
-        <div class="table-footer">
-            <span class="table-note">Hiển thị danh mục sản phẩm</span>
-            <nav>
-                <ul class="pagination pagination-sm mb-0">
-                    <li class="page-item disabled"><span class="page-link">Trước</span></li>
-                    <li class="page-item active"><span class="page-link">1</span></li>
-                    <li class="page-item disabled"><span class="page-link">Sau</span></li>
+            <!-- Footer thống kê số dòng & phân trang giống ảnh mẫu -->
+            <div class="card-bottom-bar">
+                <span class="entries-info" id="resultText">Hiển thị 0 danh mục</span>
+
+                <ul class="clean-pagination">
+                    <li><span class="page-btn disabled"><i class="bi bi-chevron-left"></i></span></li>
+                    <li><span class="page-btn active">1</span></li>
+                    <li><span class="page-btn disabled"><i class="bi bi-chevron-right"></i></span></li>
                 </ul>
-            </nav>
+            </div>
+
         </div>
-
     </div>
-
 </div>
-
 
 <script>
     /* =========================================================
-       1. ĐỌC DỮ LIỆU THẬT TỪ BẢNG HTML (DO C# & SQL SERVER RENDER)
+       1. ĐỌC DỮ LIỆU TỪ BẢNG HTML
        ========================================================= */
     function getCategoriesFromTable() {
         const rows = document.querySelectorAll("#categoryTableBody tr");
         let categories = [];
 
         rows.forEach(row => {
-            // Đọc các giá trị đã render từ C# Razor vào
             const idEl = row.querySelector(".product-code");
             const nameEl = row.querySelector(".product-name");
             const descEl = row.querySelector(".description");
@@ -462,8 +581,7 @@
                 const id = idEl.textContent.trim();
                 const name = nameEl.textContent.trim();
                 const description = descEl ? descEl.textContent.trim() : "";
-                
-                // Kiểm tra xem trạng thái là Active hay Inactive dựa vào class của badge
+
                 let status = "Active";
                 if (statusBadge && statusBadge.classList.contains("unavailable")) {
                     status = "Inactive";
@@ -474,7 +592,7 @@
                     name: name,
                     description: description,
                     status: status,
-                    element: row // Lưu lại tham chiếu đến dòng HTML để ẩn/hiện khi lọc
+                    element: row
                 });
             }
         });
@@ -483,36 +601,7 @@
     }
 
     /* =========================================================
-       2. CÁC HÀM HIỆU ỨNG VÀ HỖ TRỢ GIAO DIỆN
-       ========================================================= */
-    function escapeHtml(value) {
-        return String(value)
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;")
-            .replaceAll("'", "&#039;");
-    }
-
-    /* Số đếm chạy từ giá trị cũ lên giá trị mới */
-    function animateNumber(el, to) {
-        const from = parseInt(el.textContent, 10) || 0;
-        if (from === to) { el.textContent = to; return; }
-
-        const duration = 600;
-        const start = performance.now();
-
-        function step(now) {
-            const t = Math.min((now - start) / duration, 1);
-            const eased = 1 - Math.pow(1 - t, 3);
-            el.textContent = Math.round(from + (to - from) * eased);
-            if (t < 1) requestAnimationFrame(step);
-        }
-        requestAnimationFrame(step);
-    }
-
-    /* =========================================================
-       3. HÀM TÌM KIẾM VÀ LỌC TRỰC TIẾP TRÊN BẢNG HTML
+       2. TÌM KIẾM & LỌC TRỰC TIẾP TRÊN BẢNG
        ========================================================= */
     function filterCategories() {
         const categories = getCategoriesFromTable();
@@ -532,10 +621,10 @@
                 (statusFilter === "inactive" && item.status === "Inactive");
 
             if (matchKeyword && matchStatus) {
-                item.element.style.display = ""; // Hiển thị dòng
+                item.element.style.display = "";
                 visibleCount++;
             } else {
-                item.element.style.display = "none"; // Ẩn dòng không khớp
+                item.element.style.display = "none";
             }
         });
 
@@ -546,27 +635,14 @@
             emptyState.classList.add("d-none");
         }
 
-        // Cập nhật lại số liệu thống kê tổng quan
-        updateSummary(categories.length, visibleCount);
-    }
-
-    function updateSummary(total, displayed) {
-        const categories = getCategoriesFromTable();
-        const active = categories.filter(item => item.status === "Active").length;
-        const inactive = categories.filter(item => item.status === "Inactive").length;
-
-        animateNumber(document.getElementById("totalCategories"), total);
-        animateNumber(document.getElementById("activeCategories"), active);
-        animateNumber(document.getElementById("inactiveCategories"), inactive);
-        animateNumber(document.getElementById("displayCategories"), displayed);
-
-        document.getElementById("resultText").textContent = `${displayed} danh mục`;
+        document.getElementById("resultText").textContent =
+            `Hiển thị 1 - ${visibleCount} trên tổng số ${categories.length} danh mục`;
     }
 
     /* =========================================================
-       4. HIỆU ỨNG RIPPLE CHO NÚT BẤM & SỰ KIỆN TƯƠNG TÁC
+       3. HIỆU ỨNG RIPPLE & SỰ KIỆN
        ========================================================= */
-    document.querySelectorAll(".btn-tea, .btn-filter").forEach(btn => {
+    document.querySelectorAll(".btn-tea-add").forEach(btn => {
         btn.addEventListener("click", function (e) {
             const rect = this.getBoundingClientRect();
             const size = Math.max(rect.width, rect.height);
@@ -589,9 +665,7 @@
         filterCategories();
     });
 
-    // Khởi chạy thống kê lần đầu khi vừa load trang xong
     window.addEventListener("DOMContentLoaded", () => {
-        const categories = getCategoriesFromTable();
-        updateSummary(categories.length, categories.length);
+        filterCategories();
     });
 </script>
