@@ -1,8 +1,8 @@
 ﻿
 /* =========================================================
-   PRODUCT MANAGEMENT - MILK TEA ADMIN
-   Dùng riêng cho Views/.../Index.cshtml
-   Không đụng vào layout/navbar chung.
+   PRODUCT MANAGEMENT - LUMI TEA ADMIN
+   Dùng riêng cho các trang Index quản lý
+   Không tác động layout/navbar chung
    ========================================================= */
 
 .product-page {
@@ -16,17 +16,20 @@
     --tea-muted: #78837e;
     --tea-border: #e6dcc2;
     --tea-red: #c65b4a;
-    padding: 34px 30px 60px;
     max-width: 1500px;
     margin: 0 auto;
+    padding: 34px 30px 60px;
     color: var(--tea-text);
 }
 
-    /* Header */
+    /* =========================================================
+   1. HEADER
+   ========================================================= */
+
     .product-page .product-heading {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
         gap: 20px;
         margin-bottom: 25px;
     }
@@ -65,14 +68,21 @@
         font-size: 13px;
     }
 
-    /* Buttons */
+    /* =========================================================
+   2. BUTTONS
+   ========================================================= */
+
     .product-page .btn-tea {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 46px;
+        padding: 0 21px;
         border: 0;
+        border-radius: 11px;
         background: var(--tea-green);
         color: #fff;
-        min-height: 44px;
-        padding: 10px 17px;
-        border-radius: 10px;
         font-size: 13px;
         font-weight: 700;
         box-shadow: 0 7px 16px rgba(32, 88, 79, .16);
@@ -85,14 +95,19 @@
             transform: translateY(-1px);
         }
 
+        .product-page .btn-tea:active {
+            transform: scale(.97);
+        }
+
     .product-page .btn-filter {
         min-height: 42px;
         border: 1px solid var(--tea-green);
-        color: var(--tea-green);
-        background: #fff;
         border-radius: 9px;
+        background: #fff;
+        color: var(--tea-green);
         font-size: 13px;
         font-weight: 700;
+        transition: .2s ease;
     }
 
         .product-page .btn-filter:hover {
@@ -100,7 +115,10 @@
             color: #fff;
         }
 
-    /* Summary cards */
+    /* =========================================================
+   3. SUMMARY CARDS
+   ========================================================= */
+
     .product-page .summary-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -110,9 +128,9 @@
 
     .product-page .summary-card {
         position: relative;
-        overflow: hidden;
         min-height: 105px;
         padding: 18px;
+        overflow: hidden;
         border: 1px solid var(--tea-border);
         border-radius: 15px;
         background: #fff;
@@ -120,7 +138,6 @@
     }
 
         .product-page .summary-card::after {
-            content: "";
             position: absolute;
             right: -24px;
             bottom: -30px;
@@ -128,6 +145,7 @@
             height: 95px;
             border-radius: 50%;
             background: var(--tea-green-light);
+            content: "";
         }
 
     .product-page .summary-label {
@@ -160,7 +178,10 @@
         font-size: 17px;
     }
 
-    /* Filter */
+    /* =========================================================
+   4. FILTER
+   ========================================================= */
+
     .product-page .filter-card {
         margin-bottom: 20px;
         border: 1px solid var(--tea-border);
@@ -170,11 +191,11 @@
     }
 
     .product-page .filter-head {
-        padding: 16px 19px;
-        border-bottom: 1px solid #eee8da;
         display: flex;
         align-items: center;
         gap: 9px;
+        padding: 16px 19px;
+        border-bottom: 1px solid #eee8da;
     }
 
         .product-page .filter-head i {
@@ -192,10 +213,10 @@
     }
 
     .product-page .form-label {
+        margin-bottom: 7px;
         color: #45534f;
         font-size: 12px;
         font-weight: 700;
-        margin-bottom: 7px;
     }
 
     .product-page .form-control,
@@ -220,7 +241,10 @@
         color: var(--tea-green);
     }
 
-    /* Table */
+    /* =========================================================
+   5. TABLE
+   ========================================================= */
+
     .product-page .product-table-card {
         overflow: hidden;
         border: 1px solid var(--tea-border);
@@ -230,11 +254,11 @@
     }
 
     .product-page .table-top {
-        padding: 17px 19px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 15px;
+        padding: 17px 19px;
         border-bottom: 1px solid #eee8da;
     }
 
@@ -261,9 +285,9 @@
 
         .product-page .table thead th {
             padding: 13px 12px;
+            border-bottom: 1px solid var(--tea-border);
             background: #f6f7f3;
             color: #61706a;
-            border-bottom: 1px solid var(--tea-border);
             font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
@@ -301,11 +325,11 @@
     .product-page .product-image {
         width: 54px;
         height: 54px;
-        object-fit: cover;
-        border-radius: 12px;
-        border: 1px solid var(--tea-border);
-        background: var(--tea-cream);
         padding: 2px;
+        border: 1px solid var(--tea-border);
+        border-radius: 12px;
+        background: var(--tea-cream);
+        object-fit: cover;
     }
 
     .product-page .product-name {
@@ -390,14 +414,17 @@
             color: #fff;
         }
 
-    /* Pagination */
+    /* =========================================================
+   6. PAGINATION
+   ========================================================= */
+
     .product-page .table-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
         padding: 15px 19px;
         border-top: 1px solid #eee8da;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 15px;
     }
 
     .product-page .pagination .page-link {
@@ -408,83 +435,725 @@
     }
 
     .product-page .pagination .page-item.active .page-link {
-        background: var(--tea-green);
         border-color: var(--tea-green);
+        background: var(--tea-green);
         color: #fff;
     }
 
-/* Modal */
-.product-page-modal .modal-content {
-    border: 0;
+/* =========================================================
+   7. MODAL CHUNG
+   ========================================================= */
+
+.product-page-modal {
+    --tea-green: #20584f;
+    --tea-green-dark: #17463e;
+    --tea-green-light: #eaf3ef;
+    --tea-text: #213430;
+    --tea-border: #e6dcc2;
+}
+
+    .product-page-modal .modal-dialog {
+        max-width: 520px;
+    }
+
+    .product-page-modal .modal-content {
+        overflow: hidden;
+        border: 0;
+        border-radius: 19px;
+        box-shadow: 0 20px 55px rgba(20, 45, 39, .22);
+    }
+
+    .product-page-modal .modal-header {
+        padding: 21px 24px;
+        border: 0;
+        background: linear-gradient(120deg, #17463e, #287363);
+        color: #fff;
+    }
+
+    .product-page-modal .modal-title {
+        font-size: 16px;
+        font-weight: 800;
+    }
+
+    .product-page-modal .btn-close {
+        filter: brightness(0) invert(1);
+        opacity: .85;
+    }
+
+    .product-page-modal .modal-body {
+        padding: 25px;
+        background: #fffdf8;
+    }
+
+    .product-page-modal .modal-footer {
+        padding: 17px 24px;
+        border-top: 1px solid #eee8da;
+        background: #fff;
+    }
+
+    .product-page-modal .modal-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #45534f;
+        font-size: 12px;
+        font-weight: 750;
+    }
+
+    .product-page-modal .form-control,
+    .product-page-modal .form-select {
+        min-height: 44px;
+        border: 1px solid #ddd7c9;
+        border-radius: 10px;
+        font-size: 13px;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+        .product-page-modal .form-control:focus,
+        .product-page-modal .form-select:focus {
+            border-color: #478b78;
+            box-shadow: 0 0 0 3px rgba(32, 88, 79, .10);
+        }
+
+    .product-page-modal textarea.form-control {
+        min-height: 95px;
+    }
+
+    .product-page-modal .btn-save,
+    .btn-save {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 10px 18px;
+        border: 1px solid #20584f !important;
+        border-radius: 8px;
+        background: #20584f !important;
+        color: #fff !important;
+        font-weight: 600;
+    }
+
+        .product-page-modal .btn-save:hover,
+        .btn-save:hover {
+            border-color: #17463e !important;
+            background: #17463e !important;
+            color: #fff !important;
+        }
+
+        .product-page-modal .btn-save:focus,
+        .product-page-modal .btn-save:active,
+        .btn-save:focus,
+        .btn-save:active {
+            border-color: #17463e !important;
+            background: #17463e !important;
+            color: #fff !important;
+            box-shadow: 0 0 0 .2rem rgba(32, 88, 79, .2) !important;
+        }
+
+        .btn-save i {
+            color: #fff !important;
+        }
+
+/* =========================================================
+   8. REVIEW HOVER
+   ========================================================= */
+
+.review-card {
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+    .review-card:hover {
+        transform: translateY(-4px);
+        border-color: #cfded8 !important;
+        box-shadow: 0 14px 30px rgba(33, 52, 48, .10) !important;
+    }
+
+    .review-card .review-avatar {
+        transition: transform .2s ease, background-color .2s ease;
+    }
+
+    .review-card:hover .review-avatar {
+        transform: scale(1.05);
+        background: #dfeee8 !important;
+    }
+
+    .review-card .btn-filter,
+    .review-card .action-btn {
+        transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease;
+    }
+
+        .review-card .btn-filter:hover,
+        .review-card .action-btn:hover {
+            transform: translateY(-1px);
+        }
+
+    .review-card .category-badge {
+        transition: background-color .2s ease, transform .2s ease;
+    }
+
+    .review-card:hover .category-badge {
+        transform: translateX(2px);
+    }
+
+    .review-card .review-stars {
+        transition: transform .2s ease;
+    }
+
+    .review-card:hover .review-stars {
+        transform: scale(1.03);
+    }
+
+/* =========================================================
+   9. TOPPING HOVER
+   ========================================================= */
+
+.topping-card {
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+    .topping-card:hover {
+        transform: translateY(-4px);
+        border-color: #cfded8 !important;
+        box-shadow: 0 14px 30px rgba(33, 52, 48, .10) !important;
+    }
+
+    .topping-card .topping-icon {
+        transition: transform .2s ease, background-color .2s ease;
+    }
+
+    .topping-card:hover .topping-icon {
+        transform: scale(1.05);
+        background: #dfeee8 !important;
+    }
+
+    .topping-card .product-name {
+        transition: color .2s ease;
+    }
+
+    .topping-card:hover .product-name {
+        color: #20584f;
+    }
+
+    .topping-card .status-badge,
+    .topping-card .product-price {
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .topping-card:hover .status-badge {
+        transform: translateY(-1px);
+    }
+
+    .topping-card:hover .product-price {
+        transform: translateX(2px);
+    }
+
+    .topping-card .btn-filter,
+    .topping-card .action-btn {
+        transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease;
+    }
+
+        .topping-card .btn-filter:hover,
+        .topping-card .action-btn:hover {
+            transform: translateY(-1px);
+        }
+
+/* =========================================================
+   10. SIZE TOOLBAR - TÌM KIẾM VÀ THỐNG KÊ
+   ========================================================= */
+
+.product-page .size-toolbar {
+    padding: 22px 24px;
+    border: 1px solid #e6dcc2;
     border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 20px 55px rgba(20, 45, 39, .22);
+    background: #fff;
+    box-shadow: 0 5px 18px rgba(32, 88, 79, .05);
 }
 
-.product-page-modal .modal-header {
-    padding: 18px 21px;
-    background: var(--tea-green);
-    color: #fff;
-    border: 0;
+.product-page .size-toolbar-heading {
+    margin-bottom: 18px;
 }
 
-.product-page-modal .modal-title {
-    font-size: 16px;
+.product-page .size-toolbar-title {
+    margin: 0;
+    color: #17463e;
+    font-size: 18px;
     font-weight: 800;
 }
 
-.product-page-modal .btn-close {
-    filter: brightness(0) invert(1);
-    opacity: .85;
+.product-page .size-toolbar-subtitle {
+    margin: 5px 0 0;
+    color: #78837e;
+    font-size: 12px;
 }
 
-.product-page-modal .modal-body {
-    padding: 22px;
-    background: #fffdf8;
+.product-page .size-toolbar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
 }
 
-.product-page-modal .modal-footer {
-    padding: 15px 21px;
-    border-top: 1px solid #eee8da;
-    background: #fff;
+.product-page .size-search-box {
+    flex: 1;
+    width: 100%;
+    max-width: 520px;
 }
 
-.product-page-modal .modal-label {
+.product-page .size-toolbar-label {
+    display: block;
+    margin-bottom: 8px;
     color: #45534f;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 800;
 }
 
-.product-page-modal .form-control,
-.product-page-modal .form-select {
-    min-height: 42px;
-    border-radius: 9px;
-    border: 1px solid #ddd7c9;
-    font-size: 13px;
+.product-page .size-search-box .input-group-text {
+    min-height: 44px;
+    border-radius: 10px 0 0 10px;
+    background: #eaf3ef;
+    color: #20584f;
 }
 
-.product-page-modal textarea.form-control {
-    min-height: 95px;
+.product-page .size-search-box .form-control {
+    min-height: 44px;
+    border-radius: 0 10px 10px 0;
 }
 
-.product-page-modal .btn-save {
+.product-page .size-toolbar-hint {
+    display: block;
+    margin-top: 7px;
+    color: #89958f;
+    font-size: 11px;
+}
+
+/* Nhóm thống kê */
+
+.product-page .size-stat-group {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 22px;
+    padding: 13px 18px;
+    border: 1px solid #e8eee9;
+    border-radius: 13px;
+    background: #f7faf7;
+}
+
+.product-page .size-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 125px;
+}
+
+.product-page .size-stat-icon {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: #eaf3ef;
+    color: #20584f;
+    font-size: 17px;
+}
+
+    .product-page .size-stat-icon.product {
+        background: #fff4d5;
+        color: #987000;
+    }
+
+.product-page .size-stat-label {
+    display: block;
+    margin-bottom: 3px;
+    color: #78837e;
+    font-size: 11px;
+}
+
+.product-page .size-stat-item strong {
+    color: #17463e;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.product-page .size-stat-divider {
+    width: 1px;
+    height: 42px;
+    background: #dfe8e2;
+}
+
+/* =========================================================
+   11. SIZE CARDS
+   ========================================================= */
+
+.product-page #sizeCardContainer {
+    row-gap: 22px;
+}
+
+    /* Card */
+
+    .product-page #sizeCardContainer .size-card-modern {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+        padding: 24px !important;
+        overflow: hidden;
+        border: 1px solid #e6ece8 !important;
+        border-radius: 18px !important;
+        background: #fff !important;
+        box-shadow: 0 4px 16px rgba(32, 88, 79, .055) !important;
+        transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+
+        .product-page #sizeCardContainer .size-card-modern::before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #20584f, #78a99a);
+            content: "";
+        }
+
+        .product-page #sizeCardContainer .size-card-modern:hover {
+            transform: translateY(-5px);
+            border-color: #c7ddd3 !important;
+            box-shadow: 0 12px 28px rgba(32, 88, 79, .12) !important;
+        }
+
+/* Header card */
+
+.product-page .size-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-width: 0;
+}
+
+.product-page .size-card-title {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.product-page .size-eyebrow {
+    display: block;
+    margin-bottom: 8px;
+    color: #81918a;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.product-page .size-name {
+    margin: 0 0 7px;
+    color: #244f45;
+    font-size: 21px;
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+.product-page .size-code {
+    display: inline-block;
+    color: #8a9690;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Vòng tròn ký hiệu S / M / L */
+
+.product-page #sizeCardContainer .size-letter-modern {
+    position: relative;
+    width: 76px;
+    height: 76px;
+    min-width: 76px;
+    min-height: 76px;
+    max-width: 76px;
+    max-height: 76px;
+    flex: 0 0 76px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    overflow: hidden;
     border: 0;
-    border-radius: 9px;
-    background: var(--tea-green);
-    color: #fff;
-    font-weight: 700;
-    padding: 9px 17px;
+    border-radius: 50%;
+    background: #eaf3ef;
+    color: #20584f;
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    box-shadow: inset 0 0 0 1px rgba(32, 88, 79, .06);
+    transition: transform .25s ease, background .25s ease;
 }
 
-    .product-page-modal .btn-save:hover {
-        background: var(--tea-green-dark);
+    .product-page #sizeCardContainer .size-letter-modern::before,
+    .product-page #sizeCardContainer .size-letter-modern::after {
+        display: none !important;
+        content: none !important;
+    }
+
+.product-page #sizeCardContainer .size-card-modern:hover .size-letter-modern {
+    transform: rotate(-5deg) scale(1.07);
+    background: #dceee5;
+}
+
+/* Mô tả */
+
+.product-page .size-description {
+    min-height: 85px;
+    margin-top: 24px;
+    padding: 15px 16px;
+    border: 1px solid #edf1ee;
+    border-radius: 12px;
+    background: #f7f9f7;
+}
+
+.product-page .size-info-label {
+    display: block;
+    margin-bottom: 7px;
+    color: #89958f;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.product-page .size-description p {
+    margin: 0;
+    color: #4d5d55;
+    font-size: 13px;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+}
+
+/* Thông tin sản phẩm và trạng thái */
+
+.product-page .size-card-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 17px 0;
+    border-top: 1px solid #edf0ed;
+    border-bottom: 1px solid #edf0ed;
+}
+
+.product-page .size-count-number {
+    color: #20584f;
+    font-size: 25px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+    .product-page .size-count-number small {
+        color: #87938d;
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+.product-page .size-status {
+    text-align: right;
+}
+
+.product-page .size-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 11px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+    .product-page .size-status-pill.active {
+        background: #e9f5ed;
+        color: #318052;
+    }
+
+    .product-page .size-status-pill.inactive {
+        background: #f1f2f1;
+        color: #78817c;
+    }
+
+/* Nút Xem - Sửa - Xóa */
+
+.product-page .size-card-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+.product-page .size-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-width: 0;
+    height: 41px;
+    padding: 0 8px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+    .product-page .size-action-btn i {
+        font-size: 13px;
+    }
+
+    .product-page .size-action-btn.view {
+        border-color: #d9e9e0;
+        background: #edf5f1;
+        color: #20584f;
+    }
+
+    .product-page .size-action-btn.edit {
+        border-color: #f2e5bc;
+        background: #fff7e2;
+        color: #987000;
+    }
+
+    .product-page .size-action-btn.delete {
+        border-color: #f1d9d4;
+        background: #fff0ed;
+        color: #c45b4b;
+    }
+
+    .product-page .size-action-btn.view:hover {
+        border-color: #20584f;
+        background: #20584f;
         color: #fff;
     }
 
-/* Responsive */
+    .product-page .size-action-btn.edit:hover {
+        border-color: #f1c64c;
+        background: #f1c64c;
+        color: #244f45;
+    }
+
+    .product-page .size-action-btn.delete:hover {
+        border-color: #c45b4b;
+        background: #c45b4b;
+        color: #fff;
+    }
+
+    .product-page .size-action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 12px rgba(0, 0, 0, .08);
+    }
+
+    .product-page .size-action-btn:active {
+        transform: scale(.97);
+    }
+
+/* Hiệu ứng tương thích với card Size cũ nếu còn sử dụng */
+
+.product-page #sizeCardContainer .size-card {
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+    .product-page #sizeCardContainer .size-card:hover {
+        transform: translateY(-4px);
+        border-color: #cfded8 !important;
+        box-shadow: 0 14px 30px rgba(33, 52, 48, .10) !important;
+    }
+
+/* =========================================================
+   12. SIZE EMPTY STATE
+   ========================================================= */
+
+.product-page .size-empty-state {
+    padding: 55px 20px;
+    border: 1px dashed #cbdad2;
+    border-radius: 16px;
+    background: #fff;
+    text-align: center;
+}
+
+    .product-page .size-empty-state i {
+        display: block;
+        margin-bottom: 14px;
+        color: #8aa99b;
+        font-size: 36px;
+    }
+
+    .product-page .size-empty-state h5 {
+        color: #20584f;
+        font-size: 16px;
+        font-weight: 800;
+    }
+
+    .product-page .size-empty-state p {
+        margin: 0;
+        color: #89958f;
+        font-size: 13px;
+    }
+
+/* =========================================================
+   13. SIZE DETAIL MODAL
+   ========================================================= */
+
+.product-page-modal .view-size-letter {
+    width: 82px;
+    height: 82px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #eaf3ef;
+    color: #20584f;
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.product-page-modal .view-size-name {
+    margin-top: 12px;
+    color: #213430;
+    font-size: 23px;
+    font-weight: 800;
+}
+
+/* =========================================================
+   14. KEYBOARD ACCESSIBILITY
+   ========================================================= */
+
+.product-page button:focus-visible,
+.product-page-modal button:focus-visible {
+    outline: 3px solid rgba(245, 200, 75, .65);
+    outline-offset: 3px;
+}
+
+/* =========================================================
+   15. RESPONSIVE
+   ========================================================= */
+
 @media (max-width: 1100px) {
     .product-page .summary-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .product-page .size-toolbar-content {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .product-page .size-search-box {
+        max-width: 100%;
+    }
+
+    .product-page .size-stat-group {
+        justify-content: flex-start;
     }
 }
 
@@ -509,7 +1178,7 @@
         }
 
         .product-page .summary-grid {
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, 1fr);
         }
 
         .product-page .table-top {
@@ -517,9 +1186,30 @@
             flex-direction: column;
         }
 
+            .product-page .table-top > div:last-child {
+                width: 100% !important;
+            }
+
+            .product-page .table-top .input-group {
+                width: 100%;
+            }
+
         .product-page .table-footer {
             align-items: flex-start;
             flex-direction: column;
+        }
+
+        .product-page #sizeCardContainer .size-card-modern {
+            padding: 19px !important;
+        }
+
+        .product-page .size-card-info {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .product-page .size-status {
+            text-align: left;
         }
 }
 
@@ -532,227 +1222,71 @@
         min-height: 92px;
     }
 }
-/* =========================
-   NÚT LƯU MODAL
-   ========================= */
-.btn-save {
-    background-color: #20584f !important;
-    border: 1px solid #20584f !important;
-    color: #ffffff !important;
-    font-weight: 600;
-    padding: 10px 18px;
-    border-radius: 8px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
+
+@media (max-width: 480px) {
+    .product-page .size-toolbar {
+        padding: 18px;
+    }
+
+    .product-page .size-stat-group {
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .product-page .size-stat-item {
+        min-width: 0;
+        gap: 7px;
+    }
+
+    .product-page .size-stat-icon {
+        width: 34px;
+        height: 34px;
+        flex-basis: 34px;
+    }
+
+    .product-page .size-stat-item strong {
+        font-size: 19px;
+    }
+
+    .product-page .size-stat-label {
+        font-size: 10px;
+    }
+
+    .product-page #sizeCardContainer .size-card-modern {
+        padding: 18px !important;
+    }
+
+    .product-page #sizeCardContainer .size-letter-modern {
+        width: 60px;
+        height: 60px;
+        min-width: 60px;
+        min-height: 60px;
+        max-width: 60px;
+        max-height: 60px;
+        flex-basis: 60px;
+        font-size: 26px;
+    }
+
+    .product-page .size-name {
+        font-size: 19px;
+    }
+
+    .product-page .size-action-btn {
+        gap: 4px;
+        padding: 0 5px;
+        font-size: 11px;
+    }
 }
 
-    .btn-save:hover {
-        background-color: #17463e !important;
-        border-color: #17463e !important;
-        color: #ffffff !important;
-    }
-
-    .btn-save:focus,
-    .btn-save:active {
-        background-color: #17463e !important;
-        border-color: #17463e !important;
-        color: #ffffff !important;
-        box-shadow: 0 0 0 0.2rem rgba(32, 88, 79, 0.2) !important;
-    }
-
-    .btn-save i {
-        color: #ffffff !important;
-    }
 /* =========================================================
-   HOVER EFFECT - REVIEW
+   16. REDUCED MOTION
    ========================================================= */
 
-.review-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+@media (prefers-reduced-motion: reduce) {
+    .product-page *,
+    .product-page-modal * {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+    }
 }
-
-    .review-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 14px 30px rgba(33, 52, 48, 0.10) !important;
-        border-color: #cfded8 !important;
-    }
-
-
-    /* Avatar */
-
-    .review-card .review-avatar {
-        transition: transform 0.2s ease, background-color 0.2s ease;
-    }
-
-    .review-card:hover .review-avatar {
-        transform: scale(1.05);
-        background: #dfeee8 !important;
-    }
-
-
-    /* Nút thao tác */
-
-    .review-card .btn-filter,
-    .review-card .action-btn {
-        transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
-    }
-
-        .review-card .btn-filter:hover,
-        .review-card .action-btn:hover {
-            transform: translateY(-1px);
-        }
-
-
-    /* Badge sản phẩm */
-
-    .review-card .category-badge {
-        transition: background-color 0.2s ease, transform 0.2s ease;
-    }
-
-    .review-card:hover .category-badge {
-        transform: translateX(2px);
-    }
-
-
-    /* Sao */
-
-    .review-card .review-stars {
-        transition: transform 0.2s ease;
-    }
-
-    .review-card:hover .review-stars {
-        transform: scale(1.03);
-    }
-/* =========================================================
-   HOVER EFFECT - TOPPING
-   ========================================================= */
-
-.topping-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-    .topping-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 14px 30px rgba(33, 52, 48, 0.10) !important;
-        border-color: #cfded8 !important;
-    }
-
-
-    /* Icon topping */
-
-    .topping-card .topping-icon {
-        transition: transform 0.2s ease, background-color 0.2s ease;
-    }
-
-    .topping-card:hover .topping-icon {
-        transform: scale(1.05);
-        background: #dfeee8 !important;
-    }
-
-
-    /* Tên topping */
-
-    .topping-card .product-name {
-        transition: color 0.2s ease;
-    }
-
-    .topping-card:hover .product-name {
-        color: #20584f;
-    }
-
-
-    /* Badge trạng thái */
-
-    .topping-card .status-badge {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .topping-card:hover .status-badge {
-        transform: translateY(-1px);
-    }
-
-
-    /* Badge giá */
-
-    .topping-card .product-price {
-        transition: transform 0.2s ease;
-    }
-
-    .topping-card:hover .product-price {
-        transform: translateX(2px);
-    }
-
-
-    /* Nút thao tác */
-
-    .topping-card .btn-filter,
-    .topping-card .action-btn {
-        transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
-    }
-
-        .topping-card .btn-filter:hover,
-        .topping-card .action-btn:hover {
-            transform: translateY(-1px);
-        }
-/* =========================================================
-   HOVER EFFECT - SIZE
-   ========================================================= */
-
-.size-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-    .size-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 14px 30px rgba(33, 52, 48, 0.10) !important;
-        border-color: #cfded8 !important;
-    }
-
-
-    /* Vòng ký hiệu S / M / L */
-
-    .size-card .size-letter {
-        transition: transform 0.2s ease, background-color 0.2s ease;
-    }
-
-    .size-card:hover .size-letter {
-        transform: scale(1.06);
-        background: #dfeee8 !important;
-    }
-
-
-    /* Tên size */
-
-    .size-card .product-name {
-        transition: color 0.2s ease;
-    }
-
-    .size-card:hover .product-name {
-        color: #20584f;
-    }
-
-
-    /* Badge trạng thái */
-
-    .size-card .status-badge {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .size-card:hover .status-badge {
-        transform: translateY(-1px);
-    }
-
-
-    /* Nút thao tác */
-
-    .size-card .btn-filter,
-    .size-card .action-btn {
-        transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
-    }
-
-        .size-card .btn-filter:hover,
-        .size-card .action-btn:hover {
-            transform: translateY(-1px);
-        }
