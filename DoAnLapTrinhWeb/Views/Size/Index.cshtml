@@ -1,4 +1,5 @@
-﻿@using System.Web.Helpers
+﻿
+@using System.Web.Helpers
 
 @{
     ViewData["Title"] = "Quản lý size";
@@ -16,232 +17,299 @@
                 <i class="bi bi-rulers"></i>
             </div>
             <div>
-                <h1 class="page-title">
-                    Kích thước ly
-                </h1>
+                <h1 class="page-title">Kích thước ly</h1>
                 <p class="page-subtitle">
                     Quản lý các kích thước được sử dụng cho sản phẩm.
                 </p>
             </div>
         </div>
 
-        <button type="button"
-                class="btn-tea"
-                onclick="openAddSize()">
+        <button type="button" class="btn-tea" onclick="openAddSize()">
             <i class="bi bi-plus-lg me-1"></i>
             Thêm kích thước
         </button>
     </div>
 
-    <!-- HERO SIZE -->
-    <div class="row g-4 mb-4" id="sizeCardContainer">
-    </div>
 
-    <!-- INFO -->
-    <div class="border rounded-4 p-4 mb-4" style="background:#fff7d7;border-color:#e6dcc2 !important;">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center"
-                         style="width:50px;height:50px;background:#f5c84b;color:#17463e;">
-                        <i class="bi bi-lightbulb-fill"></i>
-                    </div>
-                    <div>
-                        <div style="font-weight:800;color:#213430;">
-                            Quản lý kích thước
-                        </div>
-                        <div style="font-size:13px;color:#78837e;">
-                            Dữ liệu được kết nối trực tiếp với CSDL SQL Server.
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- KHU VỰC TÌM KIẾM VÀ THỐNG KÊ -->
+    <div class="size-toolbar mb-4">
 
-            <div class="col-lg-4 mt-3 mt-lg-0 text-lg-end">
-                <span class="table-note">
-                    Tổng:
-                    <strong id="sizeTotal">0</strong> size
-                </span>
-                <span class="mx-2">•</span>
-                <span class="table-note">
-                    Sản phẩm dùng:
-                    <strong id="sizeProductTotal">0</strong>
-                </span>
+        <div class="size-toolbar-heading">
+            <div>
+                <h2 class="size-toolbar-title">Quản lý kích thước</h2>
+                <p class="size-toolbar-subtitle">
+                    Theo dõi và quản lý các kích thước ly trong menu Lumi Tea.
+                </p>
             </div>
         </div>
-    </div>
 
-    <!-- SEARCH & TABLE -->
-    <div class="product-table-card">
-        <div class="table-top">
-            <div>
-                <h2 class="table-title">Danh sách kích thước</h2>
-                <span class="table-note">Dữ liệu cập nhật trực tiếp</span>
-            </div>
+        <div class="size-toolbar-content">
 
-            <div style="width:300px;">
+            <!-- TÌM KIẾM -->
+            <div class="size-search-box">
+                <label for="sizeKeyword" class="size-toolbar-label">
+                    Tìm kiếm kích thước
+                </label>
+
                 <div class="input-group">
                     <span class="input-group-text">
                         <i class="bi bi-search"></i>
                     </span>
+
                     <input type="text"
                            id="sizeKeyword"
                            class="form-control"
-                           placeholder="Tìm mã hoặc tên size..."
+                           placeholder="Nhập S, M, L, mã size hoặc tên trà..."
                            oninput="renderSizes()" />
                 </div>
+
+                <span class="size-toolbar-hint">
+                    Tìm theo ký hiệu, mã size hoặc tên sản phẩm.
+                </span>
+            </div>
+
+            <!-- THỐNG KÊ -->
+            <div class="size-stat-group">
+
+                <div class="size-stat-item">
+                    <div class="size-stat-icon">
+                        <i class="bi bi-rulers"></i>
+                    </div>
+                    <div>
+                        <span class="size-stat-label">Tổng kích thước</span>
+                        <strong id="sizeTotal">0</strong>
+                    </div>
+                </div>
+
+                <div class="size-stat-divider"></div>
+
+                <div class="size-stat-item">
+                    <div class="size-stat-icon product">
+                        <i class="bi bi-cup-straw"></i>
+                    </div>
+                    <div>
+                        <span class="size-stat-label">Lượt sử dụng</span>
+                        <strong id="sizeProductTotal">0</strong>
+                    </div>
+                </div>
+
             </div>
         </div>
-
-        <div class="table-responsive">
-            <table class="table align-middle">
-                <thead>
-                    <tr>
-                        <th>Mã</th>
-                        <th>Kích thước</th>
-                        <th>Mô tả</th>
-                        <th>Sản phẩm</th>
-                        <th>Trạng thái</th>
-                        <th class="text-center">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody id="sizeTableBody">
-                </tbody>
-            </table>
-        </div>
     </div>
+
+    <!-- DANH SÁCH CARD SIZE -->
+    <div class="row g-4 mb-4" id="sizeCardContainer">
+    </div>
+
+
 </div>
 
-<!-- =============================================================
+<!-- =========================================================
      MODAL THÊM / SỬA SIZE
-     ============================================================= -->
+     ========================================================= -->
 <div class="modal fade product-page-modal"
      id="sizeModal"
      tabindex="-1"
      aria-hidden="true">
+
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
+
             <div class="modal-header">
                 <div>
                     <h5 class="modal-title" id="sizeModalTitle">
                         <i class="bi bi-rulers me-2"></i>Thêm kích thước
                     </h5>
-                    <div class="description mt-1">Nhập thông tin kích thước.</div>
+                    <div class="description mt-1">
+                        Nhập thông tin kích thước.
+                    </div>
                 </div>
-                <button type="button" class="btn-close" onclick="closeSizeModal()"></button>
+
+                <button type="button"
+                        class="btn-close"
+                        onclick="closeSizeModal()">
+                </button>
             </div>
 
             <div class="modal-body">
+
                 <input type="hidden" id="sizeEditId" />
 
-                <!-- BỔ SUNG: Chọn sản phẩm gắn với Size -->
                 <div class="mb-3">
                     <label class="modal-label">
                         Mã / Chọn sản phẩm <span class="text-danger">*</span>
                     </label>
-                    <input type="text" id="sizeProductId" class="form-control" placeholder="Ví dụ: SP0000001" />
+
+                    <input type="text"
+                           id="sizeProductId"
+                           class="form-control"
+                           placeholder="Ví dụ: SP0000001" />
                 </div>
 
                 <div class="mb-3">
                     <label class="modal-label">Mã size</label>
-                    <input type="text" id="sizeId" class="form-control" readonly />
+
+                    <input type="text"
+                           id="sizeId"
+                           class="form-control"
+                           readonly />
                 </div>
 
                 <div class="mb-3">
                     <label class="modal-label">
                         Tên size <span class="text-danger">*</span>
                     </label>
-                    <input type="text" id="sizeName" class="form-control" placeholder="Ví dụ: Size S..." />
+
+                    <input type="text"
+                           id="sizeName"
+                           class="form-control"
+                           placeholder="Ví dụ: Size S..." />
                 </div>
 
                 <div class="mb-3">
                     <label class="modal-label">
                         Ký hiệu <span class="text-danger">*</span>
                     </label>
-                    <input type="text" id="sizeLetter" class="form-control" maxlength="3" placeholder="S" />
+
+                    <input type="text"
+                           id="sizeLetter"
+                           class="form-control"
+                           maxlength="3"
+                           placeholder="S" />
                 </div>
 
                 <div class="mb-3">
                     <label class="modal-label">Mô tả</label>
-                    <textarea id="sizeDescription" class="form-control" rows="3" placeholder="Nhập mô tả..."></textarea>
+
+                    <textarea id="sizeDescription"
+                              class="form-control"
+                              rows="3"
+                              placeholder="Nhập mô tả..."></textarea>
                 </div>
 
                 <div>
                     <label class="modal-label">Trạng thái</label>
+
                     <select id="sizeStatus" class="form-select">
                         <option value="Đang sử dụng">Đang sử dụng</option>
                         <option value="Ngừng sử dụng">Ngừng sử dụng</option>
                     </select>
                 </div>
+
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn-filter" onclick="closeSizeModal()">Hủy</button>
-                <button type="button" class="btn-save" onclick="saveSize()">
-                    <i class="bi bi-check-lg me-1"></i>Lưu thay đổi
+                <button type="button"
+                        class="btn-filter"
+                        onclick="closeSizeModal()">
+                    Hủy
+                </button>
+
+                <button type="button"
+                        class="btn-save"
+                        onclick="saveSize()">
+                    <i class="bi bi-check-lg me-1"></i>
+                    Lưu thay đổi
                 </button>
             </div>
+
         </div>
     </div>
 </div>
 
-<!-- =============================================================
-     MODAL XEM CHI TIẾT
-     ============================================================= -->
+<!-- =========================================================
+     MODAL XEM CHI TIẾT SIZE
+     ========================================================= -->
 <div class="modal fade product-page-modal"
      id="sizeViewModal"
      tabindex="-1"
      aria-hidden="true">
+
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
+
             <div class="modal-header">
                 <div>
-                    <h5 class="modal-title"><i class="bi bi-eye-fill me-2"></i>Chi tiết kích thước</h5>
+                    <h5 class="modal-title">
+                        <i class="bi bi-eye-fill me-2"></i>
+                        Chi tiết kích thước
+                    </h5>
                 </div>
-                <button type="button" class="btn-close" onclick="closeSizeViewModal()"></button>
+
+                <button type="button"
+                        class="btn-close"
+                        onclick="closeSizeViewModal()">
+                </button>
             </div>
 
             <div class="modal-body">
+
                 <div class="text-center mb-4">
                     <div id="viewSizeLetter"
-                         class="rounded-circle d-inline-flex align-items-center justify-content-center"
-                         style="width:82px;height:82px;background:#eaf3ef;color:#20584f;font-size:32px;font-weight:800;">
+                         class="view-size-letter">
                     </div>
-                    <div id="viewSizeName" style="font-size:23px;font-weight:800;color:#213430;margin-top:12px;"></div>
+
+                    <div id="viewSizeName" class="view-size-name"></div>
+
                     <div id="viewSizeStatus" class="mt-2"></div>
                 </div>
 
                 <div class="mb-3">
                     <label class="modal-label">Mã</label>
-                    <input type="text" id="viewSizeId" class="form-control" readonly />
+
+                    <input type="text"
+                           id="viewSizeId"
+                           class="form-control"
+                           readonly />
                 </div>
 
                 <div class="mb-3">
                     <label class="modal-label">Mô tả</label>
-                    <textarea id="viewSizeDescription" class="form-control" rows="3" readonly></textarea>
+
+                    <textarea id="viewSizeDescription"
+                              class="form-control"
+                              rows="3"
+                              readonly></textarea>
                 </div>
 
                 <div>
-                    <label class="modal-label">Số sản phẩm đang dùng</label>
-                    <input type="text" id="viewSizeProductCount" class="form-control" readonly />
+                    <label class="modal-label">
+                        Số sản phẩm đang dùng
+                    </label>
+
+                    <input type="text"
+                           id="viewSizeProductCount"
+                           class="form-control"
+                           readonly />
                 </div>
+
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn-filter" onclick="closeSizeViewModal()">Đóng</button>
+                <button type="button"
+                        class="btn-filter"
+                        onclick="closeSizeViewModal()">
+                    Đóng
+                </button>
             </div>
+
         </div>
     </div>
 </div>
 
 <script>
+    // =========================================================
+    // DỮ LIỆU SIZE
+    // =========================================================
+
     var initialSizes = @Html.Raw(Json.Encode(ViewBag.SizesList ?? new List<object>()));
-    var sizeData = initialSizes;
+    var sizeData = initialSizes || [];
 
     var sizeModalInstance = null;
     var sizeViewModalInstance = null;
 
     document.addEventListener("DOMContentLoaded", function () {
+
         var modalElement = document.getElementById("sizeModal");
         sizeModalInstance = new bootstrap.Modal(modalElement);
 
@@ -251,12 +319,44 @@
         renderSizes();
     });
 
+
+    // =========================================================
+    // HÀM HỖ TRỢ
+    // =========================================================
+
     function generateSizeId() {
         return "SZ" + Math.floor(1000000 + Math.random() * 9000000);
     }
 
+    // Chỉ hiển thị ký hiệu S / M / L trong vòng tròn.
+    // Không thay đổi dữ liệu gốc trong CSDL.
+    function getSizeLetter(value) {
+        var letter = String(value || "").trim();
+
+        letter = letter.replace(/^size\s*/i, "");
+
+        return letter;
+    }
+
+    function escapeHtml(value) {
+        return String(value == null ? "" : value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    // =========================================================
+    // THÊM SIZE
+    // =========================================================
+
     function openAddSize() {
-        document.getElementById("sizeModalTitle").innerHTML = '<i class="bi bi-plus-circle-fill me-2"></i>Thêm kích thước';
+
+        document.getElementById("sizeModalTitle").innerHTML =
+            '<i class="bi bi-plus-circle-fill me-2"></i>Thêm kích thước';
+
         document.getElementById("sizeEditId").value = "";
         document.getElementById("sizeProductId").value = "";
         document.getElementById("sizeId").value = generateSizeId();
@@ -264,29 +364,51 @@
         document.getElementById("sizeLetter").value = "";
         document.getElementById("sizeDescription").value = "";
         document.getElementById("sizeStatus").value = "Đang sử dụng";
+
         sizeModalInstance.show();
     }
+
+
+    // =========================================================
+    // SỬA SIZE
+    // =========================================================
 
     function editSize(id) {
-        var item = sizeData.find(function (x) { return x.Id === id; });
+
+        var item = sizeData.find(function (x) {
+            return x.Id === id;
+        });
+
         if (!item) return;
 
-        document.getElementById("sizeModalTitle").innerHTML = '<i class="bi bi-pencil-fill me-2"></i>Chỉnh sửa kích thước';
+        document.getElementById("sizeModalTitle").innerHTML =
+            '<i class="bi bi-pencil-fill me-2"></i>Chỉnh sửa kích thước';
+
         document.getElementById("sizeEditId").value = item.Id;
         document.getElementById("sizeId").value = item.Id;
-        document.getElementById("sizeName").value = item.Name;
-        document.getElementById("sizeLetter").value = item.Letter;
-        document.getElementById("sizeDescription").value = item.Description;
-        document.getElementById("sizeStatus").value = item.Status;
+        document.getElementById("sizeProductId").value = "";
+        document.getElementById("sizeName").value = item.Name || "";
+        document.getElementById("sizeLetter").value = item.Letter || "";
+        document.getElementById("sizeDescription").value = item.Description || "";
+        document.getElementById("sizeStatus").value = item.Status || "Đang sử dụng";
 
         sizeModalInstance.show();
     }
 
-    // Gửi AJAX lưu dữ liệu (Thêm hoặc Sửa) xuống CSDL
+
+    // =========================================================
+    // LƯU SIZE - GIỮ NGUYÊN AJAX
+    // =========================================================
+
     async function saveSize() {
+
         var editId = document.getElementById("sizeEditId").value;
         var id = document.getElementById("sizeId").value.trim();
-        var product_id = document.getElementById("sizeProductId") ? document.getElementById("sizeProductId").value.trim() : "";
+
+        var product_id = document.getElementById("sizeProductId")
+            ? document.getElementById("sizeProductId").value.trim()
+            : "";
+
         var name = document.getElementById("sizeName").value.trim();
         var letter = document.getElementById("sizeLetter").value.trim();
         var description = document.getElementById("sizeDescription").value.trim();
@@ -303,6 +425,7 @@
         }
 
         var formData = new URLSearchParams();
+
         formData.append("id", id);
         formData.append("product_id", product_id);
         formData.append("name", name);
@@ -310,130 +433,276 @@
         formData.append("description", description);
         formData.append("status", status);
 
-        var url = editId === "" ? '@Url.Action("Create", "Size")' : '@Url.Action("Edit", "Size")';
+        var url = editId === ""
+            ? '@Url.Action("Create", "Size")'
+            : '@Url.Action("Edit", "Size")';
 
         try {
+
             let res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
                 body: formData.toString()
             });
+
             let result = await res.json();
+
             alert(result.message);
+
             if (result.success) {
                 window.location.reload();
             }
+
         } catch (err) {
+
             console.error(err);
             alert("Lỗi kết nối máy chủ.");
+
         }
     }
 
+
+    // =========================================================
+    // XEM CHI TIẾT SIZE
+    // =========================================================
+
     function viewSize(id) {
-        var item = sizeData.find(function (x) { return x.Id === id; });
+
+        var item = sizeData.find(function (x) {
+            return x.Id === id;
+        });
+
         if (!item) return;
 
-        document.getElementById("viewSizeLetter").textContent = item.Letter;
-        document.getElementById("viewSizeName").textContent = item.Name;
-        document.getElementById("viewSizeId").value = item.Id;
-        document.getElementById("viewSizeDescription").value = item.Description;
-        document.getElementById("viewSizeProductCount").value = item.ProductCount + " sản phẩm";
-        document.getElementById("viewSizeStatus").innerHTML = item.Status === "Đang sử dụng"
-            ? '<span class="status-badge available"><i class="bi bi-circle-fill"></i> Đang sử dụng</span>'
-            : '<span class="status-badge unavailable"><i class="bi bi-circle-fill"></i> Ngừng sử dụng</span>';
+        document.getElementById("viewSizeLetter").textContent =
+            getSizeLetter(item.Letter);
+
+        document.getElementById("viewSizeName").textContent =
+            item.Name || "";
+
+        document.getElementById("viewSizeId").value =
+            item.Id || "";
+
+        document.getElementById("viewSizeDescription").value =
+            item.Description || "";
+
+        document.getElementById("viewSizeProductCount").value =
+            Number(item.ProductCount || 0) + " sản phẩm";
+
+        document.getElementById("viewSizeStatus").innerHTML =
+            item.Status === "Đang sử dụng"
+                ? '<span class="status-badge available"><i class="bi bi-circle-fill"></i> Đang sử dụng</span>'
+                : '<span class="status-badge unavailable"><i class="bi bi-circle-fill"></i> Ngừng sử dụng</span>';
 
         sizeViewModalInstance.show();
     }
 
-    // Gửi AJAX xóa dữ liệu khỏi CSDL
+
+    // =========================================================
+    // XÓA SIZE - GIỮ NGUYÊN AJAX
+    // =========================================================
+
     async function deleteSize(id) {
-        var item = sizeData.find(function (x) { return x.Id === id; });
+
+        var item = sizeData.find(function (x) {
+            return x.Id === id;
+        });
+
         if (!item) return;
 
-        if (!confirm("Bạn có chắc chắn muốn xóa size '" + item.Name + "' này không?")) return;
+        if (!confirm("Bạn có chắc chắn muốn xóa size '" + item.Name + "' này không?")) {
+            return;
+        }
 
         var formData = new URLSearchParams();
         formData.append("id", id);
 
         try {
+
             let res = await fetch('@Url.Action("Delete", "Size")', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
                 body: formData.toString()
             });
+
             let result = await res.json();
+
             alert(result.message);
+
             if (result.success) {
                 window.location.reload();
             }
+
         } catch (err) {
+
             console.error(err);
             alert("Lỗi kết nối máy chủ.");
+
         }
     }
 
+
+    // =========================================================
+    // HIỂN THỊ CARD + TÌM KIẾM
+    // =========================================================
+
     function renderSizes() {
-        var keyword = document.getElementById("sizeKeyword") ? document.getElementById("sizeKeyword").value.toLowerCase().trim() : "";
+
+        var keyword = document.getElementById("sizeKeyword")
+            ? document.getElementById("sizeKeyword").value.toLowerCase().trim()
+            : "";
+
+        // Tìm theo mã size, tên size, ký hiệu và mô tả sản phẩm.
         var filtered = sizeData.filter(function (item) {
-            var text = (item.Id + " " + item.Name + " " + item.Letter).toLowerCase();
+
+            var text = [
+                item.Id,
+                item.Name,
+                item.Letter,
+                getSizeLetter(item.Letter),
+                item.Description
+            ].join(" ").toLowerCase();
+
             return text.includes(keyword);
         });
 
         var cardContainer = document.getElementById("sizeCardContainer");
+
         cardContainer.innerHTML = "";
 
-        filtered.forEach(function (item) {
-            var col = document.createElement("div");
-            col.className = "col-lg-4";
-            col.innerHTML = '<div class="size-card border rounded-4 h-100 p-4 shadow-sm" style="background:linear-gradient(145deg,#ffffff,#f7faf8);">' +
-                '<div class="d-flex justify-content-between align-items-start">' +
-                '<div>' +
-                '<div class="small text-uppercase fw-bold" style="color:#78837e;letter-spacing:1px;">Kích thước</div>' +
-                '<div class="product-name mt-1" style="font-size:22px;">' + escapeHtml(item.Name) + '</div>' +
-                '</div>' +
-                '<div class="size-letter rounded-circle d-flex align-items-center justify-content-center" style="width:72px;height:72px;background:#eaf3ef;color:#20584f;font-size:32px;font-weight:800;">' + escapeHtml(item.Letter) + '</div>' +
-                '</div>' +
-                '<div class="mt-4"><div class="description" style="min-height:45px;">' + escapeHtml(item.Description) + '</div></div>' +
-                '<div class="d-flex align-items-center justify-content-between mt-4 pt-3 border-top">' +
-                '<div><div class="small" style="color:#78837e;">Đang dùng cho</div><div style="font-size:20px;font-weight:800;color:#20584f;">' + item.ProductCount + '</div><div class="small" style="color:#78837e;">sản phẩm</div></div>' +
-                '<div class="text-end">' + (item.Status === "Đang sử dụng" ? '<span class="status-badge available"><i class="bi bi-circle-fill"></i> Đang dùng</span>' : '<span class="status-badge unavailable"><i class="bi bi-circle-fill"></i> Ngừng dùng</span>') + '</div>' +
-                '</div>' +
-                '<div class="d-flex gap-2 mt-4">' +
-                '<button type="button" class="btn-filter flex-grow-1" onclick="viewSize(\'' + item.Id + '\')"><i class="bi bi-eye-fill me-1"></i>Xem</button>' +
-                '<button type="button" class="btn-filter" onclick="editSize(\'' + item.Id + '\')"><i class="bi bi-pencil-fill"></i></button>' +
-                '<button type="button" class="action-btn delete-btn" onclick="deleteSize(\'' + item.Id + '\')"><i class="bi bi-trash-fill"></i></button>' +
-                '</div>' +
+        // Trường hợp không tìm thấy kết quả.
+        if (filtered.length === 0) {
+
+            cardContainer.innerHTML =
+                '<div class="col-12">' +
+                    '<div class="size-empty-state">' +
+                        '<i class="bi bi-search"></i>' +
+                        '<h5>Không tìm thấy kích thước</h5>' +
+                        '<p>Vui lòng thử mã size, ký hiệu hoặc tên sản phẩm khác.</p>' +
+                    '</div>' +
                 '</div>';
-            cardContainer.appendChild(col);
-        });
 
-        var tableBody = document.getElementById("sizeTableBody");
-        tableBody.innerHTML = "";
+        }
 
         filtered.forEach(function (item) {
-            var row = document.createElement("tr");
-            row.innerHTML = '<td><span class="product-code">' + escapeHtml(item.Id) + '</span></td>' +
-                '<td><div class="d-flex align-items-center gap-3"><div class="rounded-3 d-flex align-items-center justify-content-center" style="width:42px;height:42px;background:#eaf3ef;color:#20584f;font-weight:800;">' + escapeHtml(item.Letter) + '</div><div class="product-name">' + escapeHtml(item.Name) + '</div></div></td>' +
-                '<td><div class="description">' + escapeHtml(item.Description) + '</div></td>' +
-                '<td><span class="category-badge"><i class="bi bi-cup-straw me-1"></i>' + item.ProductCount + ' sản phẩm</span></td>' +
-                '<td>' + (item.Status === "Đang sử dụng" ? '<span class="status-badge available"><i class="bi bi-circle-fill"></i> Đang sử dụng</span>' : '<span class="status-badge unavailable"><i class="bi bi-circle-fill"></i> Ngừng sử dụng</span>') + '</td>' +
-                '<td class="text-center">' +
-                '<button type="button" class="action-btn edit-btn" onclick="viewSize(\'' + item.Id + '\')" title="Xem"><i class="bi bi-eye-fill"></i></button>' +
-                '<button type="button" class="action-btn edit-btn" onclick="editSize(\'' + item.Id + '\')" title="Sửa"><i class="bi bi-pencil-fill"></i></button>' +
-                '<button type="button" class="action-btn delete-btn" onclick="deleteSize(\'' + item.Id + '\')" title="Xóa"><i class="bi bi-trash-fill"></i></button>' +
-                '</td>';
-            tableBody.appendChild(row);
+
+            var col = document.createElement("div");
+            col.className = "col-lg-4 col-md-6";
+
+            var sizeLetter = getSizeLetter(item.Letter);
+
+            col.innerHTML =
+
+                '<div class="size-card size-card-modern h-100">' +
+
+                    // PHẦN ĐẦU CARD
+                    '<div class="size-card-header">' +
+
+                        '<div class="size-card-title">' +
+                            '<span class="size-eyebrow">KÍCH THƯỚC SẢN PHẨM</span>' +
+                            '<h5 class="size-name">' +
+                                escapeHtml(item.Name) +
+                            '</h5>' +
+                            '<span class="size-code">' +
+                                'Mã: ' + escapeHtml(item.Id) +
+                            '</span>' +
+                        '</div>' +
+
+                        // CHỈ HIỂN THỊ S / M / L
+                        '<div class="size-letter-modern">' +
+                            escapeHtml(sizeLetter) +
+                        '</div>' +
+
+                    '</div>' +
+
+                    // MÔ TẢ
+                    '<div class="size-description">' +
+                        '<span class="size-info-label">Mô tả kích thước</span>' +
+                        '<p>' +
+                            (item.Description
+                                ? escapeHtml(item.Description)
+                                : "Chưa có mô tả") +
+                        '</p>' +
+                    '</div>' +
+
+                    // THÔNG TIN SỬ DỤNG
+                    '<div class="size-card-info">' +
+
+                        '<div class="size-product-count">' +
+                            '<span class="size-info-label">Sản phẩm đang sử dụng</span>' +
+                            '<div class="size-count-number">' +
+                                Number(item.ProductCount || 0) +
+                                '<small> sản phẩm</small>' +
+                            '</div>' +
+                        '</div>' +
+
+                        '<div class="size-status">' +
+                            (item.Status === "Đang sử dụng"
+                                ? '<span class="size-status-pill active"><i class="bi bi-check-circle-fill"></i> Đang sử dụng</span>'
+                                : '<span class="size-status-pill inactive"><i class="bi bi-pause-circle-fill"></i> Ngừng sử dụng</span>') +
+                        '</div>' +
+
+                    '</div>' +
+
+                    // NÚT THAO TÁC
+                    '<div class="size-card-actions">' +
+
+                        '<button type="button" class="size-action-btn view" ' +
+                            'onclick="viewSize(\'' + item.Id + '\')" title="Xem chi tiết">' +
+                            '<i class="bi bi-eye-fill"></i><span>Xem</span>' +
+                        '</button>' +
+
+                        '<button type="button" class="size-action-btn edit" ' +
+                            'onclick="editSize(\'' + item.Id + '\')" title="Chỉnh sửa">' +
+                            '<i class="bi bi-pencil-fill"></i><span>Sửa</span>' +
+                        '</button>' +
+
+                        '<button type="button" class="size-action-btn delete" ' +
+                            'onclick="deleteSize(\'' + item.Id + '\')" title="Xóa kích thước">' +
+                            '<i class="bi bi-trash-fill"></i><span>Xóa</span>' +
+                        '</button>' +
+
+                    '</div>' +
+
+                '</div>';
+
+            cardContainer.appendChild(col);
+
         });
 
-        document.getElementById("sizeTotal").textContent = sizeData.length;
-        document.getElementById("sizeProductTotal").textContent = sizeData.reduce(function (sum, item) { return sum + Number(item.ProductCount || 0); }, 0);
+
+        // =====================================================
+        // CẬP NHẬT THỐNG KÊ
+        // =====================================================
+
+        document.getElementById("sizeTotal").textContent =
+            sizeData.length;
+
+        document.getElementById("sizeProductTotal").textContent =
+            sizeData.reduce(function (sum, item) {
+                return sum + Number(item.ProductCount || 0);
+            }, 0);
     }
 
-    function closeSizeModal() { if (sizeModalInstance) sizeModalInstance.hide(); }
-    function closeSizeViewModal() { if (sizeViewModalInstance) sizeViewModalInstance.hide(); }
 
-    function escapeHtml(value) {
-        return String(value == null ? "" : value)
-            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    // =========================================================
+    // ĐÓNG MODAL
+    // =========================================================
+
+    function closeSizeModal() {
+        if (sizeModalInstance) {
+            sizeModalInstance.hide();
+        }
     }
+
+    function closeSizeViewModal() {
+        if (sizeViewModalInstance) {
+            sizeViewModalInstance.hide();
+        }
+    }
+
 </script>
